@@ -1,0 +1,84 @@
+:::::TODO:::::
+Update for LD42
+:::::TODO:::::
+
+
+# Links
+---
+
+- ** [HTML5/WebGL  !!TODO!! ](https://lando.systems/games/ld41-putt-putt-boom) **
+- ** [Desktop/Java !!TODO!! ](https://lando.systems/games/ld40-litterburg/ld41-putt-putt-boom.jar) **
+- ** [Source](https://github.com/bploeckelman/LudumDare41) **
+
+The year is 2048 and *international relations* are in *tatters* ??
+
+The only remaining form of diplomacy is **tank-based mini-golf**
+
+*Diplomats, to your vehicles!*
+
+![putt-putt-boom-title.gif](///raw/103/z/1285d.gif)
+
+
+# Controls:
+---
+
+- ** Left click ** Control the power of the putt
+- ** Mouse cursor ** Aims the tank's turret
+- ** Mouse scroll ** Zoom on the map
+- ** WASD ** Basic control of the tank
+- ** TRFG ** Advanced control of the tank using individual treads
+- ** Escape ** Go back to level select screen
+
+![screenshot1.jpg](///raw/103/z/12993.jpg)
+
+
+# Game:
+---
+
+Here's the general flow of the game:
+
+- A classic game of Mini Golf, but with tanks... and turrets... and catapults... and maybe one really big tank.
+- Get the ball in the hole to complete the level.
+- Aim with the mouse cursor and left click to charge fire the ball.
+- Each death, including resets, is a two stroke penalty.
+- Enemy turrets will only fire in a set direction.  Catapults, on the other hand, will aim and attack when you are in sight.
+- Like normal golf ** You can't move when you have the ball**, so timing is crucial.
+- Pick up powerful power-ups to assist you in your relaxing time on the greens.
+
+![screenshot4.jpg](///raw/103/z/1299f.jpg)
+
+
+# About the Team:
+---
+
+[LandoSystems](https://lando.systems) is a group of jammers from Madison, Wisconsin that varies in size from 2 to 12 people. This is the team�s 16th Ludum Dare game!! :grinning:
+
+
+# Team Members:
+---
+
+Code:
+- Doug Graham [dsgraham](https://twitter.com/dsgraham)
+- Brian Ploeckelman [PalpatinesSmile](https://twitter.com/PalpatinesSmile)
+- Brian Rossman
+- Jeffrey Hwang
+- Brandon Humboldt
+- Colin Kennedy
+
+Art:
+- Matt Neumann
+- Troy Sullivan
+
+Music:
+- Tyler Pecora
+
+Baklava provided by
+- Ian McNamara
+
+Support Shiba:
+- Asuka!
+![shiba-w-scarf.jpg](///raw/103/z/12960.jpg)
+
+
+We hope you enjoy playing the game as much as we did making it! :fingers_crossed:
+

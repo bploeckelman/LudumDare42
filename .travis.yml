@@ -1,0 +1,22 @@
+language: java
+jdk: oraclejdk8
+notifications:
+  email: false
+install:
+- "./travis/install-prerequisites.sh"
+script:
+- "./travis/build.sh"
+after_success:
+- "./travis/deploy.sh"
+#env:
+#  global:
+#  - BINTRAY_USER=bploeckelman
+#  - BINTRAY_REPO=LudumDare
+cache:
+  directories:
+  - "$HOME/.gradle/caches"
+  - "$HOME/.gradle/wrapper"
+# Don't need to cache this without an android module
+#  - travis/android-sdk-linux
+before_cache:
+- rm -f "$HOME/.gradle/caches/modules-2/modules-2.lock"
