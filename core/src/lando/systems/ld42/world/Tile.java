@@ -13,6 +13,13 @@ import lando.systems.ld42.accessors.Vector2Accessor;
 import lando.systems.ld42.utils.TileUtils;
 
 public class Tile {
+    public enum TileType {
+        None,
+        forest,
+        mountain,
+        playerBase,
+        enemyBase
+    }
 
     public static final float scale = 2f;
     public static float tileWidth = 64 * scale;
@@ -26,6 +33,7 @@ public class Tile {
     public TextureRegion texture;
     public MutableFloat alpha;
     public Color renderColor;
+    public TileType type;
 
     /**
      * Owner of the tile 0 - unclaimed, 1 - player, 2 - computer
@@ -40,7 +48,7 @@ public class Tile {
         alpha = new MutableFloat(0);
         this.position = new Vector2(TileUtils.getX(col, tileWidth), TileUtils.getY(row, col, tileHeight) - 30);
         pickColor = TileUtils.getColorFromPosition(row, col);
-        texture = LudumDare42.game.assets.blueCastle;
+        texture = LudumDare42.game.assets.blankTile;
         Timeline.createSequence()
                 .pushPause(MathUtils.random(1.5f)+.5f)
                 .beginParallel()
@@ -50,6 +58,8 @@ public class Tile {
                         .target(1))
                 .end()
                 .start(LudumDare42.game.tween);
+
+        type = TileType.None;
     }
 
 
@@ -69,6 +79,23 @@ public class Tile {
             }
         }
 
+        batch.setColor(Color.WHITE);
+        renderType(batch);
+    }
+
+    public void renderType(SpriteBatch batch) {
+        TextureRegion typeTexture = null;
+        switch (type) {
+            case forest: typeTexture = LudumDare42.game.assets.tree; break;
+            case mountain: typeTexture = LudumDare42.game.assets.mountain; break;
+            default: break;
+        }
+
+        if (typeTexture != null) {
+            int typeXTexOffset = texture.getRegionWidth() / 2;
+            int typeYTextOffset = texture.getRegionHeight() / 2;
+            batch.draw(typeTexture, position.x + typeXTexOffset, position.y + typeYTextOffset);
+        }
     }
 
     public void renderPickBuffer(SpriteBatch batch){

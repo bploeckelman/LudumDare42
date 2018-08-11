@@ -74,6 +74,26 @@ public class World {
                 tiles.add(new Tile(col, row));
             }
         }
+
+        randomAssignTileType();
+    }
+
+    public void randomAssignTileType() {
+        for (Tile tile : tiles) {
+            int randIndex = MathUtils.random(0, 1);
+            tile.type = getTileTypeFromInt(randIndex);
+        }
+    }
+
+    public Tile.TileType getTileTypeFromInt(int num) {
+        Tile.TileType type = Tile.TileType.None;
+        switch (num) {
+            case 0: type = Tile.TileType.forest; break;
+            case 1: type = Tile.TileType.mountain; break;
+            default: break;
+        }
+
+        return type;
     }
 
     public Tile getTile(GridPoint2 location) {
