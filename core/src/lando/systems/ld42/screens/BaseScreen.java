@@ -24,9 +24,9 @@ public abstract class BaseScreen extends InputAdapter {
     public OrthographicCamera worldCamera;
     public OrthographicCamera hudCamera;
 
-    private static final float ZOOM_SCALE = 0.1f;
-    private static final float MAX_ZOOM = 5f;
-    private static final float MIN_ZOOM = 0.5f;
+    protected static final float ZOOM_SCALE = 0.1f;
+    protected static final float MAX_ZOOM = 2f;
+    protected static final float MIN_ZOOM = 0.5f;
     private static final float DRAG_DELTA = 10f;
     private static final float ZOOM_LERP = .1f;
     private static final float PAN_LERP = .2f;

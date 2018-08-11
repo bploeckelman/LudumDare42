@@ -8,7 +8,7 @@ import lando.systems.ld42.screens.*;
 public class World {
 
     public static World THE_WORLD;
-    public static final int WORLD_WIDTH = 36;
+    public static final int WORLD_WIDTH = 10;
 
     public Array<Tile> adjacentTiles;
 

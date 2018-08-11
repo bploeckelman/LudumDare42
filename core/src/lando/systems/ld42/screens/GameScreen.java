@@ -127,8 +127,8 @@ public class GameScreen extends BaseScreen {
 
    @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-       worldCamera.position.x = cameraTouchStart.x + (touchStart.x - screenX) * worldCamera.zoom;
-       worldCamera.position.y = cameraTouchStart.y + (screenY - touchStart.y) * worldCamera.zoom;
+       cameraTargetPos.x = cameraTouchStart.x + (touchStart.x - screenX) * worldCamera.zoom;
+       cameraTargetPos.y = cameraTouchStart.y + (screenY - touchStart.y) * worldCamera.zoom;
        if (cameraTouchStart.dst(worldCamera.position) > DRAG_DELTA) {
            cancelTouchUp = true;
        }
