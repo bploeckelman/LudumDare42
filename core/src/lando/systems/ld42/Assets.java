@@ -71,7 +71,7 @@ public class Assets implements Disposable {
     public Animation<TextureRegion> unitAnimationSoldier;
     public Animation<TextureRegion> unitAnimationArcher;
 
-    public BitmapFont font;
+    public static BitmapFont font;
     public ShaderProgram fontShader;
 
     public Array<ShaderProgram> randomTransitions;

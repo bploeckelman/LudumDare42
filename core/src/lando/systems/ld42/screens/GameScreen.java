@@ -12,11 +12,13 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import lando.systems.ld42.Config;
 import lando.systems.ld42.teams.EnemyTeam;
 import lando.systems.ld42.teams.PlayerTeam;
+import lando.systems.ld42.turns.TurnAction;
 import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.utils.TileUtils;
 import lando.systems.ld42.world.Tile;
@@ -31,8 +33,8 @@ public class GameScreen extends BaseScreen {
     public PlayerTeam playerTeam;
     public EnemyTeam enemyTeam;
 
-    public int turn;
     public float time;
+    public TurnAction turnAction;
 
     public Vector3 cameraTouchStart;
     public Vector3 touchStart;
@@ -69,7 +71,7 @@ public class GameScreen extends BaseScreen {
         worldCamera.update();
         adjacentTiles = new Array<Tile>();
         adjacentBuildTiles = new Array<Tile>();
-        turn = 0;
+        turnAction = new TurnAction();
 
         cameraTouchStart = new Vector3();
         touchStart = new Vector3();
@@ -90,6 +92,10 @@ public class GameScreen extends BaseScreen {
     public void update(float dt) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
+            turnAction.doAction();
         }
 
         // TODO: removeme, just for testing
@@ -182,6 +188,14 @@ public class GameScreen extends BaseScreen {
             hud.render(batch);
 //            batch.draw(pickRegion, 0, 0, 100, 80);
         }
+        String turnText;
+        if (turnAction.turn == turnAction.turn.PLAYER) {
+            turnText = "Player's Turn " + turnAction.turnNumber;
+        } else {
+            turnText = "Enemy's Turn " + turnAction.turnNumber;
+        }
+
+        lando.systems.ld42.Assets.drawString(batch, turnText, 0, 30, Color.BLACK, .5f, lando.systems.ld42.Assets.font, Config.window_width, Align.center);
         batch.end();
     }
 
