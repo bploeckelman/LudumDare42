@@ -52,6 +52,17 @@ public class Assets implements Disposable {
     public TextureRegion testTexture;
     public Texture titleTexture;
 
+    public TextureRegion whitePixel;
+    public TextureRegion defaultHex;
+    public TextureRegion whiteHex;
+    public TextureRegion selectHex;
+
+    public TextureRegion shadowUL;
+    public TextureRegion shadowUR;
+    public TextureRegion shadowU;
+
+
+
     public BitmapFont font;
     public ShaderProgram fontShader;
 
@@ -115,6 +126,14 @@ public class Assets implements Disposable {
         // Cache TextureRegions from TextureAtlas in fields for quicker access
         atlas = mgr.get(atlasAsset);
         testTexture = atlas.findRegion("badlogic");
+
+        whitePixel = atlas.findRegion("white-pixel");
+
+        defaultHex = atlas.findRegion("default-hex");
+        whiteHex = atlas.findRegion("white-hex");
+        shadowU = atlas.findRegion("shadow_u");
+        shadowUR = atlas.findRegion("shadow_ur");
+        shadowUL = atlas.findRegion("shadow_ul");
 
         titleTexture = mgr.get(titleTextureAsset);
 
@@ -191,5 +210,4 @@ public class Assets implements Disposable {
         font.getData().setScale(scale);
         batch.setShader(null);
     }
-
 }

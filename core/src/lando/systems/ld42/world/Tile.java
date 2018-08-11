@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import lando.systems.ld42.Assets;
 
 public class Tile extends GameObject {
 
@@ -50,17 +51,17 @@ public class Tile extends GameObject {
 
     public void addShadow(int type){
         shadow_tex = null;
-//        switch (type){
-//            case 1:
-//                shadow_tex = Assets.shadowUL;
-//                break;
-//            case 2:
-//                shadow_tex = Assets.shadowUR;
-//                break;
-//            case 3:
-//                shadow_tex = Assets.shadowU;
-//                break;
-//        }
+        switch (type){
+            case 1:
+                shadow_tex = assets().shadowUL;
+                break;
+            case 2:
+                shadow_tex = assets().shadowUR;
+                break;
+            case 3:
+                shadow_tex = assets().shadowU;
+                break;
+        }
     }
 
     public void render(SpriteBatch batch, float x, float y) {
@@ -74,8 +75,8 @@ public class Tile extends GameObject {
         Color texColor = Color.WHITE;
         if (asPickBuffer) {
             texColor = pickColor;
-            //bottomTex = Assets.white_hex;
-            //topTex = Assets.white_hex;
+            bottomTex = assets().whiteHex;
+            topTex = assets().whiteHex;
         }
 
         batch.setColor(texColor);
@@ -97,22 +98,22 @@ public class Tile extends GameObject {
 
         if (isHighlighted) {
             batch.setColor((isInaccessible) ? Color.RED : Color.CYAN);
-//            batch.draw(Assets.select_hex, x, y + heightOffset, tileWidth, tileHeight);
+            batch.draw(assets().selectHex, x, y, tileWidth, tileHeight);
             batch.setColor(Color.WHITE);
         }
         if (isMoveTarget) {
             batch.setColor(0,1,0,selectAlpha);
-//            batch.draw(Assets.select_hex, x, y + heightOffset, tileWidth, tileHeight);
+            batch.draw(assets().selectHex, x, y, tileWidth, tileHeight);
             batch.setColor(Color.WHITE);
         }
         if (isBuildTarget) {
             batch.setColor(1, .75f, 0, selectAlpha);
-//            batch.draw(Assets.select_hex, x, y + heightOffset, tileWidth, tileHeight);
+            batch.draw(assets().selectHex, x, y, tileWidth, tileHeight);
             batch.setColor(Color.WHITE);
         }
         if (isWaitTarget){
             batch.setColor(1,0,1,selectAlpha);
-//            batch.draw(Assets.select_hex, x, y + heightOffset, tileWidth, tileHeight);
+            batch.draw(assets().selectHex, x, y, tileWidth, tileHeight);
             batch.setColor(Color.WHITE);
         }
 //        if (!decoration.equals(Decoration.None) && (aboveWater && heightOffset > waterHeight)) {

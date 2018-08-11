@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import lando.systems.ld42.Assets;
 import lando.systems.ld42.Config;
 import lando.systems.ld42.LudumDare42;
 
@@ -16,6 +17,7 @@ import lando.systems.ld42.LudumDare42;
 public abstract class BaseScreen extends InputAdapter {
 
     public final LudumDare42 game;
+    public final Assets assets;
 
     public boolean allowInput;
     public MutableFloat alpha;
@@ -35,9 +37,12 @@ public abstract class BaseScreen extends InputAdapter {
     public Vector3 cameraTargetPos = new Vector3();
     public MutableFloat targetZoom = new MutableFloat(1f);
 
+
+
     public BaseScreen() {
         super();
         this.game = LudumDare42.game;
+        this.assets = LudumDare42.game.assets;
 
         this.allowInput = false;
         this.alpha = new MutableFloat(0f);

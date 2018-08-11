@@ -2,6 +2,8 @@ package lando.systems.ld42.world;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.*;
+import lando.systems.ld42.Assets;
+import lando.systems.ld42.LudumDare42;
 
 public abstract class GameObject {
     public World world;
@@ -34,6 +36,10 @@ public abstract class GameObject {
         this.row = row;
 
         this.position = new Vector3(getX(row, col), getY(row), height);
+    }
+
+    protected Assets assets() {
+        return LudumDare42.game.assets;
     }
 
     public void update(float dt){
