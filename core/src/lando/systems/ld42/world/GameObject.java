@@ -8,8 +8,9 @@ import lando.systems.ld42.LudumDare42;
 public abstract class GameObject {
     public World world;
 
-    public static float tileWidth = 26;
-    public static float tileHeight = 30;
+    public static final float scale = 2f;
+    public static float tileWidth = 26 * scale;
+    public static float tileHeight = 30 * scale;
 
     public static float getX(int row, int col) {
         float x = col * tileWidth;

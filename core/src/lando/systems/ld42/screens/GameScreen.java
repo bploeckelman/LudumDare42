@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
 import lando.systems.ld42.Config;
+import lando.systems.ld42.LudumDare42;
+import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.world.*;
 
 public class GameScreen extends BaseScreen {
@@ -22,6 +24,7 @@ public class GameScreen extends BaseScreen {
 //    public EndTurnButton endTurnButton;
 //    public PlayerSelectionHud playerSelection;
     public Player selectedPlayer;
+    public Unit testUnit;
 
     public int turn;
 //    public Array<TurnAction> turnActions;
@@ -67,10 +70,17 @@ public class GameScreen extends BaseScreen {
         cameraTouchStart = new Vector3();
         touchStart = new Vector3();
 //        shaker = new Screenshake(120, 3);
+        testUnit = new Unit(LudumDare42.game.assets);
+        Tile tile = world.getTile(0, 0);
+        testUnit.pos.set(tile.position.x + Tile.tileWidth / 2f - testUnit.size.x / 2f, tile.position.y + Tile.tileHeight - testUnit.size.y);
     }
 
     @Override
     public void update(float dt) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            Gdx.app.exit();
+        }
+
 //        if (endGameOverlay == null) {
 //            stats.totalTime += dt;
 //        }
@@ -95,6 +105,7 @@ public class GameScreen extends BaseScreen {
 
         time += dt;
         world.update(dt);
+        testUnit.update(dt);
 //        endTurnButton.update(dt);
 
 //        if (tutorialManager != null) {
@@ -263,8 +274,7 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void render(SpriteBatch batch) {
-        Gdx.gl.glClearColor(Config.background_color.r, Config.background_color.g,
-                Config.background_color.b, Config.background_color.a);
+        Gdx.gl.glClearColor(Config.background_color.r, Config.background_color.g, Config.background_color.b, Config.background_color.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // Draw world
@@ -272,10 +282,9 @@ public class GameScreen extends BaseScreen {
         batch.begin();
         {
             world.render(batch);
+            testUnit.render(batch);
         }
         batch.end();
-
-        batch.setProjectionMatrix(worldCamera.combined);
 
 // move to a hud screen
 //        // Draw HUD

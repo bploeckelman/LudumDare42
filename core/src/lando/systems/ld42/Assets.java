@@ -61,7 +61,7 @@ public class Assets implements Disposable {
     public TextureRegion shadowUR;
     public TextureRegion shadowU;
 
-
+    public Animation<TextureRegion> unitAnimation;
 
     public BitmapFont font;
     public ShaderProgram fontShader;
@@ -134,6 +134,9 @@ public class Assets implements Disposable {
         shadowU = atlas.findRegion("shadow_u");
         shadowUR = atlas.findRegion("shadow_ur");
         shadowUL = atlas.findRegion("shadow_ul");
+
+        Array<TextureAtlas.AtlasRegion> unit = atlas.findRegions("unit");
+        unitAnimation = new Animation<TextureRegion>(0.33f, unit, Animation.PlayMode.LOOP);
 
         titleTexture = mgr.get(titleTextureAsset);
 
