@@ -37,7 +37,7 @@ public class PlayerHUD {
         }
     }
 
-    public void render(SpriteBatch batch) {
+    public void render(SpriteBatch batch, boolean inTransition) {
         for (TileHUDIndicator indicator : indicators) {
             indicator.render(batch);
         }

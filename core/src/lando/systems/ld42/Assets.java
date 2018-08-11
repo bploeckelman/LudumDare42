@@ -39,6 +39,8 @@ public class Assets implements Disposable {
     private final AssetDescriptor<ShaderProgram> shaderHeartAsset         = new AssetDescriptor<ShaderProgram>("shaders/heart.frag",      ShaderProgram.class, defaultVertParam);
     private final AssetDescriptor<ShaderProgram> shaderCircleCropAsset    = new AssetDescriptor<ShaderProgram>("shaders/circlecrop.frag", ShaderProgram.class, defaultVertParam);
     private final AssetDescriptor<ShaderProgram> shaderWaterAsset         = new AssetDescriptor<ShaderProgram>("shaders/water.frag",      ShaderProgram.class, defaultVertParam);
+    private final AssetDescriptor<ShaderProgram> shaderCloudAsset         = new AssetDescriptor<ShaderProgram>("shaders/cloud.frag",      ShaderProgram.class, defaultVertParam);
+
 
     public enum Loading { SYNC, ASYNC }
 
@@ -89,6 +91,8 @@ public class Assets implements Disposable {
     public ShaderProgram circleCropShader;
     public ShaderProgram waterShader;
 
+    public ShaderProgram cloudShader;
+
     public boolean initialized;
 
     public Assets() {
@@ -121,6 +125,7 @@ public class Assets implements Disposable {
         mgr.load(shaderHeartAsset);
         mgr.load(shaderCircleCropAsset);
         mgr.load(shaderWaterAsset);
+        mgr.load(shaderCloudAsset);
 
         if (loading == Loading.SYNC) {
             mgr.finishLoading();
@@ -180,6 +185,7 @@ public class Assets implements Disposable {
         heartShader      = mgr.get(shaderHeartAsset);
         circleCropShader = mgr.get(shaderCircleCropAsset);
         waterShader      = mgr.get(shaderWaterAsset);
+        cloudShader      = mgr.get(shaderCloudAsset);
 
         randomTransitions = new Array<ShaderProgram>();
         randomTransitions.addAll(

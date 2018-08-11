@@ -58,7 +58,7 @@ public abstract class BaseScreen extends InputAdapter {
     }
 
     public abstract void update(float dt);
-    public abstract void render(SpriteBatch batch);
+    public abstract void render(SpriteBatch batch, boolean inTransition);
 
     protected void updateCamera() {
         worldCamera.zoom = MathUtils.lerp(worldCamera.zoom, targetZoom.floatValue(), ZOOM_LERP);

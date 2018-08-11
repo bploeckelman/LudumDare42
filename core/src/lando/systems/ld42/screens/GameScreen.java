@@ -54,6 +54,7 @@ public class GameScreen extends BaseScreen {
     public int pickMapScale = 8;
     private FrameBuffer pickBuffer;
     private TextureRegion pickRegion;
+    private float accum;
 
     public GameScreen() {
         super();
@@ -90,6 +91,7 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void update(float dt) {
+        accum += dt;
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
@@ -136,29 +138,41 @@ public class GameScreen extends BaseScreen {
 
 
     @Override
-    public void render(SpriteBatch batch) {
+    public void render(SpriteBatch batch, boolean inTransition) {
         // Draw picking frame buffer
-        batch.setProjectionMatrix(worldCamera.combined);
-        pickBuffer.begin();
-        {
-            Gdx.gl.glClearColor(0f, 0f, 1f, 1f);
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-            batch.begin();
-            world.renderPickBuffer(batch);
-            batch.end();
-        }
+        if (!inTransition) {
+            batch.setProjectionMatrix(worldCamera.combined);
+            pickBuffer.begin();
+            {
+                Gdx.gl.glClearColor(0f, 0f, 1f, 1f);
+                Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+                batch.begin();
+                world.renderPickBuffer(batch);
+                batch.end();
+            }
 
-        pickPixmap = ScreenUtils.getFrameBufferPixmap(0, 0, pickBuffer.getWidth(), pickBuffer.getHeight());
-        pickBuffer.end();
+            pickPixmap = ScreenUtils.getFrameBufferPixmap(0, 0, pickBuffer.getWidth(), pickBuffer.getHeight());
+            pickBuffer.end();
+        }
 
 
         Gdx.gl.glClearColor(Config.background_color.r, Config.background_color.g, Config.background_color.b, Config.background_color.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        batch.setProjectionMatrix(hudCamera.combined);
+        batch.setShader(assets.cloudShader);
+        batch.begin();
+        assets.cloudShader.setUniformf("u_time", accum);
+        assets.cloudShader.setUniformf("u_resolution", hudCamera.viewportWidth, hudCamera.viewportHeight);
+        batch.draw(assets.titleTexture, 0, 0, hudCamera.viewportWidth, hudCamera.viewportHeight);
+        batch.end();
+        batch.setShader(null);
+
         // Draw world
         batch.setProjectionMatrix(worldCamera.combined);
         batch.begin();
         {
+
             world.render(batch);
             playerTeam.render(batch);
             enemyTeam.render(batch);
@@ -180,7 +194,7 @@ public class GameScreen extends BaseScreen {
         batch.begin();
         {
             batch.setColor(Color.WHITE);
-            hud.render(batch);
+            hud.render(batch, inTransition);
 //            batch.draw(pickRegion, 0, 0, 100, 80);
         }
         String turnText;

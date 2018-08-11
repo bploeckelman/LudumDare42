@@ -77,12 +77,12 @@ public class LudumDare42 extends ApplicationAdapter {
 
             transitionFBO.begin();
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-            nextScreen.render(assets.batch);
+            nextScreen.render(assets.batch, true);
             transitionFBO.end();
 
             originalFBO.begin();
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-            screen.render(assets.batch);
+            screen.render(assets.batch, true);
             originalFBO.end();
 
             assets.batch.setShader(transitionShader);
@@ -97,7 +97,7 @@ public class LudumDare42 extends ApplicationAdapter {
             assets.batch.end();
             assets.batch.setShader(null);
         } else {
-            screen.render(assets.batch);
+            screen.render(assets.batch, false);
         }
     }
 

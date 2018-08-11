@@ -51,7 +51,7 @@ public class TitleScreen extends BaseScreen {
     }
 
     @Override
-    public void render(SpriteBatch batch) {
+    public void render(SpriteBatch batch, boolean inTransition) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.setProjectionMatrix(hudCamera.combined);
