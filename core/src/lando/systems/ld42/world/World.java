@@ -23,6 +23,7 @@ public class World {
 
     public int enemyTileCount;
     public int playerTileCount;
+    public int unclaimedTileCount;
 
     public World(GameScreen screen){
         this.screen = screen;
@@ -34,6 +35,10 @@ public class World {
         adjacentTiles = new Array<Tile>();
         tiles.get(0).owner = 1;
         tiles.get(tiles.size-1).owner = 2;
+
+        unclaimedTileCount = tiles.size - 2;
+        enemyTileCount = 1;
+        playerTileCount = 1;
     }
 
     public void update(float dt){
@@ -188,15 +193,5 @@ public class World {
         }
 
 
-    }
-
-    public int getTileCount(int owner) {
-        int tileCount = 0;
-        for (Tile tile : tiles) {
-            if (tile.owner == owner) {
-                tileCount++;
-            }
-        }
-        return tileCount;
     }
 }

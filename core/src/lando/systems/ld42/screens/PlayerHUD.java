@@ -26,7 +26,14 @@ public class PlayerHUD {
 
     public void update(float dt) {
         for (TileHUDIndicator indicator : indicators) {
-            indicator.count = screen.world.getTileCount(indicator.owner);
+            int tileCount = 0;
+            switch (indicator.owner) {
+                case 0: tileCount = screen.world.unclaimedTileCount; break;
+                case 1: tileCount = screen.world.playerTileCount; break;
+                case 2: tileCount = screen.world.enemyTileCount; break;
+                default: break;
+            }
+            indicator.count = tileCount;
         }
     }
 
