@@ -172,20 +172,32 @@ public class World {
         t.row = row;
         t.col = col;
         t.pickColor = TileUtils.getColorFromPosition(row, col);
-        tiles.set(col + row *WORLD_WIDTH, t);
+        tiles.set(col + row * WORLD_WIDTH, t);
         tiles.set(oldIndex, null);
     }
 
     public void squishHoles(){
-        for (int row = 0; row < WORLD_HEIGHT; row ++){
-            for (int col = 0; col < WORLD_WIDTH; col ++){
-                Tile t = getTile(col, row);
-                if (t == null){
-                    for (int y = row + 1; y < WORLD_HEIGHT; y ++ ){
-                        Tile next = getTile(col, y);
-                        if (next != null){
-                            moveTile(next, col, row);
-                            break;
+        for (int fixthis = 0; fixthis < 5; fixthis++){
+            for (int row = 0; row < WORLD_HEIGHT; row ++) {
+                for (int col = 0; col < WORLD_WIDTH; col++) {
+                    Tile t = getTile(col, row);
+                    if (t == null) {
+                        boolean emptyCol = row == 0;
+                        for (int y = row + 1; y < WORLD_HEIGHT; y++) {
+                            Tile next = getTile(col, y);
+                            if (next != null) {
+                                moveTile(next, col, row);
+                                emptyCol = false;
+                                break;
+                            }
+                        }
+                        if (emptyCol) {
+                            for (int y = 0; y < WORLD_HEIGHT; y++) {
+                                Tile rightTile = getTile(col + 1, y);
+                                if (rightTile != null) {
+                                    moveTile(rightTile, col, y);
+                                }
+                            }
                         }
                     }
                 }
