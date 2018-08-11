@@ -53,6 +53,8 @@ public class GameScreen extends BaseScreen {
 
     public Pixmap pickPixmap;
     public Color pickColor;
+    public PlayerHUD hud;
+
     public int pickMapScale = 8;
     private FrameBuffer pickBuffer;
     private TextureRegion pickRegion;
@@ -91,6 +93,7 @@ public class GameScreen extends BaseScreen {
         archer.moveTo(world.getTile(0, 1));
         testUnits.add(peasant, soldier, archer);
 
+        hud = new PlayerHUD(this);
         pickBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int)worldCamera.viewportWidth / pickMapScale, (int)worldCamera.viewportHeight / pickMapScale, false, false);
         pickRegion = new TextureRegion(pickBuffer.getColorBufferTexture());
         pickRegion.flip(false, true);
@@ -181,6 +184,7 @@ public class GameScreen extends BaseScreen {
         batch.begin();
         {
             batch.setColor(Color.WHITE);
+            hud.render(batch);
 //            batch.draw(pickRegion, 0, 0, 100, 80);
         }
         batch.end();
