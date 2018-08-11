@@ -69,37 +69,6 @@ public abstract class BaseScreen extends InputAdapter {
         worldCamera.update();
     }
 
-//    @Override
-//    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-//        cameraTouchStart.set(worldCamera.position);
-//        touchStart.set(screenX, screenY, 0);
-//        return true;
-//    }
 //
-//    @Override
-//    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-//        if (cancelTouchUp) {
-//            cancelTouchUp = false;
-//            return false;
-//        }
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean touchDragged(int screenX, int screenY, int pointer) {
-//        cameraTargetPos.x = cameraTouchStart.x + (touchStart.x - screenX) * worldCamera.zoom;
-//        cameraTargetPos.y = cameraTouchStart.y + (screenY - touchStart.y) * worldCamera.zoom;
-//        if (cameraTouchStart.dst(cameraTargetPos) > DRAG_DELTA) {
-//            cancelTouchUp = true;
-//        }
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean scrolled (int change) {
-//        targetZoom.setValue(targetZoom.floatValue() + change * targetZoom.floatValue() * ZOOM_SCALE);
-//        targetZoom.setValue(MathUtils.clamp(targetZoom.floatValue(), MIN_ZOOM, MAX_ZOOM));
-//        return true;
-//    }
 
 }

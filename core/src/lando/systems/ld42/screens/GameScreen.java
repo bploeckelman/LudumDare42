@@ -32,12 +32,7 @@ public class GameScreen extends BaseScreen {
 
     public Vector3 cameraTouchStart;
     public Vector3 touchStart;
-    public static float zoomScale = 0.15f;
-    public static float maxZoom = 1.6f;
-    public static float minZoom = 0.2f;
-    public static float DRAG_DELTA = 10f;
 
-    public boolean cancelTouchUp = false;
     public boolean firstRun = false;
 
     public MutableFloat overlayAlpha;
@@ -47,12 +42,10 @@ public class GameScreen extends BaseScreen {
 //    EndGameOverlay endGameOverlay;
 //    public Screenshake shaker;
     public Vector2 cameraCenter;
-    public float gullTimer;
 
     public GameScreen() {
         super();
  //       SoundManager.oceanWaves.play();
-        gullTimer = 40;
         cameraCenter = new Vector2();
         gameOver = false;
         overlayAlpha = new MutableFloat(1);
@@ -85,154 +78,17 @@ public class GameScreen extends BaseScreen {
             Gdx.app.exit();
         }
 
-//        if (endGameOverlay == null) {
-//            stats.totalTime += dt;
-//        }
-        gullTimer -= dt;
-//        if (gullTimer < 0 && endGameOverlay == null){
-//            gullTimer = MathUtils.random(30f,90f);
-//            SoundManager.playSound(SoundManager.SoundOptions.seagull);
-//        }
-//        if (tutorialManager != null) {
-//            if (!firstRun && tutorialManager.isDisplayed()) {
-//                tutorialManager.update(dt);
-//                return;
-//            }
-//            firstRun = false;
-//        }
-
-//        if (endGameOverlay != null){
-//            endGameOverlay.update(dt);
-//        }
-
-//        SoundManager.update(dt);
 
         time += dt;
         world.update(dt);
         testUnit.update(dt);
-//        endTurnButton.update(dt);
 
-//        if (tutorialManager != null) {
-//            handleKeyBindings();
-//        }
 
         updateCamera();
 
 //        shaker.update(dt, camera, camera.position.x, camera.position.y);
     }
 
-
-//    private boolean handleMove(GridPoint2 location) {
-//        if (actionButton == null) return false;
-//
-//        OldTile tile = world.getTile(location);
-//        if (actionButton.action == Actions.displayMoves) {
-//            if (adjacentTiles.contains(tile, true) && !tile.isInaccessible) {
-//                SoundManager.playSound(SoundManager.SoundOptions.player_move);
-//                TurnAction turnAction = new TurnAction(selectedPlayer, actionCost);
-//                turnAction.action = new ActionTypeMove(turnAction, tile.col, tile.row);
-//                addAction(turnAction, selectedPlayer.getHudPostion(camera, hudCamera));
-//                clearMovement();
-//                return true;
-//            }
-//        } else if (actionButton.action == Actions.build){
-//            if (adjacentTiles.contains(tile, true)) {
-//                TurnAction turnAction = new TurnAction(selectedPlayer, actionCost);
-//                turnAction.action = new ActionTypeBuild(turnAction, actionButton.region, tile.col, tile.row);
-//                addAction(turnAction, selectedPlayer.getHudPostion(camera, hudCamera));
-//                clearMovement();
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
-//    private void showMovement(Player player, TextureRegion asset) {
-//        // TODO: is there a situation where this could be null?
-//        OldTile playerTile = world.getTile(player.row, player.col);
-//
-//        adjacentTiles.addAll(world.getNeighbors(player.row, player.col));
-//        for (OldTile tile : adjacentTiles) {
-//            tile.isHighlighted = true;
-//
-//            // Water inaccessible...
-//            if (tile.heightOffset < world.water.waterHeight) {
-//                tile.isInaccessible = (asset == null);
-//                if (tile.isInaccessible) {
-//                    if (tile.item == Assets.raft) {
-//                        tile.isInaccessible = false;
-//                    } else {
-//                        tile.overlayObjectTex = Assets.raft;
-//                    }
-//                }
-//            }
-//            // height inaccessible
-////            if (tile.height > 1f + playerTile.height) { // NOTE: this line requires ladders for tiles more than 1 'step' above player tile's height
-//            if (tile.height > playerTile.height) { // NOTE: this line requires ladders _ALL_ tiles above the player tile's height
-//                tile.isInaccessible = (asset == null);
-//                if (tile.isInaccessible) {
-//                    if (tile.item == Assets.ladder) {
-//                        tile.isInaccessible = false;
-//                    } else {
-//                        tile.overlayObjectTex = Assets.ladder;
-//                    }
-//                }
-//            }
-//        }
-//    }
-
-//    private void clearMovement() {
-//        for (OldTile tile : adjacentTiles) {
-//            tile.isHighlighted = false;
-//            tile.isInaccessible = false;
-//            tile.overlayObjectTex = null;
-//        }
-//        adjacentTiles.clear();
-//    }
-
-
-//    Vector3 tp = new Vector3();
-//    @Override
-//    public boolean scrolled (int change) {
-//        if (tutorialManager != null && tutorialManager.isDisplayed()) {
-//            return false;
-//        }
-//
-//        camera.unproject(tp.set(Gdx.input.getX(), Gdx.input.getY(), 0 ));
-//        float px = tp.x;
-//        float py = tp.y;
-//        camera.zoom += change * camera.zoom * zoomScale;
-//        updateCamera();
-//
-//        camera.unproject(tp.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-//        camera.position.add(px - tp.x, py- tp.y, 0);
-//        camera.update();
-//        return true;
-//    }
-
-//    private void updateCamera(){
-//        camera.zoom = MathUtils.clamp(camera.zoom, minZoom, maxZoom);
-//        float minY = world.bounds.y + camera.viewportHeight/2 * camera.zoom;
-//        float maxY = world.bounds.height - camera.viewportHeight/2 * camera.zoom;
-//
-//        float minX = world.bounds.x + camera.viewportWidth/2 * camera.zoom;
-//        float maxX = world.bounds.x + world.bounds.width - camera.viewportWidth/2 * camera.zoom;
-//
-//        if (camera.viewportHeight * camera.zoom > world.bounds.height){
-//            camera.position.y = world.bounds.height/2;
-//        } else {
-//            camera.position.y = MathUtils.clamp(camera.position.y, minY, maxY);
-//        }
-//
-//
-//        if (camera.viewportWidth * camera.zoom > world.bounds.width){
-//            camera.position.x = world.bounds.x + world.bounds.width/2;
-//        } else {
-//            camera.position.x = MathUtils.clamp(camera.position.x, minX, maxX);
-//        }
-//
-//        camera.update();
-//    }
 
 
     @Override

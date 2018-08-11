@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.*;
 import lando.systems.ld42.Assets;
 import lando.systems.ld42.LudumDare42;
+import lando.systems.ld42.utils.TileUtils;
 
 public abstract class GameObject {
     public World world;
@@ -12,31 +13,21 @@ public abstract class GameObject {
     public static float tileWidth = 26 * scale;
     public static float tileHeight = 30 * scale;
 
-    public static float getX(int row, int col) {
-        float x = col * tileWidth;
-        if (row % 2 == 0) x += tileWidth / 2f;
-        return x;
-    }
 
-    public static float getY(int row) {
-        return row * tileHeight * .75f;
-    }
-
-    public float height;
     public int row;
     public int col;
-    public Vector3 position;
+    public Vector2 position;
 
     public GameObject() {
-        this(0, 0, 0);
+        this(0, 0);
     }
 
-    public GameObject(int col, int row, float height){
+    public GameObject(int col, int row){
         this.world = World.THE_WORLD;
         this.col = col;
         this.row = row;
 
-        this.position = new Vector3(getX(row, col), getY(row), height);
+        this.position = new Vector2(TileUtils.getX(col, tileWidth), TileUtils.getY(row, col, tileHeight));
     }
 
     protected Assets assets() {
@@ -48,16 +39,9 @@ public abstract class GameObject {
     }
 
     public void render(SpriteBatch batch) {
-        render(batch, position.x, position.y + position.z);
+        render(batch, position.x, position.y);
     }
 
     protected abstract void render(SpriteBatch batch, float x, float y);
 
-//    public OldTile getTile() {
-//        return getTile(row, col);
-//    }
-
-//    public OldTile getTile(int row, int col) {
-//        return world.getTile(row, col);
-//    }
 }
