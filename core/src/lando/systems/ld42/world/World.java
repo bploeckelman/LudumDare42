@@ -2,10 +2,10 @@ package lando.systems.ld42.world;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Array;
-import lando.systems.ld42.screens.GameScreen;
+import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.utils.*;
+import lando.systems.ld42.screens.*;
+import lando.systems.ld42.utils.TileUtils;
 
 public class World {
 
@@ -26,6 +26,8 @@ public class World {
         bounds = new Rectangle(0, 0,(Tile.tileWidth) * WORLD_WIDTH * .75f, Tile.tileHeight * WORLD_HEIGHT);
 
         adjacentTiles = new Array<Tile>();
+        tiles.get(0).owner = 1;
+        tiles.get(tiles.size-1).owner = 2;
     }
 
     public void update(float dt){
@@ -35,7 +37,9 @@ public class World {
     public void render(SpriteBatch batch){
         for (int i = tiles.size-1; i >= 0; i--){
             Tile t = tiles.get(i);
-            t.render(batch);
+            if (t != null){
+                t.render(batch);
+            }
         }
 
         batch.setColor(Color.WHITE);
@@ -44,7 +48,9 @@ public class World {
     public void renderPickBuffer(SpriteBatch batch){
         for (int i = tiles.size-1; i >= 0; i--){
             Tile t = tiles.get(i);
-            t.renderPickBuffer(batch);
+            if (t != null) {
+                t.renderPickBuffer(batch);
+            }
         }
         batch.setColor(Color.WHITE);
     }
@@ -74,6 +80,11 @@ public class World {
         return getTile(location.x, location.y);
     }
 
+    public int getTileIndex(Tile t){
+        if (t == null) return -1;
+        return t.col + t.row * WORLD_WIDTH;
+    }
+
     public Tile getTile(int col, int row){
         if (col < 0 || col >= WORLD_WIDTH) return null;
         if (row < 0 || row >= WORLD_HEIGHT) return null;
@@ -83,4 +94,35 @@ public class World {
 
     }
 
+    public void removeTile(Tile t){
+        tiles.set(getTileIndex(t), null);
+        // TODO other stuff like kill things on the tile?
+    }
+
+    Array<Tile> unclaimedTiles = new Array<Tile>();
+    public void pickRemoveTile(){
+        Tile removeTile = null;
+        unclaimedTiles.clear();
+        for (Tile t : tiles){
+            if (t != null && t.owner == 0){
+                unclaimedTiles.add(t);
+            }
+        }
+
+        Array<Tile> tilesToRemove = tiles;
+        if (unclaimedTiles.size > 0) {
+            tilesToRemove = unclaimedTiles;
+        }
+
+        if (tilesToRemove.size < 2) return;
+        while (removeTile == null) {
+            int index = MathUtils.random(tilesToRemove.size - 1);
+            removeTile = tilesToRemove.get(index);
+        }
+        removeTile(removeTile);
+    }
+
+    public void squishHoles(){
+
+    }
 }

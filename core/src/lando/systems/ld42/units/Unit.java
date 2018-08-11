@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.accessors.Vector2Accessor;
+import lando.systems.ld42.utils.TileUtils;
 import lando.systems.ld42.world.Tile;
 
 public abstract class Unit {
@@ -45,8 +46,9 @@ public abstract class Unit {
     }
 
     public void moveTo(final Tile tile) {
-        float tx = tile.position.x + Tile.tileWidth / 2f - size.x / 2f;
-        float ty = tile.position.y + Tile.tileHeight - size.y;
+
+        float tx = TileUtils.getX(tile.col, Tile.tileWidth) + Tile.tileWidth / 2f - size.x / 2f;
+        float ty = TileUtils.getY(tile.row, tile.col, Tile.tileHeight)+ Tile.tileHeight - size.y;
         Tween.to(pos, Vector2Accessor.XY, moveDuration)
              .target(tx, ty)
              .setCallback(new TweenCallback() {

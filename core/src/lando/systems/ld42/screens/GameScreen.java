@@ -116,6 +116,17 @@ public class GameScreen extends BaseScreen {
             Gdx.app.log("MOVE", "(" + currCol + ", " + currRow + ") -> (" + nextCol + ", " + nextRow + ")");
             testUnit.moveTo(world.getTile(nextCol, nextRow));
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Y)){
+            world.pickRemoveTile();
+            world.pickRemoveTile();
+
+            world.pickRemoveTile();
+
+            world.pickRemoveTile();
+            world.pickRemoveTile();
+
+
+        }
 
 
         time += dt;
