@@ -57,4 +57,13 @@ public class TileUtils {
         if (topRight != null) neighbors.add(topRight);
         if (bottomRight != null) neighbors.add(bottomRight);
     }
+
+    public static Tile getTopNeighbor(int col, int row, World world){
+        return  world.getTile(col, row -1);
+    }
+
+    public static Tile getTopRightNeighbor(int col, int row, World world){
+        int colOffset = col %2;
+        return  world.getTile(col + 1, row + -1 + colOffset);
+    }
 }
