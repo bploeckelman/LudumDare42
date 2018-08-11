@@ -15,9 +15,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import lando.systems.ld42.Config;
-import lando.systems.ld42.units.ArcherUnit;
-import lando.systems.ld42.units.PeasantUnit;
-import lando.systems.ld42.units.SoldierUnit;
+import lando.systems.ld42.teams.EnemyTeam;
+import lando.systems.ld42.teams.PlayerTeam;
 import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.utils.TileUtils;
 import lando.systems.ld42.world.Tile;
@@ -28,7 +27,9 @@ public class GameScreen extends BaseScreen {
     public World world;
     public Array<Tile> adjacentTiles;
     public Array<Tile> adjacentBuildTiles;
-    public Array<Unit> testUnits;
+
+    public PlayerTeam playerTeam;
+    public EnemyTeam enemyTeam;
 
     public int turn;
     public float time;
@@ -70,21 +71,12 @@ public class GameScreen extends BaseScreen {
         adjacentBuildTiles = new Array<Tile>();
         turn = 0;
 
-//        endTurnButton = new EndTurnButton(new Rectangle(hudCamera.viewportWidth - 100 - 10, 10, 100, 30), hudCamera);
-//        playerSelection = new PlayerSelectionHud(this);
-//        testingButton = new Button(Assets.transparentPixel, new Rectangle(50,50,50,50), hudCamera, "Too much Text!", "Tooltip");
         cameraTouchStart = new Vector3();
         touchStart = new Vector3();
 //        shaker = new Screenshake(120, 3);
 
-        testUnits = new Array<Unit>();
-        Unit peasant = new PeasantUnit(assets);
-        Unit soldier = new SoldierUnit(assets);
-        Unit archer  = new ArcherUnit(assets);
-        peasant.moveTo(world.getTile(0, 0));
-        soldier.moveTo(world.getTile(1, 0));
-        archer.moveTo(world.getTile(0, 1));
-        testUnits.add(peasant, soldier, archer);
+        playerTeam = new PlayerTeam(world, assets);
+        enemyTeam = new EnemyTeam(world, assets);
 
         hud = new PlayerHUD(this);
         pickBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int)worldCamera.viewportWidth / pickMapScale, (int)worldCamera.viewportHeight / pickMapScale, false, false);
@@ -102,7 +94,8 @@ public class GameScreen extends BaseScreen {
 
         // TODO: removeme, just for testing
         if (Gdx.input.justTouched()) {
-            Unit testUnit = testUnits.get(MathUtils.random(0, testUnits.size - 1));
+            Array<Unit> units = MathUtils.randomBoolean() ? playerTeam.units : enemyTeam.units;
+            Unit testUnit = units.get(MathUtils.random(0, units.size - 1));
             int currCol = testUnit.tile.col;
             int currRow = testUnit.tile.row;
             int nextCol = currCol;
@@ -131,9 +124,8 @@ public class GameScreen extends BaseScreen {
 
         time += dt;
         world.update(dt);
-        for (Unit unit : testUnits) {
-            unit.update(dt);
-        }
+        playerTeam.update(dt);
+        enemyTeam.update(dt);
 
         updateCamera();
 
@@ -167,9 +159,8 @@ public class GameScreen extends BaseScreen {
         batch.begin();
         {
             world.render(batch);
-            for (Unit unit : testUnits) {
-                unit.render(batch);
-            }
+            playerTeam.render(batch);
+            enemyTeam.render(batch);
 
             if (pickPixmap != null){
                 Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());

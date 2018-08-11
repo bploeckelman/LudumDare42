@@ -20,6 +20,7 @@ public abstract class Unit {
     public Vector2 pos;
     public Vector2 size;
     public Color color;
+    public Color shadowColor;
     public Tile tile;
     public float moveDuration;
     public float animTime;
@@ -32,6 +33,7 @@ public abstract class Unit {
         this.pos = new Vector2();
         this.size = new Vector2();
         this.color = new Color(1f, 1f, 1f, 1f);
+        this.shadowColor = new Color(0f, 0f, 0f, 0.75f);
         this.moveDuration = 0.5f;
         this.animTime = 0f;
         this.animation = animation;
@@ -61,11 +63,13 @@ public abstract class Unit {
     }
 
     public void render(SpriteBatch batch) {
-        batch.setColor(0f, 0f, 0f, 0.75f);
+        batch.setColor(shadowColor);
         batch.draw(dropShadow, pos.x, pos.y, size.x, size.y);
-        batch.setColor(color);
+
         float offset = 1.5f * scale;
+        batch.setColor(color);
         batch.draw(keyframe, pos.x, pos.y + offset, size.x, size.y);
+
         batch.setColor(1f, 1f, 1f, 1f);
     }
 
