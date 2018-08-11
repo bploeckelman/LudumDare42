@@ -172,7 +172,6 @@ public class GameScreen extends BaseScreen {
                 Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
                 if (t != null) {
                     t.renderHightlight(batch, Color.YELLOW);
-                    t.owner = 1;
                     TileUtils.getNeighbors(t, world, adjacentTiles);
                     for (Tile a : adjacentTiles){
                         a.renderHightlight(batch, Color.BLUE);
