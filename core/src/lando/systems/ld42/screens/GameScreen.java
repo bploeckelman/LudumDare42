@@ -132,7 +132,7 @@ public class GameScreen extends BaseScreen {
         world.update(dt);
         playerTeam.update(dt);
         enemyTeam.update(dt);
-
+        hud.update(dt);
         updateCamera();
 
 //        shaker.update(dt, camera, camera.position.x, camera.position.y);
@@ -172,6 +172,7 @@ public class GameScreen extends BaseScreen {
                 Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
                 if (t != null) {
                     t.renderHightlight(batch, Color.YELLOW);
+                    t.owner = 1;
                     TileUtils.getNeighbors(t, world, adjacentTiles);
                     for (Tile a : adjacentTiles){
                         a.renderHightlight(batch, Color.BLUE);

@@ -18,6 +18,9 @@ public class World {
     public Rectangle bounds;
     public GameScreen screen;
 
+    public int enemyTileCount;
+    public int playerTileCount;
+
     public World(GameScreen screen){
         this.screen = screen;
         THE_WORLD = this;
@@ -147,5 +150,15 @@ public class World {
 
 
 
+    }
+
+    public int getTileCount(int owner) {
+        int tileCount = 0;
+        for (Tile tile : tiles) {
+            if (tile.owner == owner) {
+                tileCount++;
+            }
+        }
+        return tileCount;
     }
 }
