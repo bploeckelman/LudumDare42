@@ -6,37 +6,32 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.utils.*;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ScreenUtils;
 import lando.systems.ld42.Config;
-import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.units.ArcherUnit;
 import lando.systems.ld42.units.PeasantUnit;
 import lando.systems.ld42.units.SoldierUnit;
 import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.utils.TileUtils;
-import lando.systems.ld42.world.*;
+import lando.systems.ld42.world.Tile;
+import lando.systems.ld42.world.World;
 
 public class GameScreen extends BaseScreen {
 
-//    public TutorialManager tutorialManager;
-    public TextureRegion debugTex;
     public World world;
-//    public TurnCounter turnCounter;
     public Array<Tile> adjacentTiles;
     public Array<Tile> adjacentBuildTiles;
-//    public EndTurnButton endTurnButton;
-//    public PlayerSelectionHud playerSelection;
-    public Player selectedPlayer;
     public Array<Unit> testUnits;
 
     public int turn;
-//    public Array<TurnAction> turnActions;
-    float time;
+    public float time;
 
     public Vector3 cameraTouchStart;
     public Vector3 touchStart;
@@ -47,8 +42,6 @@ public class GameScreen extends BaseScreen {
     public boolean pauseGame;
     public boolean gameOver;
     public boolean gameLost;
-//    EndGameOverlay endGameOverlay;
-//    public Screenshake shaker;
     public Vector2 cameraCenter;
 
     public Pixmap pickPixmap;
