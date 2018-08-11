@@ -127,7 +127,7 @@ public class Assets implements Disposable {
         atlas = mgr.get(atlasAsset);
         testTexture = atlas.findRegion("badlogic");
 
-        whitePixel = atlas.findRegion("white-pixel");
+        whitePixel = atlas.findRegion("white");
 
         defaultHex = atlas.findRegion("default-hex");
         whiteHex = atlas.findRegion("white-hex");

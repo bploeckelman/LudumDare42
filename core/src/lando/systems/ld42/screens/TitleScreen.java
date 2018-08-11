@@ -9,19 +9,23 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Align;
 import lando.systems.ld42.Assets;
 import lando.systems.ld42.accessors.ColorAccessor;
+import lando.systems.ld42.utils.Utils;
 
 public class TitleScreen extends BaseScreen {
 
     public MutableFloat clickTextScale;
     public Color clickTextColor;
+    public Color backgroundColor;
+    public float accum;
 
     public TitleScreen() {
         alpha = new MutableFloat(0);
-
+        accum = 0;
         float scaleMax = 0.52f;
         float scaleMin = 0.48f;
         clickTextScale = new MutableFloat(scaleMin);
         clickTextColor = new Color(0xffa50044);
+        backgroundColor = new Color();
         Tween.to(clickTextColor, ColorAccessor.A, 0.33f)
              .target(1f)
              .repeatYoyo(-1, 0f)
@@ -36,6 +40,7 @@ public class TitleScreen extends BaseScreen {
 
     @Override
     public void update(float dt) {
+        accum += dt;
         if (Gdx.app.getType() == Application.ApplicationType.Desktop && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
@@ -52,6 +57,10 @@ public class TitleScreen extends BaseScreen {
         batch.setProjectionMatrix(hudCamera.combined);
         batch.begin();
         {
+            Utils.hsvToRgb(accum/10f, .8f, .6f, backgroundColor);
+            batch.setColor(backgroundColor);
+            batch.draw(game.assets.whitePixel, 0, 0, hudCamera.viewportWidth, hudCamera.viewportHeight);
+
             batch.setColor(Color.WHITE);
             batch.draw(game.assets.titleTexture, 0f, 0f, hudCamera.viewportWidth, hudCamera.viewportHeight);
 
