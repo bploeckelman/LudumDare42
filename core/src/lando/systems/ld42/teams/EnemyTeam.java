@@ -6,6 +6,7 @@ import lando.systems.ld42.units.ArcherUnit;
 import lando.systems.ld42.units.PeasantUnit;
 import lando.systems.ld42.units.SoldierUnit;
 import lando.systems.ld42.units.Unit;
+import lando.systems.ld42.world.Castle;
 import lando.systems.ld42.world.World;
 
 public class EnemyTeam extends Team {
@@ -28,6 +29,6 @@ public class EnemyTeam extends Team {
             unit.shadowColor.a = 0.75f;
         }
 
-        // TODO: set base tile
+        this.castle = new Castle(assets, Type.enemy, world.getTile(World.WORLD_WIDTH - 1, World.WORLD_HEIGHT / 2));
     }
 }

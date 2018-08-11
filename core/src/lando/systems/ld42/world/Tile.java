@@ -9,7 +9,6 @@ import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import lando.systems.ld42.Config;
 import lando.systems.ld42.LudumDare42;
@@ -111,7 +110,7 @@ public class Tile {
 
     public void renderHightlight(SpriteBatch batch, Color c){
         batch.setColor(c.r, c.g, c.b, alpha.floatValue());
-        batch.draw(LudumDare42.game.assets.hightlightHex, position.x, position.y, tileWidth, tileHeight);
+        batch.draw(LudumDare42.game.assets.highlightHex, position.x, position.y, tileWidth, tileHeight);
     }
 
     public void killTile(){

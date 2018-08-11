@@ -19,9 +19,9 @@ public class PlayerHUD {
         indicators = new Array<TileHUDIndicator>();
 
         // Add indicators for # of enemy tiles, player tiles, unclaimed tiles
-        indicators.add(new TileHUDIndicator(LudumDare42.game.assets.blankTile, new Vector2(300, hudCamera.viewportHeight - LudumDare42.game.assets.blueCastle.getRegionHeight() - 10), 0));
-        indicators.add(new TileHUDIndicator(LudumDare42.game.assets.blankTile, new Vector2(175, hudCamera.viewportHeight - LudumDare42.game.assets.blueCastle.getRegionHeight() - 10), 1));
-        indicators.add(new TileHUDIndicator(LudumDare42.game.assets.blankTile, new Vector2(50, hudCamera.viewportHeight - LudumDare42.game.assets.blueCastle.getRegionHeight() - 10), 2));
+        indicators.add(new TileHUDIndicator(LudumDare42.game.assets.blankTile, new Vector2(300, hudCamera.viewportHeight - LudumDare42.game.assets.mountain.getRegionHeight() - 10), 0));
+        indicators.add(new TileHUDIndicator(LudumDare42.game.assets.blankTile, new Vector2(175, hudCamera.viewportHeight - LudumDare42.game.assets.mountain.getRegionHeight() - 10), 1));
+        indicators.add(new TileHUDIndicator(LudumDare42.game.assets.blankTile, new Vector2(50, hudCamera.viewportHeight - LudumDare42.game.assets.mountain.getRegionHeight() - 10), 2));
     }
 
     public void update(float dt) {
