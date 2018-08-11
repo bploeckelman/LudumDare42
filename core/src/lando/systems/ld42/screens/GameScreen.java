@@ -1,11 +1,14 @@
 package lando.systems.ld42.screens;
 
 import aurelienribon.tweenengine.primitives.MutableFloat;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
+import lando.systems.ld42.Config;
 import lando.systems.ld42.world.*;
 
 public class GameScreen extends BaseScreen {
@@ -260,13 +263,19 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void render(SpriteBatch batch) {
-//        Gdx.gl.glClearColor(Config.bgColor.r, Config.bgColor.g, Config.bgColor.b, Config.bgColor.a);
-//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-//
-//        // Draw world
-//        batch.setProjectionMatrix(worldCamera.combined);
-//
-//        batch.setProjectionMatrix(worldCamera.combined);
+        Gdx.gl.glClearColor(Config.background_color.r, Config.background_color.g,
+                Config.background_color.b, Config.background_color.a);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // Draw world
+        batch.setProjectionMatrix(worldCamera.combined);
+        batch.begin();
+        {
+            world.render(batch);
+        }
+        batch.end();
+
+        batch.setProjectionMatrix(worldCamera.combined);
 
 // move to a hud screen
 //        // Draw HUD

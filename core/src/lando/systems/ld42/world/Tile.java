@@ -14,7 +14,7 @@ public class Tile extends GameObject {
     //public TileType type;
     public TextureRegion top_tex;
     public TextureRegion bottom_tex;
-    
+
     //public TextureRegion decoration_tex;
     //public Decoration decoration;
     public TextureRegion shadow_tex;
@@ -32,6 +32,8 @@ public class Tile extends GameObject {
         pickColor = Tile.getColorFromPosition(row, col);
         //decoration = Decoration.None;
         //decoration_tex = null;
+        top_tex = assets().defaultHex;
+        addShadow(1);
     }
 
 //    public void setType(TileType type){
@@ -88,9 +90,7 @@ public class Tile extends GameObject {
 //            }
 //        }
 
-        if (asPickBuffer) {
-            batch.draw(topTex, x, y, tileWidth, tileHeight);
-        }
+        batch.draw(topTex, x, y, tileWidth, tileHeight);
         batch.setColor(Color.WHITE);
 
         if (asPickBuffer) {

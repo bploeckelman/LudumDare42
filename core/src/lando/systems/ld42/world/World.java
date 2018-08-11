@@ -8,7 +8,7 @@ import lando.systems.ld42.screens.*;
 public class World {
 
     public static World THE_WORLD;
-    public static final int WORLD_WIDTH = 25;
+    public static final int WORLD_WIDTH = 36;
 
     public Array<Tile> adjacentTiles;
 
@@ -102,7 +102,7 @@ public class World {
         // Create the tiles.
         for (int row = 0; row < WORLD_WIDTH; row++){
             for (int col = 0; col < WORLD_WIDTH; col++){
-                tiles.add(new Tile(col, row, -10));
+                tiles.add(new Tile(col, row, 10));
             }
         }
 //        // Now, assign biomes.

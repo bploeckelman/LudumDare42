@@ -40,9 +40,9 @@ public class TitleScreen extends BaseScreen {
             Gdx.app.exit();
         }
 
-//        if (Gdx.input.justTouched()) {
-//            game.setScreen(new LevelSelectScreen());
-//        }
+        if (Gdx.input.justTouched()) {
+            game.setScreen(new GameScreen());
+        }
     }
 
     @Override
