@@ -8,14 +8,13 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import lando.systems.ld42.Assets;
 import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.accessors.Vector2Accessor;
 import lando.systems.ld42.world.Tile;
 
-public class Unit {
+public abstract class Unit {
 
-    private static float scale = 3f;
+    protected static float scale = 4f;
 
     public Vector2 pos;
     public Vector2 size;
@@ -24,17 +23,19 @@ public class Unit {
     public float moveDuration;
     public float animTime;
     public TextureRegion keyframe;
+    public TextureRegion dropShadow;
     public Animation<TextureRegion> animation;
 
-    public Unit(Assets assets) {
+    public Unit(Animation<TextureRegion> animation) {
         this.tile = null;
         this.pos = new Vector2();
         this.size = new Vector2();
         this.color = new Color(1f, 1f, 1f, 1f);
         this.moveDuration = 0.5f;
         this.animTime = 0f;
-        this.animation = assets.unitAnimation;
+        this.animation = animation;
         this.keyframe = animation.getKeyFrame(animTime);
+        this.dropShadow = LudumDare42.game.assets.whiteCircle; // brian frowny faces at self
         this.size.set(keyframe.getRegionWidth() * scale, keyframe.getRegionHeight() * scale);
     }
 
@@ -58,8 +59,11 @@ public class Unit {
     }
 
     public void render(SpriteBatch batch) {
+        batch.setColor(0f, 0f, 0f, 0.75f);
+        batch.draw(dropShadow, pos.x, pos.y, size.x, size.y);
         batch.setColor(color);
-        batch.draw(keyframe, pos.x, pos.y, size.x, size.y);
+        float offset = 1.5f * scale;
+        batch.draw(keyframe, pos.x, pos.y + offset, size.x, size.y);
         batch.setColor(1f, 1f, 1f, 1f);
     }
 

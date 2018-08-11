@@ -53,6 +53,7 @@ public class Assets implements Disposable {
     public Texture titleTexture;
 
     public TextureRegion whitePixel;
+    public TextureRegion whiteCircle;
     public TextureRegion defaultHex;
     public TextureRegion whiteHex;
     public TextureRegion hightlightHex;
@@ -62,7 +63,9 @@ public class Assets implements Disposable {
     public TextureRegion shadowUR;
     public TextureRegion shadowU;
 
-    public Animation<TextureRegion> unitAnimation;
+    public Animation<TextureRegion> unitAnimationPeasant;
+    public Animation<TextureRegion> unitAnimationSoldier;
+    public Animation<TextureRegion> unitAnimationArcher;
 
     public BitmapFont font;
     public ShaderProgram fontShader;
@@ -128,7 +131,8 @@ public class Assets implements Disposable {
         atlas = mgr.get(atlasAsset);
         testTexture = atlas.findRegion("badlogic");
 
-        whitePixel = atlas.findRegion("white");
+        whitePixel = atlas.findRegion("white-pixel");
+        whiteCircle = atlas.findRegion("white-circle");
 
         defaultHex = atlas.findRegion("default-hex");
         whiteHex = atlas.findRegion("white-hex");
@@ -138,8 +142,12 @@ public class Assets implements Disposable {
         blueCastle = atlas.findRegion("mountain");
         hightlightHex = atlas.findRegion("tile_outline");
 
-        Array<TextureAtlas.AtlasRegion> unit = atlas.findRegions("unit");
-        unitAnimation = new Animation<TextureRegion>(0.33f, unit, Animation.PlayMode.LOOP);
+        Array<TextureAtlas.AtlasRegion> peasant = atlas.findRegions("unit-peasant");
+        Array<TextureAtlas.AtlasRegion> soldier = atlas.findRegions("unit-soldier");
+        Array<TextureAtlas.AtlasRegion> archer = atlas.findRegions("unit-archer");
+        unitAnimationPeasant = new Animation<TextureRegion>(0.33f, peasant, Animation.PlayMode.LOOP);
+        unitAnimationSoldier = new Animation<TextureRegion>(0.33f, soldier, Animation.PlayMode.LOOP);
+        unitAnimationArcher = new Animation<TextureRegion>(0.33f, archer, Animation.PlayMode.LOOP);
 
         titleTexture = mgr.get(titleTextureAsset);
 

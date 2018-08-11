@@ -14,6 +14,9 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
 import lando.systems.ld42.Config;
 import lando.systems.ld42.LudumDare42;
+import lando.systems.ld42.units.ArcherUnit;
+import lando.systems.ld42.units.PeasantUnit;
+import lando.systems.ld42.units.SoldierUnit;
 import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.utils.TileUtils;
 import lando.systems.ld42.world.*;
@@ -29,7 +32,7 @@ public class GameScreen extends BaseScreen {
 //    public EndTurnButton endTurnButton;
 //    public PlayerSelectionHud playerSelection;
     public Player selectedPlayer;
-    public Unit testUnit;
+    public Array<Unit> testUnits;
 
     public int turn;
 //    public Array<TurnAction> turnActions;
@@ -79,8 +82,14 @@ public class GameScreen extends BaseScreen {
         touchStart = new Vector3();
 //        shaker = new Screenshake(120, 3);
 
-        testUnit = new Unit(LudumDare42.game.assets);
-        testUnit.moveTo(world.getTile(0, 0));
+        testUnits = new Array<Unit>();
+        Unit peasant = new PeasantUnit(assets);
+        Unit soldier = new SoldierUnit(assets);
+        Unit archer  = new ArcherUnit(assets);
+        peasant.moveTo(world.getTile(0, 0));
+        soldier.moveTo(world.getTile(1, 0));
+        archer.moveTo(world.getTile(0, 1));
+        testUnits.add(peasant, soldier, archer);
 
         pickBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int)worldCamera.viewportWidth / pickMapScale, (int)worldCamera.viewportHeight / pickMapScale, false, false);
         pickRegion = new TextureRegion(pickBuffer.getColorBufferTexture());
@@ -97,6 +106,7 @@ public class GameScreen extends BaseScreen {
 
         // TODO: removeme, just for testing
         if (Gdx.input.justTouched()) {
+            Unit testUnit = testUnits.get(MathUtils.random(0, testUnits.size - 1));
             int currCol = testUnit.tile.col;
             int currRow = testUnit.tile.row;
             int nextCol = currCol;
@@ -114,7 +124,9 @@ public class GameScreen extends BaseScreen {
 
         time += dt;
         world.update(dt);
-        testUnit.update(dt);
+        for (Unit unit : testUnits) {
+            unit.update(dt);
+        }
 
         updateCamera();
 
@@ -148,7 +160,9 @@ public class GameScreen extends BaseScreen {
         batch.begin();
         {
             world.render(batch);
-            testUnit.render(batch);
+            for (Unit unit : testUnits) {
+                unit.render(batch);
+            }
 
             if (pickPixmap != null){
                 Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
@@ -170,7 +184,6 @@ public class GameScreen extends BaseScreen {
 //            batch.draw(pickRegion, 0, 0, 100, 80);
         }
         batch.end();
-
     }
 
     // required Konami code
