@@ -26,6 +26,6 @@ public class TileUtils {
     public static Tile parsePickColorForTileInWorld(Color pickColor, World world) {
         int col = (int) (pickColor.r * (255f / 5f));
         int row = (int) (pickColor.g * (255f / 5f));
-        return world.getTile(row, col);
+        return world.getTile(col, row);
     }
 }

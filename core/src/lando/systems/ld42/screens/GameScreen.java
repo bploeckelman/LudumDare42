@@ -67,9 +67,9 @@ public class GameScreen extends BaseScreen {
         cameraTouchStart = new Vector3();
         touchStart = new Vector3();
 //        shaker = new Screenshake(120, 3);
+
         testUnit = new Unit(LudumDare42.game.assets);
-        Tile tile = world.getTile(0, 0);
-        testUnit.pos.set(tile.position.x + Tile.tileWidth / 2f - testUnit.size.x / 2f, tile.position.y + Tile.tileHeight - testUnit.size.y);
+        testUnit.moveTo(world.getTile(0, 0));
     }
 
     @Override
@@ -78,11 +78,25 @@ public class GameScreen extends BaseScreen {
             Gdx.app.exit();
         }
 
+        // TODO: removeme, just for testing
+        if (Gdx.input.justTouched()) {
+            int currCol = testUnit.tile.col;
+            int currRow = testUnit.tile.row;
+            int nextCol = currCol;
+            int nextRow = currRow;
+            boolean moveCol = MathUtils.randomBoolean();
+            if (moveCol) {
+                nextCol = MathUtils.clamp(currCol + MathUtils.randomSign(), 0, World.WORLD_WIDTH - 1);
+            } else {
+                nextRow = MathUtils.clamp(currRow + MathUtils.randomSign(), 0, World.WORLD_HEIGHT - 1);
+            }
+            Gdx.app.log("MOVE", "(" + currCol + ", " + currRow + ") -> (" + nextCol + ", " + nextRow + ")");
+            testUnit.moveTo(world.getTile(nextCol, nextRow));
+        }
 
         time += dt;
         world.update(dt);
         testUnit.update(dt);
-
 
         updateCamera();
 

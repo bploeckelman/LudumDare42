@@ -90,12 +90,12 @@ public class World {
 
     public Tile getUpperLeftTile(int row, int col){
         int offset = row % 2 == 1 ? -1 : 0;
-        return getTile(row +1, col + offset);
+        return getTile(col + 1, row + offset);
     }
 
     public Tile getUpperRightTile(int row, int col){
         int offset = row % 2 == 1 ? 0 : 1;
-        return getTile(row +1, col + offset);
+        return getTile(col + 1, row + offset);
     }
 
     private void generateWorldTiles() {
@@ -159,10 +159,10 @@ public class World {
     }
 
     public Tile getTile(GridPoint2 location) {
-        return getTile(location.y, location.x);
+        return getTile(location.x, location.y);
     }
 
-    public Tile getTile(int row, int col){
+    public Tile getTile(int col, int row){
         int index = col + row * WORLD_WIDTH;
         if (index < 0 || index >= tiles.size) return null;
         return tiles.get(index);
