@@ -8,7 +8,8 @@ import lando.systems.ld42.screens.*;
 public class World {
 
     public static World THE_WORLD;
-    public static final int WORLD_WIDTH = 10;
+    public static final int WORLD_WIDTH = 15;
+    public static final int WORLD_HEIGHT = 10;
 
     public Array<Tile> adjacentTiles;
 
@@ -25,7 +26,7 @@ public class World {
         THE_WORLD = this;
 
         generateWorldTiles();
-        bounds = new Rectangle(-100, -100,(Tile.tileWidth) * WORLD_WIDTH + 200, Tile.tileHeight * WORLD_WIDTH * .75f + 200);
+        bounds = new Rectangle(0, 0,(Tile.tileWidth) * WORLD_WIDTH * .75f, Tile.tileHeight * WORLD_HEIGHT);
 
         players = new Array<Player>();
 
@@ -66,26 +67,26 @@ public class World {
         }
     }
 
-    public Array<Tile> getNeighbors(int row, int col){
-        adjacentTiles.clear();
-
-        boolean even = (row % 2 == 0);
-        Tile left = getTile(row, col - 1);
-        Tile right = getTile(row, col + 1);
-        Tile upLeft = getTile(row + 1, col + (even ? 0 : -1));
-        Tile upRight = getTile(row + 1, col + (even ? 1 : 0));
-        Tile downLeft = getTile(row - 1, col + (even ? 0 : -1));
-        Tile downRight = getTile(row - 1, col + (even ? 1 : 0));
-
-        if (left != null) adjacentTiles.add(left);
-        if (right != null) adjacentTiles.add(right);
-        if (upLeft != null) adjacentTiles.add(upLeft);
-        if (upRight != null) adjacentTiles.add(upRight);
-        if (downLeft != null) adjacentTiles.add(downLeft);
-        if (downRight != null) adjacentTiles.add(downRight);
-
-        return adjacentTiles;
-    }
+//    public Array<OldTile> getNeighbors(int row, int col){
+//        adjacentTiles.clear();
+//
+//        boolean even = (row % 2 == 0);
+//        OldTile left = getTile(row, col - 1);
+//        OldTile right = getTile(row, col + 1);
+//        OldTile upLeft = getTile(row + 1, col + (even ? 0 : -1));
+//        OldTile upRight = getTile(row + 1, col + (even ? 1 : 0));
+//        OldTile downLeft = getTile(row - 1, col + (even ? 0 : -1));
+//        OldTile downRight = getTile(row - 1, col + (even ? 1 : 0));
+//
+//        if (left != null) adjacentTiles.add(left);
+//        if (right != null) adjacentTiles.add(right);
+//        if (upLeft != null) adjacentTiles.add(upLeft);
+//        if (upRight != null) adjacentTiles.add(upRight);
+//        if (downLeft != null) adjacentTiles.add(downLeft);
+//        if (downRight != null) adjacentTiles.add(downRight);
+//
+//        return adjacentTiles;
+//    }
 
     public Tile getUpperLeftTile(int row, int col){
         int offset = row % 2 == 1 ? -1 : 0;
@@ -98,17 +99,17 @@ public class World {
     }
 
     private void generateWorldTiles() {
-        tiles = new Array<Tile>(WORLD_WIDTH * WORLD_WIDTH );
+        tiles = new Array<Tile>(WORLD_WIDTH * WORLD_HEIGHT );
         // Create the tiles.
-        for (int row = 0; row < WORLD_WIDTH; row++){
+        for (int row = 0; row < WORLD_HEIGHT; row++){
             for (int col = 0; col < WORLD_WIDTH; col++){
-                tiles.add(new Tile(col, row, 10));
+                tiles.add(new Tile(col, row));
             }
         }
 //        // Now, assign biomes.
 //        float relativeHeightAboveSeaLevel; // 0 - 1, one being the highest.  Height of 0 is bound to 0.
 //        float typeStep = 1 / 6f;  // Number of biomes
-//        for (Tile tile : tiles) {
+//        for (OldTile tile : tiles) {
 //            relativeHeightAboveSeaLevel = tile.height <= 0 ? 0 : tile.height / maxTileHeight;
 //            // Clay, Dirt, Grass, Sand, Snow, Stone
 //            TileType type;
@@ -128,8 +129,8 @@ public class World {
 //                type = TileType.Snow;
 //            }
 //            tile.setType(type);
-//            Tile ul = getUpperLeftTile(tile.row, tile.col);
-//            Tile ur = getUpperRightTile(tile.row, tile.col);
+//            OldTile ul = getUpperLeftTile(tile.row, tile.col);
+//            OldTile ur = getUpperRightTile(tile.row, tile.col);
 //            int shadowmap = 0;
 //            if (ul != null && ul.height > tile.height) shadowmap += 1;
 //            if (ur != null && ur.height > tile.height) shadowmap += 2;

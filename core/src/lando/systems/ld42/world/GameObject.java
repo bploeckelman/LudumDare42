@@ -53,11 +53,11 @@ public abstract class GameObject {
 
     protected abstract void render(SpriteBatch batch, float x, float y);
 
-    public Tile getTile() {
-        return getTile(row, col);
-    }
+//    public OldTile getTile() {
+//        return getTile(row, col);
+//    }
 
-    public Tile getTile(int row, int col) {
-        return world.getTile(row, col);
-    }
+//    public OldTile getTile(int row, int col) {
+//        return world.getTile(row, col);
+//    }
 }

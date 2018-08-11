@@ -59,7 +59,11 @@ public class GameScreen extends BaseScreen {
         pauseGame = true;
         time = 0;
         world = new World(this);
- //       turnCounter = new TurnCounter(hudCamera);
+        cameraTargetPos.set(world.bounds.width/2f, world.bounds.height/2f, 0);
+        worldCamera.position.set(cameraTargetPos);
+        targetZoom.setValue(MAX_ZOOM);
+        worldCamera.zoom = targetZoom.floatValue();
+        worldCamera.update();
         adjacentTiles = new Array<Tile>();
         adjacentBuildTiles = new Array<Tile>();
         turn = 0;
@@ -117,52 +121,11 @@ public class GameScreen extends BaseScreen {
 //        shaker.update(dt, camera, camera.position.x, camera.position.y);
     }
 
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        cameraTouchStart.set(worldCamera.position);
-        touchStart.set(screenX, screenY, 0);
-
-        return true;
-    }
-
-   @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-       cameraTargetPos.x = cameraTouchStart.x + (touchStart.x - screenX) * worldCamera.zoom;
-       cameraTargetPos.y = cameraTouchStart.y + (screenY - touchStart.y) * worldCamera.zoom;
-       if (cameraTouchStart.dst(worldCamera.position) > DRAG_DELTA) {
-           cancelTouchUp = true;
-       }
-       return true;
-   }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-//        if (tutorialManager != null && tutorialManager.isDisplayed()) {
-//            return false;
-//        }
-
-        if (cancelTouchUp) {
-            cancelTouchUp = false;
-            return false;
-        }
-
-//        if (playerSelection.handleTouch(screenX, screenY)) return false;
-//        if (endTurnButton.checkForTouch(screenX, screenY)) {
-//            endTurnButton.handleTouch();
-//            endTurn();
-//        }
-
-//        GridPoint2 location =  getGridPosition(screenX, screenY);
-//        if (handleMove(location)) return false;
-//        if (handlePlayerAction(screenX, screenY, button)) return false;
-
-        return false;
-    }
 
 //    private boolean handleMove(GridPoint2 location) {
 //        if (actionButton == null) return false;
 //
-//        Tile tile = world.getTile(location);
+//        OldTile tile = world.getTile(location);
 //        if (actionButton.action == Actions.displayMoves) {
 //            if (adjacentTiles.contains(tile, true) && !tile.isInaccessible) {
 //                SoundManager.playSound(SoundManager.SoundOptions.player_move);
@@ -186,10 +149,10 @@ public class GameScreen extends BaseScreen {
 
 //    private void showMovement(Player player, TextureRegion asset) {
 //        // TODO: is there a situation where this could be null?
-//        Tile playerTile = world.getTile(player.row, player.col);
+//        OldTile playerTile = world.getTile(player.row, player.col);
 //
 //        adjacentTiles.addAll(world.getNeighbors(player.row, player.col));
-//        for (Tile tile : adjacentTiles) {
+//        for (OldTile tile : adjacentTiles) {
 //            tile.isHighlighted = true;
 //
 //            // Water inaccessible...
@@ -219,7 +182,7 @@ public class GameScreen extends BaseScreen {
 //    }
 
 //    private void clearMovement() {
-//        for (Tile tile : adjacentTiles) {
+//        for (OldTile tile : adjacentTiles) {
 //            tile.isHighlighted = false;
 //            tile.isInaccessible = false;
 //            tile.overlayObjectTex = null;
@@ -286,50 +249,7 @@ public class GameScreen extends BaseScreen {
         }
         batch.end();
 
-// move to a hud screen
-//        // Draw HUD
-//        batch.setProjectionMatrix(hudCamera.combined);
-//        batch.begin();
-//        {
-//            playerSelection.render(batch);
-//            resources.render(batch);
-//            turnCounter.render(batch, turn);
-//            endTurnButton.render(batch);
-//
-//            actionManager.renderTooltops(batch, hudCamera);
-//            world.getResources().renderToolTips(batch, hudCamera);
-//
-////            testingButton.render(batch);
-////            Assets.font.draw(batch, String.valueOf(Gdx.graphics.getFramesPerSecond()), 3, 16);
-//
-//            if (modal.isActive) {
-//                modal.render(batch);
-//            }
-//
-//            // Draw pick region stuff
-////            batch.setColor(pickColor);
-////            batch.draw(Assets.whitePixel, hudCamera.viewportWidth - 100 - 50, 0, 50, 50);
-////            batch.setColor(Color.WHITE);
-////            batch.draw(pickRegion, hudCamera.viewportWidth - 100, 0, 100, 100);
-//            batch.setColor(0,0,0,overlayAlpha.floatValue());
-//            batch.draw(Assets.whitePixel, 0,0, hudCamera.viewportWidth, hudCamera.viewportHeight);
-//            batch.setColor(Color.WHITE);
-//
-//            if (endGameOverlay != null) endGameOverlay.render(batch);
-//
-//            if (tutorialManager != null) {
-//                tutorialManager.render(batch);
-//            }
-//        }
-//        batch.end();
-
     }
-
-//    public void zoomToPlayer(Player p){
-//        Tween.to(worldCamera, CameraAccessor.XYZ, .5f)
-//                .target(p.position.x + p.tileWidth / 2f, p.position.y + p.position.z + p.tileHeight / 2f, .5f)
-//                .start(Assets.tween);
-//    }
 
     // required Konami code
     int[] sequence = new int [] { Input.Keys.UP, Input.Keys.UP, Input.Keys.DOWN, Input.Keys.DOWN, Input.Keys.LEFT, Input.Keys.RIGHT, Input.Keys.LEFT, Input.Keys.RIGHT, Input.Keys.B, Input.Keys.A};

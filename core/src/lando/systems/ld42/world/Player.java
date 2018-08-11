@@ -15,11 +15,11 @@ public class Player extends GameObject {
         this.row = row;
         this.col = col;
         float tileOffset = 0f;
-        Tile tile = getTile(row, col);
+//        Tile tile = getTile(row, col);
 
-        if (tile != null) {
-            tileOffset += tile.height;// * Tile.heightScale;
-        }
+//        if (tile != null) {
+//            tileOffset += tile.height;// * OldTile.heightScale;
+//        }
         position.x = getX(row, col);
         position.y = getY(row);
         position.z = tileOffset + (tileHeight * .25f);
@@ -49,10 +49,10 @@ public class Player extends GameObject {
 //        float newX = getX(row, col);
 //        float newY = getY(row);
 //        float tileOffset = (tileHeight * .25f);
-//        Tile tile = getTile(row, col);
+//        OldTile tile = getTile(row, col);
 //
 //        if (tile != null) {
-//            tileOffset += tile.height * Tile.heightScale;
+//            tileOffset += tile.height * OldTile.heightScale;
 //        }
 //
 //        Vector2 from = new Vector2(position.x, position.y + position.z);
