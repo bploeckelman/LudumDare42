@@ -42,7 +42,7 @@ public class Tile {
         pickColor = TileUtils.getColorFromPosition(row, col);
         texture = LudumDare42.game.assets.blueCastle;
         Timeline.createSequence()
-                .pushPause(MathUtils.random(2f)+1f)
+                .pushPause(MathUtils.random(1.5f)+.5f)
                 .beginParallel()
                 .push(Tween.to(position, Vector2Accessor.Y, 1f)
                         .target(TileUtils.getY(row, col, tileHeight)))

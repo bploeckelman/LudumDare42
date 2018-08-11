@@ -46,7 +46,7 @@ public abstract class Unit {
     }
 
     public void moveTo(final Tile tile) {
-
+        if (tile == null) return;
         float tx = TileUtils.getX(tile.col, Tile.tileWidth) + Tile.tileWidth / 2f - size.x / 2f;
         float ty = TileUtils.getY(tile.row, tile.col, Tile.tileHeight)+ Tile.tileHeight - size.y;
         Tween.to(pos, Vector2Accessor.XY, moveDuration)
