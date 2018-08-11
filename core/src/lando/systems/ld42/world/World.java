@@ -1,9 +1,12 @@
 package lando.systems.ld42.world;
 
+import aurelienribon.tweenengine.Tween;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
+import lando.systems.ld42.LudumDare42;
+import lando.systems.ld42.accessors.Vector2Accessor;
 import lando.systems.ld42.screens.*;
 import lando.systems.ld42.utils.TileUtils;
 
@@ -35,6 +38,13 @@ public class World {
 
     public void update(float dt){
         // ...
+        for (int i = 0; i < tiles.size; i++){
+            Tile t = tiles.get(i);
+            if (t != null && t.dead){
+                tiles.set(i, null);
+            }
+        }
+
     }
 
     public void render(SpriteBatch batch){
@@ -44,6 +54,7 @@ public class World {
                 t.render(batch);
             }
         }
+
 
         batch.setColor(Color.WHITE);
     }
@@ -83,7 +94,7 @@ public class World {
 
     public void randomAssignTileType() {
         for (Tile tile : tiles) {
-            int randIndex = MathUtils.random(0, 1);
+            int randIndex = MathUtils.random(0, 2);
             tile.type = getTileTypeFromInt(randIndex);
         }
     }
@@ -118,7 +129,7 @@ public class World {
     }
 
     public void removeTile(Tile t){
-        tiles.set(getTileIndex(t), null);
+        t.killTile();
         // TODO other stuff like kill things on the tile?
     }
 
@@ -145,9 +156,36 @@ public class World {
         removeTile(removeTile);
     }
 
+    public void moveTile(Tile t, int col, int row){
+        float x = TileUtils.getX(col, Tile.tileWidth);
+        float y = TileUtils.getY(row, col, Tile.tileHeight);
+        int oldIndex = getTileIndex(t);
+        Tween.to(t.position, Vector2Accessor.XY, 1f)
+                .target(x, y)
+                .start(LudumDare42.game.tween);
+        // TODO move units as well
+        t.row = row;
+        t.col = col;
+        t.pickColor = TileUtils.getColorFromPosition(row, col);
+        tiles.set(col + row *WORLD_WIDTH, t);
+        tiles.set(oldIndex, null);
+    }
+
     public void squishHoles(){
-
-
+        for (int row = 0; row < WORLD_HEIGHT; row ++){
+            for (int col = 0; col < WORLD_WIDTH; col ++){
+                Tile t = getTile(col, row);
+                if (t == null){
+                    for (int y = row + 1; y < WORLD_HEIGHT; y ++ ){
+                        Tile next = getTile(col, y);
+                        if (next != null){
+                            moveTile(next, col, row);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
 
     }

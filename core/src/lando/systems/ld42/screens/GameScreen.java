@@ -126,6 +126,9 @@ public class GameScreen extends BaseScreen {
 
 
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)){
+            world.squishHoles();
+        }
 
 
         time += dt;

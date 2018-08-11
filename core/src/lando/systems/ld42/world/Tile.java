@@ -1,7 +1,9 @@
 package lando.systems.ld42.world;
 
+import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.equations.Back;
 import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.graphics.Color;
@@ -36,6 +38,7 @@ public class Tile {
     public MutableFloat alpha;
     public Color renderColor;
     public TileType type;
+    public boolean dead;
 
     /**
      * Owner of the tile 0 - unclaimed, 1 - player, 2 - computer
@@ -107,8 +110,27 @@ public class Tile {
     }
 
     public void renderHightlight(SpriteBatch batch, Color c){
-        batch.setColor(c);
+        batch.setColor(c.r, c.g, c.b, alpha.floatValue());
         batch.draw(LudumDare42.game.assets.hightlightHex, position.x, position.y, tileWidth, tileHeight);
+    }
+
+    public void killTile(){
+        Timeline.createSequence()
+                .beginParallel()
+                .push(Tween.to(position, Vector2Accessor.Y, 1f)
+                        .target(TileUtils.getY(row, col, tileHeight) - 80)
+                        .ease(Back.IN))
+                .push(Tween.to(alpha, 1, .9f)
+                        .target(0))
+                .end()
+                .push(Tween.call(new TweenCallback() {
+                    @Override
+                    public void onEvent(int i, BaseTween<?> baseTween) {
+                        dead = true;
+                    }
+                }))
+                .start(LudumDare42.game.tween);
+
     }
 
 }
