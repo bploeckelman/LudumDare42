@@ -35,5 +35,14 @@ public class Tile {
         batch.draw(texture, position.x, position.y, tileWidth, tileHeight);
     }
 
+    public void renderPickBuffer(SpriteBatch batch){
+        batch.setColor(pickColor);
+        batch.draw(LudumDare42.game.assets.whiteHex, position.x, position.y, tileWidth, tileHeight);
+    }
+
+    public void renderHightlight(SpriteBatch batch, Color c){
+        batch.setColor(c);
+        batch.draw(LudumDare42.game.assets.hightlightHex, position.x, position.y, tileWidth, tileHeight);
+    }
 
 }

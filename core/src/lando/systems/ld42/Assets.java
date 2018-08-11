@@ -55,7 +55,7 @@ public class Assets implements Disposable {
     public TextureRegion whitePixel;
     public TextureRegion defaultHex;
     public TextureRegion whiteHex;
-    public TextureRegion selectHex;
+    public TextureRegion hightlightHex;
     public TextureRegion blueCastle;
 
     public TextureRegion shadowUL;
@@ -135,7 +135,8 @@ public class Assets implements Disposable {
         shadowU = atlas.findRegion("shadow_u");
         shadowUR = atlas.findRegion("shadow_ur");
         shadowUL = atlas.findRegion("shadow_ul");
-        blueCastle = atlas.findRegion("blue_castle");
+        blueCastle = atlas.findRegion("mountain");
+        hightlightHex = atlas.findRegion("tile_outline");
 
         Array<TextureAtlas.AtlasRegion> unit = atlas.findRegions("unit");
         unitAnimation = new Animation<TextureRegion>(0.33f, unit, Animation.PlayMode.LOOP);

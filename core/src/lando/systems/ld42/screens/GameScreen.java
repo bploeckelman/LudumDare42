@@ -3,14 +3,19 @@ package lando.systems.ld42.screens;
 import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
 import lando.systems.ld42.Config;
 import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.units.Unit;
+import lando.systems.ld42.utils.TileUtils;
 import lando.systems.ld42.world.*;
 
 public class GameScreen extends BaseScreen {
@@ -43,6 +48,12 @@ public class GameScreen extends BaseScreen {
 //    public Screenshake shaker;
     public Vector2 cameraCenter;
 
+    public Pixmap pickPixmap;
+    public Color pickColor;
+    public int pickMapScale = 8;
+    private FrameBuffer pickBuffer;
+    private TextureRegion pickRegion;
+
     public GameScreen() {
         super();
  //       SoundManager.oceanWaves.play();
@@ -70,6 +81,12 @@ public class GameScreen extends BaseScreen {
 
         testUnit = new Unit(LudumDare42.game.assets);
         testUnit.moveTo(world.getTile(0, 0));
+
+        pickBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int)worldCamera.viewportWidth / pickMapScale, (int)worldCamera.viewportHeight / pickMapScale, false, false);
+        pickRegion = new TextureRegion(pickBuffer.getColorBufferTexture());
+        pickRegion.flip(false, true);
+        pickPixmap = null;
+        pickColor = new Color();
     }
 
     @Override
@@ -94,6 +111,7 @@ public class GameScreen extends BaseScreen {
             testUnit.moveTo(world.getTile(nextCol, nextRow));
         }
 
+
         time += dt;
         world.update(dt);
         testUnit.update(dt);
@@ -107,6 +125,21 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void render(SpriteBatch batch) {
+        // Draw picking frame buffer
+        batch.setProjectionMatrix(worldCamera.combined);
+        pickBuffer.begin();
+        {
+            Gdx.gl.glClearColor(0f, 0f, 1f, 1f);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+            batch.begin();
+            world.renderPickBuffer(batch);
+            batch.end();
+        }
+
+        pickPixmap = ScreenUtils.getFrameBufferPixmap(0, 0, pickBuffer.getWidth(), pickBuffer.getHeight());
+        pickBuffer.end();
+
+
         Gdx.gl.glClearColor(Config.background_color.r, Config.background_color.g, Config.background_color.b, Config.background_color.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -116,6 +149,25 @@ public class GameScreen extends BaseScreen {
         {
             world.render(batch);
             testUnit.render(batch);
+
+            if (pickPixmap != null){
+                Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
+                if (t != null) {
+                    t.renderHightlight(batch, Color.YELLOW);
+                    TileUtils.getNeighbors(t, world, adjacentTiles);
+                    for (Tile a : adjacentTiles){
+                        a.renderHightlight(batch, Color.BLUE);
+                    }
+                }
+            }
+        }
+        batch.end();
+
+        batch.setProjectionMatrix(hudCamera.combined);
+        batch.begin();
+        {
+            batch.setColor(Color.WHITE);
+//            batch.draw(pickRegion, 0, 0, 100, 80);
         }
         batch.end();
 
@@ -135,5 +187,12 @@ public class GameScreen extends BaseScreen {
             index = 0;
         }
         return false;
+    }
+
+    Vector3 tempVec3 = new Vector3();
+    public Tile getTileFromScreen(int screenX, int screenY) {
+        hudCamera.unproject(tempVec3.set(screenX, screenY, 0));
+        pickColor.set(pickPixmap.getPixel((int)(tempVec3.x / pickMapScale), (int)(tempVec3.y / pickMapScale)));
+        return TileUtils.parsePickColorForTileInWorld(pickColor, world);
     }
 }

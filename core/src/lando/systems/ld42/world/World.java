@@ -1,5 +1,6 @@
 package lando.systems.ld42.world;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -44,16 +45,6 @@ public class World {
         }
 
 
-//        for (ResourceIndicator resIndicator : resIndicators) {
-//            resIndicator.update(dt);
-//        }
-//
-//        for (int i = resIndicators.size - 1; i >= 0; i--) {
-//            resIndicators.get(i).update(dt);
-//            if (resIndicators.get(i).isComplete()) {
-//                resIndicators.removeIndex(i);
-//            }
-//        }
     }
 
     public void render(SpriteBatch batch){
@@ -65,28 +56,18 @@ public class World {
         for (Player player : players) {
             player.render(batch);
         }
+
+        batch.setColor(Color.WHITE);
     }
 
-//    public Array<OldTile> getNeighbors(int row, int col){
-//        adjacentTiles.clear();
-//
-//        boolean even = (row % 2 == 0);
-//        OldTile left = getTile(row, col - 1);
-//        OldTile right = getTile(row, col + 1);
-//        OldTile upLeft = getTile(row + 1, col + (even ? 0 : -1));
-//        OldTile upRight = getTile(row + 1, col + (even ? 1 : 0));
-//        OldTile downLeft = getTile(row - 1, col + (even ? 0 : -1));
-//        OldTile downRight = getTile(row - 1, col + (even ? 1 : 0));
-//
-//        if (left != null) adjacentTiles.add(left);
-//        if (right != null) adjacentTiles.add(right);
-//        if (upLeft != null) adjacentTiles.add(upLeft);
-//        if (upRight != null) adjacentTiles.add(upRight);
-//        if (downLeft != null) adjacentTiles.add(downLeft);
-//        if (downRight != null) adjacentTiles.add(downRight);
-//
-//        return adjacentTiles;
-//    }
+    public void renderPickBuffer(SpriteBatch batch){
+        for (int i = tiles.size-1; i >= 0; i--){
+            Tile t = tiles.get(i);
+            t.renderPickBuffer(batch);
+        }
+        batch.setColor(Color.WHITE);
+    }
+
 
     public Tile getUpperLeftTile(int row, int col){
         int offset = row % 2 == 1 ? -1 : 0;
@@ -163,6 +144,8 @@ public class World {
     }
 
     public Tile getTile(int col, int row){
+        if (col < 0 || col >= WORLD_WIDTH) return null;
+        if (row < 0 || row >= WORLD_HEIGHT) return null;
         int index = col + row * WORLD_WIDTH;
         if (index < 0 || index >= tiles.size) return null;
         return tiles.get(index);
