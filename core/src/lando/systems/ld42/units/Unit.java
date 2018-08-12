@@ -80,12 +80,12 @@ public abstract class Unit {
                      }
                      Unit.this.tile = tile;
                      Unit.this.tile.occupant = Unit.this;
+                     if (Unit.this.team != null) {
+                         takeOverTile(Unit.this.tile, Unit.this.team);
+                     }
                  }
              })
              .start(LudumDare42.game.tween);
-        if (this.team != null) {
-            takeOverTile(tile, this.team);
-        }
     }
 
     public void render(SpriteBatch batch) {
