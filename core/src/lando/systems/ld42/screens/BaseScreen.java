@@ -37,8 +37,6 @@ public abstract class BaseScreen extends InputAdapter {
     public Vector3 cameraTargetPos = new Vector3();
     public MutableFloat targetZoom = new MutableFloat(1f);
 
-
-
     public BaseScreen() {
         super();
         this.game = LudumDare42.game;
@@ -55,6 +53,14 @@ public abstract class BaseScreen extends InputAdapter {
         this.hudCamera = new OrthographicCamera(Config.window_width, Config.window_height / aspect);
         this.hudCamera.translate(this.hudCamera.viewportWidth / 2f, this.hudCamera.viewportHeight / 2f, 0f);
         this.hudCamera.update();
+    }
+
+    public void setInputProcessors() {
+        Gdx.input.setInputProcessor(this);
+    }
+
+    public void clearInputProcessors() {
+        Gdx.input.setInputProcessor(null);
     }
 
     public abstract void update(float dt);

@@ -71,6 +71,11 @@ public class Assets implements Disposable {
     public TextureRegion shadowUR;
     public TextureRegion shadowU;
 
+    public TextureRegion unitHeadPeasant;
+    public TextureRegion unitHeadSoldier;
+    public TextureRegion unitHeadArcher;
+    public TextureRegion unitHeadWizard;
+
     public Animation<TextureRegion> unitAnimationPeasant;
     public Animation<TextureRegion> unitAnimationSoldier;
     public Animation<TextureRegion> unitAnimationArcher;
@@ -157,9 +162,12 @@ public class Assets implements Disposable {
         highlightHex = atlas.findRegion("tile-outline");
         emptyHex = atlas.findRegion("tile-empty");
         blankTile = atlas.findRegion("tile-blank");
-
         tree = atlas.findRegion("tree");
         mountain = atlas.findRegion("mountain");
+        unitHeadPeasant = atlas.findRegion("unit-peasant-head");
+        unitHeadSoldier = atlas.findRegion("unit-soldier-head");
+        unitHeadArcher = atlas.findRegion("unit-archer-head");
+        unitHeadWizard = atlas.findRegion("unit-wizard-head");
 
         Array<TextureAtlas.AtlasRegion> peasant = atlas.findRegions("unit-peasant");
         Array<TextureAtlas.AtlasRegion> soldier = atlas.findRegions("unit-soldier");

@@ -3,6 +3,7 @@ package lando.systems.ld42.screens;
 import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -12,9 +13,12 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import lando.systems.ld42.Assets;
 import lando.systems.ld42.Config;
 import lando.systems.ld42.particles.ParticleSystem;
 import lando.systems.ld42.teams.EnemyTeam;
@@ -22,6 +26,7 @@ import lando.systems.ld42.teams.PlayerTeam;
 import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.turns.Turn;
 import lando.systems.ld42.turns.TurnAction;
+import lando.systems.ld42.ui.RecruitmentUI;
 import lando.systems.ld42.ui.Tooltip;
 import lando.systems.ld42.units.PeasantUnit;
 import lando.systems.ld42.units.Unit;
@@ -52,6 +57,8 @@ public class GameScreen extends BaseScreen {
     public PlayerHUD hud;
     public Tooltip tooltip;
     public Screenshake shaker;
+    public Stage ui;
+    public RecruitmentUI recruitmentUI;
     public int pickMapScale = 8;
     private FrameBuffer pickBuffer;
     private TextureRegion pickRegion;
@@ -94,20 +101,26 @@ public class GameScreen extends BaseScreen {
         this.pickRegion.flip(false, true);
         this.pickPixmap = null;
         this.pickColor = new Color();
-        selectedUnitTile = playerTeam.castle.tile;
+        this.selectedUnitTile = playerTeam.castle.tile;
 
+        initializeUserInterface();
+    }
 
+    @Override
+    public void setInputProcessors() {
+        Gdx.input.setInputProcessor(new InputMultiplexer(ui, this));
     }
 
     @Override
     public void update(float dt) {
-        accum += dt;
-
-        particleSystem.update(dt);
-
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
+
+        accum += dt;
+        ui.act(Math.min(dt, 1 / 30f));
+
+        particleSystem.update(dt);
 
         if (turnAction.turn == Turn.ENEMY) {
             dumbAIMovement();
@@ -126,7 +139,8 @@ public class GameScreen extends BaseScreen {
             if (turnAction.turn == Turn.PLAYER_RECRUITMENT) {
                 Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
                 if (t != null && t.occupant == null && adjacentTiles.contains(t, true) && playerTeam.buildsLeft()){
-                    playerTeam.addUnit(new PeasantUnit(assets), t);
+                    recruitmentUI.rebuild(playerTeam, t, turnAction, hudCamera);
+                    recruitmentUI.show();
                 }
                 if (!playerTeam.buildsLeft()) {
                     selectedUnitTile = null;
@@ -136,6 +150,8 @@ public class GameScreen extends BaseScreen {
                 }
             }
             else if (turnAction.turn == Turn.PLAYER_ACTION && pickPixmap != null){
+//                recruitmentUI.hide();
+
                 Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
                 //attack unit
                 if (t != null && t.occupant != null && t.occupant.team == Team.Type.enemy && selectedUnitTile != null && adjacentTiles.contains(t, true)) {
@@ -190,6 +206,8 @@ public class GameScreen extends BaseScreen {
         playerTeam.update(dt);
         enemyTeam.update(dt);
         hud.update(dt);
+
+        recruitmentUI.update(dt);
 
         updateCamera();
         targetZoom.setValue(Math.max(world.bounds.width / worldCamera.viewportWidth, world.bounds.height / worldCamera.viewportHeight));
@@ -292,9 +310,11 @@ public class GameScreen extends BaseScreen {
         } else {
             turnText = "Enemy's Turn " + turnNumber;
         }
-        lando.systems.ld42.Assets.drawString(batch, turnText, 0, 30, Color.BLACK, .5f, lando.systems.ld42.Assets.font, Config.window_width, Align.center);
+        Assets.drawString(batch, turnText, 0, 30, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
 
         batch.end();
+
+        ui.draw();
     }
 
     private void calculateInformationForPlayerTile(Tile currentTile) {
@@ -387,6 +407,16 @@ public class GameScreen extends BaseScreen {
                 }
             }
         }
+    }
+
+    private void initializeUserInterface() {
+        ui = new Stage(new ExtendViewport(Config.window_width, Config.window_height));
+        ui.getViewport().setCamera(hudCamera);
+        ui.setDebugUnderMouse(Config.debug);
+
+        recruitmentUI = new RecruitmentUI(assets);
+
+        ui.addActor(recruitmentUI.window);
     }
 
 //    // required Konami code

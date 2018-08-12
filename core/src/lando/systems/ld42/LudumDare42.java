@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import lando.systems.ld42.accessors.*;
 import lando.systems.ld42.screens.BaseScreen;
 import lando.systems.ld42.screens.TitleScreen;
@@ -52,6 +53,7 @@ public class LudumDare42 extends ApplicationAdapter {
             Tween.registerAccessor(Rectangle.class, new RectangleAccessor());
             Tween.registerAccessor(Vector2.class, new Vector2Accessor());
             Tween.registerAccessor(Vector3.class, new Vector3Accessor());
+            Tween.registerAccessor(Window.class, new Scene2dWindowAccessor());
             Tween.registerAccessor(OrthographicCamera.class, new CameraAccessor());
         }
 
@@ -109,10 +111,10 @@ public class LudumDare42 extends ApplicationAdapter {
         if (nextScreen != null) return;
         if (screen == null) { // First time i hope
             screen = newScreen;
-            Gdx.input.setInputProcessor(screen);
+            screen.setInputProcessors();
         } else { // transition
 //            audio.playSound(Audio.Sounds.transition);
-            Gdx.input.setInputProcessor(null);
+            screen.clearInputProcessors();
             if (transitionType == null) {
                 transitionShader = assets.randomTransitions.get(MathUtils.random(assets.randomTransitions.size-1));
             } else {
@@ -136,7 +138,7 @@ public class LudumDare42 extends ApplicationAdapter {
                             screen = nextScreen;
                             nextScreen = null;
                             screen.allowInput = true;
-                            Gdx.input.setInputProcessor(screen);
+                            screen.setInputProcessors();
                         }
                     }))
                     .start(tween);
