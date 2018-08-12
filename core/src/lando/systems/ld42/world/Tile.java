@@ -22,6 +22,7 @@ public class Tile {
         none,
         forest,
         mountain,
+        crystal,
         playerBase,
         enemyBase
     }

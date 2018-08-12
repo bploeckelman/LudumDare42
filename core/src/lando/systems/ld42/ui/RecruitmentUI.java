@@ -40,6 +40,11 @@ public class RecruitmentUI extends UserInterface {
     private TextureRegion archerHead;
     private TextureRegion wizardHead;
 
+    TextButton recruitPeasantButton;
+    TextButton recruitSoldierButton;
+    TextButton recruitArcherButton;
+    TextButton recruitWizardButton;
+
     public RecruitmentUI(Assets assets) {
         this.skin = new Skin(Gdx.files.internal("skins/cloud-form-ui.json"));
         this.window = new Window("Recruit", skin);
@@ -53,6 +58,10 @@ public class RecruitmentUI extends UserInterface {
 
     @Override
     public void update(float dt) {
+        if (recruitPeasantButton != null ) recruitPeasantButton.setDisabled(!team.canBuildPeasant());
+        if (recruitSoldierButton != null ) recruitSoldierButton.setDisabled(!team.canBuildSoldier());
+        if (recruitArcherButton != null ) recruitArcherButton.setDisabled(!team.canBuildArcher());
+        if (recruitWizardButton != null ) recruitWizardButton.setDisabled(!team.canBuildWizard());
         // ...
     }
 
@@ -69,10 +78,10 @@ public class RecruitmentUI extends UserInterface {
         Image archerIcon = new Image(archerHead);
         Image wizardIcon = new Image(wizardHead);
 
-        TextButton recruitPeasantButton = new TextButton("Peasant", skin);
-        TextButton recruitSoldierButton = new TextButton("Soldier", skin);
-        TextButton recruitArcherButton  = new TextButton("Archer",  skin);
-        TextButton recruitWizardButton  = new TextButton("Wizard",  skin);
+        recruitPeasantButton = new TextButton("Peasant", skin);
+        recruitSoldierButton = new TextButton("Soldier", skin);
+        recruitArcherButton  = new TextButton("Archer",  skin);
+        recruitWizardButton  = new TextButton("Wizard",  skin);
 
         // TODO: add disabled style, enable or disable as appropriate, set text according to controlled territory
         // TODO: only move to 'next turn' when done recruiting

@@ -6,7 +6,7 @@ public class ArcherUnit extends Unit {
     public ArcherUnit(Assets assets) {
         super(assets.unitAnimationArcher);
         actionPoint = 1;
-        attackPower = 2;
-        defensePower = 2;
+        attackPower = 1;
+        defensePower = 3;
     }
 }

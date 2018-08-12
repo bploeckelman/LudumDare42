@@ -3,8 +3,8 @@ package lando.systems.ld42.teams;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
-import lando.systems.ld42.units.PeasantUnit;
-import lando.systems.ld42.units.Unit;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import lando.systems.ld42.units.*;
 import lando.systems.ld42.world.Castle;
 import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
@@ -42,16 +42,22 @@ public abstract class Team {
         }
     }
 
+    public boolean canBuildPeasant(){
+        return getUnitCount(PeasantUnit.class) < getMaxPeasant();
+    }
+    public boolean canBuildSoldier(){
+        return getUnitCount(SoldierUnit.class) < getTileTypeCount(Tile.TileType.mountain);
+    }
+    public boolean canBuildArcher(){
+        return getUnitCount(ArcherUnit.class) < getTileTypeCount(Tile.TileType.forest);
+    }
+    public boolean canBuildWizard(){
+        return getUnitCount(WizardUnit.class) < getTileTypeCount(Tile.TileType.crystal);
+    }
 
 
     public boolean buildsLeft(){
-        int peasantCount = 0;
-        for (Unit u : units){
-            if (u instanceof PeasantUnit){
-                peasantCount++;
-            }
-        }
-        return peasantCount < world.playerTileCount /3;
+        return canBuildPeasant() || canBuildSoldier() || canBuildArcher() || canBuildWizard();
     }
 
     public boolean isActionLeft() {
@@ -77,6 +83,40 @@ public abstract class Team {
         unit.moveTo(t);
         units.add(unit);
 
+    }
+
+    public int getUnitCount(Class unitType){
+        int count = 0;
+        for (Unit u : units){
+            if (unitType.isInstance(u)){
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public int getTileTypeCount(Tile.TileType type){
+        int count = 0;
+        for (Tile tile : world.tiles){
+            if (tile != null && tile.owner == this.owner && tile.type == type){
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public int getTileTotalCount(){
+        int count = 0;
+        for (Tile tile : world.tiles){
+            if (tile != null && tile.owner == this.owner){
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public int getMaxPeasant(){
+        return getTileTotalCount() /4;
     }
 
 }

@@ -1,6 +1,7 @@
 package lando.systems.ld42.teams;
 
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import lando.systems.ld42.Assets;
 import lando.systems.ld42.Config;
 import lando.systems.ld42.units.*;
@@ -28,5 +29,6 @@ public class PlayerTeam extends Team {
         }
         this.castle = new Castle(assets, Type.player, castleTile);
     }
+
 
 }
