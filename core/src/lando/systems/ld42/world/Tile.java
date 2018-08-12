@@ -109,7 +109,7 @@ public class Tile {
             case mountain: typeTexture = LudumDare42.game.assets.mountain; break;
             case crystal: typeTexture = LudumDare42.game.assets.gem; break;
             case playerBase: {
-                    typeTexture = LudumDare42.game.assets.castleAnimationPlayer.getKeyFrame(animState);
+                typeTexture = LudumDare42.game.assets.castleAnimationPlayer.getKeyFrame(animState);
             } break;
             case enemyBase: {
                 typeTexture = LudumDare42.game.assets.castleAnimationEnemy.getKeyFrame(animState);

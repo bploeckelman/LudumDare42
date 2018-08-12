@@ -176,8 +176,8 @@ public class Assets implements Disposable {
         unitAnimationArcher = new Animation<TextureRegion>(0.33f, archer, Animation.PlayMode.LOOP);
         unitAnimationWizard = new Animation<TextureRegion>(0.33f, wizard, Animation.PlayMode.LOOP);
 
-        Array<TextureAtlas.AtlasRegion> castlePlayer = atlas.findRegions("castle-yellow");
-        Array<TextureAtlas.AtlasRegion> castleEnemy = atlas.findRegions("castle-purple");
+        Array<TextureAtlas.AtlasRegion> castlePlayer = atlas.findRegions("castle-blue");
+        Array<TextureAtlas.AtlasRegion> castleEnemy = atlas.findRegions("castle-red");
         castleAnimationPlayer = new Animation<TextureRegion>(0.16f, castlePlayer, Animation.PlayMode.LOOP);
         castleAnimationEnemy = new Animation<TextureRegion>(0.16f, castleEnemy, Animation.PlayMode.LOOP);
 
