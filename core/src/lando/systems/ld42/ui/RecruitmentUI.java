@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import lando.systems.ld42.Assets;
@@ -58,11 +59,23 @@ public class RecruitmentUI extends UserInterface {
 
     @Override
     public void update(float dt) {
-        if (recruitPeasantButton != null ) recruitPeasantButton.setDisabled(!team.canBuildPeasant());
-        if (recruitSoldierButton != null ) recruitSoldierButton.setDisabled(!team.canBuildSoldier());
-        if (recruitArcherButton != null ) recruitArcherButton.setDisabled(!team.canBuildArcher());
-        if (recruitWizardButton != null ) recruitWizardButton.setDisabled(!team.canBuildWizard());
+        if (recruitPeasantButton != null ) disableButton(recruitPeasantButton, team.canBuildPeasant());
+        if (recruitSoldierButton != null ) disableButton(recruitSoldierButton, team.canBuildSoldier());
+        if (recruitArcherButton != null ) disableButton(recruitArcherButton, team.canBuildArcher());
+        if (recruitWizardButton != null ) disableButton(recruitWizardButton, team.canBuildWizard());
         // ...
+    }
+
+    private void disableButton(TextButton button, boolean enabled){
+        if (button != null ) {
+            if (enabled) {
+                button.setTouchable(Touchable.enabled);
+                button.setDisabled(false);
+            } else {
+                button.setTouchable(Touchable.disabled);
+                button.setDisabled(true);
+            }
+        }
     }
 
     public void rebuild(final Team team, final Tile tile, final TurnAction turnAction, Camera camera) {
