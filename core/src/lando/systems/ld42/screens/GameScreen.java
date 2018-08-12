@@ -110,7 +110,7 @@ public class GameScreen extends BaseScreen {
             dumbAIMovement();
             turnAction.nextTurn();
             turnNumber++;
-            world.pickRemoveTile();
+            world.pickRemoveTileCleverly();
             if (turnNumber % 8 == 0) {
                 world.squishHoles();
                 shaker.shakeDuration = 25f;
