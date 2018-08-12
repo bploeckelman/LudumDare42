@@ -22,22 +22,6 @@ public class TurnAction {
         this.enemyTeam = enemyTeam;
     }
 
-//    public void doAction() {
-//        if (turn == turn.PLAYER_RECRUITMENT) {
-//            //TODO: recruitment Action
-//            //TODO: resolution
-//
-//        }
-//        else if (turn == Turn.PLAYER_MOVEMENT) {
-//            //TODO: move Character Action
-//
-//        }
-//        else if (turn == Turn.ENEMY) {
-//            //TODO: handle AI action
-//        }
-//        nextTurn();
-//    }
-
     public void nextTurn() {
         switch (turn) {
             case PLAYER_RECRUITMENT:
