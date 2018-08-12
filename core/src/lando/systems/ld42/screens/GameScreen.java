@@ -126,16 +126,36 @@ public class GameScreen extends BaseScreen {
                 enemyTeam.replenishAction();
                 turnAction.nextTurn();
             }
-            else if (pickPixmap != null && turnAction.turn == Turn.PLAYER_ACTION){
+            else if (turnAction.turn == Turn.PLAYER_ACTION && pickPixmap != null){
                 Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
-                if (t != null && t.occupant == null && selectedUnitTile != null && adjacentTiles.contains(t, true)) {
+                //attack unit
+                if (t != null && t.occupant != null && t.occupant.team == Team.Type.enemy && selectedUnitTile != null && adjacentTiles.contains(t, true)) {
+                    if (didAttackSucceed(selectedUnitTile.occupant, t)) {
+                        //attack succeeded
+                        t.occupant.dead = true;
+                        t.occupant = null;
+                        selectedUnitTile.occupant.moveTo(t);
+                        selectedUnitTile.occupant.actionAvailable--;
+                        selectedUnitTile = null;
+                    } else {
+                        //killed
+                        selectedUnitTile.occupant.dead = true;
+                        selectedUnitTile.occupant = null;
+                        selectedUnitTile = null;
+                    }
+                }
+                //move unit
+                else if (t != null && t.occupant == null && selectedUnitTile != null && adjacentTiles.contains(t, true)) {
                     selectedUnitTile.occupant.moveTo(t);
                     selectedUnitTile.occupant.actionAvailable--;
                     selectedUnitTile = null;
                 }
+                //select unit
                 else if (t != null && t.occupant != null && t.occupant.team == Team.Type.player && t.occupant.actionAvailable > 0) {
                     selectedUnitTile = t;
-                } else {
+                }
+                //deselect
+                else {
                     selectedUnitTile = null;
                 }
                 // if no action left, next
@@ -212,12 +232,11 @@ public class GameScreen extends BaseScreen {
 
             if (!transitioning) {
                 Tile touchedTile = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
-                TileUtils.getNeighbors(touchedTile, world, adjacentTiles);
                 if (touchedTile != null) {
                     if (touchedTile.owner == Team.Type.player || (touchedTile.occupant != null && touchedTile.occupant.team == Team.Type.player)) {
-                        calculateInformationForPlayerTile(adjacentTiles, touchedTile);
+                        calculateInformationForPlayerTile(touchedTile);
                     } else if (touchedTile.owner == Team.Type.enemy || (touchedTile.occupant != null && touchedTile.occupant.team == Team.Type.enemy)) {
-                        calculateInformationForEnemyTile(adjacentTiles, touchedTile);
+                        calculateInformationForEnemyTile(touchedTile);
                     } else {
                         tooltip.text = null;
                     }
@@ -269,29 +288,33 @@ public class GameScreen extends BaseScreen {
         batch.end();
     }
 
-    private void calculateInformationForPlayerTile(Array<Tile> neighbors, Tile currentTile) {
-        if (neighbors == null || currentTile == null) return;
+    private void calculateInformationForPlayerTile(Tile currentTile) {
+        TileUtils.getNeighbors(currentTile, world, adjacentTiles);
 
-        int playerDefense = calculateDefense(neighbors, currentTile, Team.Type.player);
-        int enemyAttack = calculateAttack(neighbors, Team.Type.enemy);
+        if (adjacentTiles == null || currentTile == null) return;
+
+        int playerDefense = calculateDefense(currentTile, Team.Type.player);
+        int enemyAttack = calculateAttack(Team.Type.enemy);
 
         String str = "Player Defense: " + playerDefense + "\nEnemy Attack: " + enemyAttack;
         tooltip.setText(str);
     }
 
-    private void calculateInformationForEnemyTile(Array<Tile> neighbors, Tile currentTile) {
-        if (neighbors == null || currentTile == null) return;
+    private void calculateInformationForEnemyTile(Tile currentTile) {
+        TileUtils.getNeighbors(currentTile, world, adjacentTiles);
 
-        int enemyDefense = calculateDefense(neighbors, currentTile, Team.Type.enemy);
-        int playerAttack = calculateAttack(neighbors, Team.Type.player);
+        if (adjacentTiles == null || currentTile == null) return;
+
+        int enemyDefense = calculateDefense(currentTile, Team.Type.enemy);
+        int playerAttack = calculateAttack(Team.Type.player);
 
         String str = "Enemy Defense: " + enemyDefense + "\nPlayer Attack: " + playerAttack;
         tooltip.setText(str);
     }
 
-    private int calculateDefense(Array<Tile> neighbors, Tile currentTile, Team.Type team) {
+    private int calculateDefense(Tile currentTile, Team.Type team) {
         int defense = 0;
-        for (Tile tile : neighbors) {
+        for (Tile tile : adjacentTiles) {
             if (tile.occupant != null && tile.occupant.team == team) {
                 defense += tile.occupant.defensePower;
             }
@@ -302,27 +325,22 @@ public class GameScreen extends BaseScreen {
         return defense;
     }
 
-    private int calculateAttack(Array<Tile> neighbors, Team.Type team) {
+    private int calculateAttack(Team.Type team) {
         int attack = 0;
-        for (Tile tile : neighbors) {
+        for (Tile tile : adjacentTiles) {
             if (tile.occupant != null && tile.occupant.team == team) {
                 attack += tile.occupant.attackPower;
             }
         }
-//        for (Unit unit : units) {
-//            if (unit.tile != null) {
-//                for (Tile tile : neighbors) {
-//                    if (tile.position == unit.tile.position) {
-//                        attack += unit.attackPower;
-//                    }
-//                }
-//            }
-//        }
         return attack;
     }
 
 
-    public boolean didAttackSucceed(Unit attackingUnit, Unit defendingUnit) {
+    public boolean didAttackSucceed(Unit attackingUnit, Tile attackingTile) {
+        TileUtils.getNeighbors(attackingTile, world, adjacentTiles);
+        if (calculateAttack(attackingUnit.team) > calculateDefense(attackingTile, attackingTile.occupant.team)) {
+            return true;
+        }
         return false;
     }
 
@@ -354,7 +372,6 @@ public class GameScreen extends BaseScreen {
                 Gdx.app.log("MOVE", "(" + currCol + ", " + currRow + ") -> (" + nextCol + ", " + nextRow + ")");
                 Tile moveToTile = new Tile(nextCol, nextRow);
                 // TODO: smarter AI
-                // try again if tile occupied
                 if (moveToTile.occupant == null) {
                     unit.moveTo(world.getTile(nextCol, nextRow));
                     unit.actionAvailable--;
