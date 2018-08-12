@@ -77,8 +77,12 @@ public class Assets implements Disposable {
     public Animation<TextureRegion> unitAnimationSoldier;
     public Animation<TextureRegion> unitAnimationArcher;
     public Animation<TextureRegion> unitAnimationWizard;
-    public Animation<TextureRegion> castleAnimationPlayer;
-    public Animation<TextureRegion> castleAnimationEnemy;
+    public Animation<TextureRegion> castleRaiseAnimationPlayer;
+    public Animation<TextureRegion> castleRaiseAnimationEnemy;
+    public Animation<TextureRegion> castleWaveAnimationPlayer;
+    public Animation<TextureRegion> castleWaveAnimationEnemy;
+    public Animation<TextureRegion> castleLowerAnimationPlayer;
+    public Animation<TextureRegion> castleLowerAnimationEnemy;
 
     public static BitmapFont font;
     public ShaderProgram fontShader;
@@ -176,10 +180,21 @@ public class Assets implements Disposable {
         unitAnimationArcher = new Animation<TextureRegion>(0.33f, archer, Animation.PlayMode.LOOP);
         unitAnimationWizard = new Animation<TextureRegion>(0.33f, wizard, Animation.PlayMode.LOOP);
 
-        Array<TextureAtlas.AtlasRegion> castlePlayer = atlas.findRegions("castle-blue");
-        Array<TextureAtlas.AtlasRegion> castleEnemy = atlas.findRegions("castle-red");
-        castleAnimationPlayer = new Animation<TextureRegion>(0.16f, castlePlayer, Animation.PlayMode.LOOP);
-        castleAnimationEnemy = new Animation<TextureRegion>(0.16f, castleEnemy, Animation.PlayMode.LOOP);
+        Array<TextureAtlas.AtlasRegion> castleRaisePlayer = atlas.findRegions("castle-blue-raise");
+        Array<TextureAtlas.AtlasRegion> castleRaiseEnemy = atlas.findRegions("castle-red-raise");
+        Array<TextureAtlas.AtlasRegion> castleWavePlayer = atlas.findRegions("castle-blue-wave");
+        Array<TextureAtlas.AtlasRegion> castleWaveEnemy = atlas.findRegions("castle-red-wave");
+        Array<TextureAtlas.AtlasRegion> castleLowerPlayer = new Array<TextureAtlas.AtlasRegion>(castleRaisePlayer);
+        Array<TextureAtlas.AtlasRegion> castleLowerEnemy = new Array<TextureAtlas.AtlasRegion>(castleRaiseEnemy);
+        castleLowerPlayer.reverse();
+        castleLowerEnemy.reverse();
+
+        castleRaiseAnimationPlayer = new Animation<TextureRegion>(0.1f, castleRaisePlayer, Animation.PlayMode.LOOP);
+        castleRaiseAnimationEnemy = new Animation<TextureRegion>(0.1f, castleRaiseEnemy, Animation.PlayMode.LOOP);
+        castleWaveAnimationPlayer = new Animation<TextureRegion>(0.16f, castleWavePlayer, Animation.PlayMode.LOOP);
+        castleWaveAnimationEnemy = new Animation<TextureRegion>(0.16f, castleWaveEnemy, Animation.PlayMode.LOOP);
+        castleLowerAnimationPlayer = new Animation<TextureRegion>(0.1f, castleLowerPlayer, Animation.PlayMode.LOOP);
+        castleLowerAnimationEnemy = new Animation<TextureRegion>(0.1f, castleLowerEnemy, Animation.PlayMode.LOOP);
 
         titleTexture = mgr.get(titleTextureAsset);
 

@@ -36,6 +36,6 @@ public class TileHUDIndicator {
         }
 
         batch.setColor(Color.WHITE);
-        Assets.drawString(batch, "x" + count, pos.x + 70, pos.y + Tile.tileHeight/2f / 2 + LudumDare42.game.assets.font.getCapHeight() / 2, Color.BLUE, 0.4f, LudumDare42.game.assets.font);
+        Assets.drawString(batch, "x" + count, pos.x + 70, pos.y + Tile.tileHeight/2f / 2 + Assets.font.getCapHeight() / 2, Color.BLUE, 0.4f, Assets.font);
     }
 }
