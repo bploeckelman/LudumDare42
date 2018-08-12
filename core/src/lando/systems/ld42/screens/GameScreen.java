@@ -417,9 +417,6 @@ public class GameScreen extends BaseScreen {
 
     private int calculateAttack(Unit attackingUnit, Team.Type team) {
         int attack = 0;
-        if (attackingUnit != null){
-            attack += attackingUnit.attackPower;
-        }
         for (Tile tile : adjacentTiles) {
             if (tile.occupant != null && tile.occupant.team == team) {
                 attack += tile.occupant.attackPower;

@@ -141,6 +141,7 @@ public class EnemyAI {
             unit.actionAvailable--;
             screen.resolveAttack(unit, tempTileArray.random());
             delay = 1f;
+            return true;
         }
         return false;
     }
