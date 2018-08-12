@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import lando.systems.ld42.Assets;
 import lando.systems.ld42.Config;
 import lando.systems.ld42.LudumDare42;
+import lando.systems.ld42.world.Tile;
 
 import java.awt.*;
 
@@ -24,17 +25,17 @@ public class TileHUDIndicator {
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(texture, pos.x, pos.y);
+        batch.draw(texture, pos.x, pos.y, Tile.tileWidth/2f, Tile.tileHeight/2f);
         if (owner == 1) {
             batch.setColor(new Color(Config.player_color.r, Config.player_color.g, Config.player_color.b, .3f));
-            batch.draw(LudumDare42.game.assets.whiteHex, pos.x, pos.y, texture.getRegionWidth(), texture.getRegionHeight());
+            batch.draw(LudumDare42.game.assets.whiteHex, pos.x, pos.y, Tile.tileWidth/2f, Tile.tileHeight/2f);
         }
         if (owner == 2) {
             batch.setColor(new Color(Config.enemy_color.r, Config.enemy_color.g, Config.enemy_color.b, .3f));
-            batch.draw(LudumDare42.game.assets.whiteHex, pos.x, pos.y, texture.getRegionWidth(), texture.getRegionHeight());
+            batch.draw(LudumDare42.game.assets.whiteHex, pos.x, pos.y, Tile.tileWidth/2f, Tile.tileHeight/2f);
         }
 
         batch.setColor(Color.WHITE);
-        Assets.drawString(batch, "x" + count, pos.x + 70, pos.y + texture.getRegionHeight() / 2 + LudumDare42.game.assets.font.getCapHeight() / 2, Color.BLUE, 0.4f, LudumDare42.game.assets.font);
+        Assets.drawString(batch, "x" + count, pos.x + 70, pos.y + Tile.tileHeight/2f / 2 + LudumDare42.game.assets.font.getCapHeight() / 2, Color.BLUE, 0.4f, LudumDare42.game.assets.font);
     }
 }

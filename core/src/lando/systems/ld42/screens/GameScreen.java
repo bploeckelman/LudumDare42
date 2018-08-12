@@ -167,7 +167,6 @@ public class GameScreen extends BaseScreen {
         enemyTeam.update(dt);
         hud.update(dt);
         updateCamera();
-        Gdx.app.log("Zoom", targetZoom.floatValue()+"");
         targetZoom.setValue(Math.max(world.bounds.width / worldCamera.viewportWidth, world.bounds.height / worldCamera.viewportHeight));
         cameraTargetPos.set(world.bounds.width/2, world.bounds.height/2, 0);
         shaker.update(dt, worldCamera, worldCamera.position.x, worldCamera.position.y);
