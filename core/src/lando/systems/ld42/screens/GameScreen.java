@@ -112,6 +112,12 @@ public class GameScreen extends BaseScreen {
             dumbAIMovement();
             turnAction.nextTurn();
             turnNumber++;
+            world.pickRemoveTile();
+            if (turnNumber % 8 == 0) {
+                world.squishHoles();
+                shaker.shakeDuration = 25f;
+                shaker.shake(2f);
+            }
         }
 
         if (Gdx.input.justTouched() && !transitioning) {
