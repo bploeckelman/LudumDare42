@@ -75,11 +75,11 @@ public class Tile {
 
         if (alpha.floatValue() >= 1f) {
             if (owner == Team.Type.player) {
-                batch.setColor(new Color(Config.player_color.r, Config.player_color.g, Config.player_color.b, .3f));
+                batch.setColor(new Color(Config.player_color.r, Config.player_color.g, Config.player_color.b, .5f));
                 batch.draw(LudumDare42.game.assets.whiteHex, position.x, position.y, tileWidth, tileHeight);
             }
             if (owner == Team.Type.enemy) {
-                batch.setColor(new Color(Config.enemy_color.r, Config.enemy_color.g, Config.enemy_color.b, .3f));
+                batch.setColor(new Color(Config.enemy_color.r, Config.enemy_color.g, Config.enemy_color.b, .5f));
                 batch.draw(LudumDare42.game.assets.whiteHex, position.x, position.y, tileWidth, tileHeight);
             }
         }
@@ -115,13 +115,14 @@ public class Tile {
 
     public void killTile(){
         Timeline.createSequence()
-                .beginParallel()
                 .push(Tween.to(position, Vector2Accessor.Y, 1f)
-                        .target(TileUtils.getY(row, col, tileHeight) - 80)
+                        .target(TileUtils.getY(row, col, tileHeight) + 80)
                         .ease(Back.IN))
-                .push(Tween.to(alpha, 1, .9f)
-                        .target(0))
-                .end()
+                .push(Tween.call(new TweenCallback() {
+                    @Override
+                    public void onEvent(int i, BaseTween<?> baseTween) {
+                        world.screen.particleSystem.addTileDestroyParticles(Tile.this);
+                    }}))
                 .push(Tween.call(new TweenCallback() {
                     @Override
                     public void onEvent(int i, BaseTween<?> baseTween) {

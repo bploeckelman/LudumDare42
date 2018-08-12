@@ -48,7 +48,7 @@ public abstract class Unit {
         this.rotation = new MutableFloat(0f);
         this.color = new Color(1f, 1f, 1f, 1f);
         this.shadowColor = new Color(0f, 0f, 0f, 0.75f);
-        this.moveDuration = 0.5f;
+        this.moveDuration = 1f;
         this.animTime = 0f;
         this.animation = animation;
         this.keyframe = animation.getKeyFrame(animTime);

@@ -144,7 +144,6 @@ public class Assets implements Disposable {
         atlas = mgr.get(atlasAsset);
         tooltipNinePatch = new NinePatch(atlas.findRegion("tooltip-ninepatch"), 10, 10, 10, 10);
         testTexture = atlas.findRegion("badlogic");
-
         whitePixel = atlas.findRegion("white-pixel");
         whiteCircle = atlas.findRegion("white-circle");
 

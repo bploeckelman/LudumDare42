@@ -45,6 +45,9 @@ public class World {
     public void update(float dt){
         int maxCol = 0;
         int maxRow = 0;
+        enemyTileCount = 0;
+        playerTileCount = 0;
+        unclaimedTileCount = 0;
         for (int i = 0; i < tiles.size; i++){
             Tile t = tiles.get(i);
             if (t != null) {
@@ -53,6 +56,11 @@ public class World {
                 }
                 maxCol = Math.max(maxCol, t.col);
                 maxRow = Math.max(maxRow, t.row);
+                switch(t.owner){
+                    case none: unclaimedTileCount++; break;
+                    case player: playerTileCount++; break;
+                    case enemy: enemyTileCount++; break;
+                }
             }
         }
         bounds.setWidth(Tile.tileWidth * (maxCol+1.5f) * .75f);

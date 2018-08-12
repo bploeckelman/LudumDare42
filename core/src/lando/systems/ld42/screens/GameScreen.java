@@ -16,6 +16,9 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import lando.systems.ld42.Config;
+
+import lando.systems.ld42.LudumDare42;
+import lando.systems.ld42.particles.ParticleSystem;
 import lando.systems.ld42.teams.EnemyTeam;
 import lando.systems.ld42.teams.PlayerTeam;
 import lando.systems.ld42.teams.Team;
@@ -55,9 +58,12 @@ public class GameScreen extends BaseScreen {
     private TextureRegion pickRegion;
     private float accum;
 
+    public ParticleSystem particleSystem;
+
     public GameScreen() {
         super();
  //       SoundManager.oceanWaves.play();
+        this.particleSystem = new ParticleSystem();
         this.cameraCenter = new Vector2();
         this.gameOver = false;
         this.overlayAlpha = new MutableFloat(1);
@@ -89,11 +95,14 @@ public class GameScreen extends BaseScreen {
         this.pickRegion.flip(false, true);
         this.pickPixmap = null;
         this.pickColor = new Color();
+
     }
 
     @Override
     public void update(float dt) {
         accum += dt;
+
+        particleSystem.update(dt);
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
@@ -217,6 +226,9 @@ public class GameScreen extends BaseScreen {
                     adjacentTile.renderHighlight(batch, Color.BLUE);
                 }
             }
+
+            particleSystem.render(batch);
+
         }
         batch.end();
 
@@ -303,7 +315,11 @@ public class GameScreen extends BaseScreen {
 
     private Vector3 tempVec3 = new Vector3();
     private Tile getTileFromScreen(int screenX, int screenY) {
+        if (pickPixmap == null) return null;
         hudCamera.unproject(tempVec3.set(screenX, screenY, 0));
+        if (tempVec3.x < 0 || tempVec3.x > hudCamera.viewportWidth ||
+                tempVec3.y < 0 || tempVec3.y > hudCamera.viewportHeight) return null;
+
         pickColor.set(pickPixmap.getPixel((int)(tempVec3.x / pickMapScale), (int)(tempVec3.y / pickMapScale)));
         return TileUtils.parsePickColorForTileInWorld(pickColor, world);
     }
