@@ -40,6 +40,7 @@ public class Tile {
     public Color renderColor;
     public TileType type;
     public boolean dead;
+    public boolean animating;
     public Team.Type owner;
     public Unit occupant;
 
@@ -65,6 +66,8 @@ public class Tile {
         this.type = TileType.None;
         this.owner = Team.Type.none;
         this.occupant = null;
+        this.dead = false;
+        this.animating = false;
     }
 
 
@@ -114,6 +117,7 @@ public class Tile {
     }
 
     public void killTile(){
+        animating = true;
         Timeline.createSequence()
                 .push(Tween.to(position, Vector2Accessor.Y, 1f)
                         .target(TileUtils.getY(row, col, tileHeight) + 80)

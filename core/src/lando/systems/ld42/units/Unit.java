@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import lando.systems.ld42.LudumDare42;
+import lando.systems.ld42.accessors.ColorAccessor;
 import lando.systems.ld42.accessors.Vector2Accessor;
 import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.utils.TileUtils;
@@ -24,7 +25,6 @@ public abstract class Unit {
 
     public Vector2 pos;
     public Vector2 size;
-    public MutableFloat alpha;
     public MutableFloat rotation;
     public Color color;
     public Color shadowColor;
@@ -45,7 +45,6 @@ public abstract class Unit {
         this.tile = null;
         this.pos = new Vector2();
         this.size = new Vector2();
-        this.alpha = new MutableFloat(1f);
         this.rotation = new MutableFloat(0f);
         this.color = new Color(1f, 1f, 1f, 1f);
         this.shadowColor = new Color(0f, 0f, 0f, 0.75f);
@@ -86,10 +85,10 @@ public abstract class Unit {
     }
 
     public void render(SpriteBatch batch) {
-        batch.setColor(shadowColor.r, shadowColor.b, shadowColor.b, alpha.floatValue());
+        batch.setColor(shadowColor);
         batch.draw(dropShadow, pos.x, pos.y, size.x, size.y);
 
-        batch.setColor(color.r, color.g, color.b, alpha.floatValue());
+        batch.setColor(color);
         batch.draw(keyframe, pos.x, pos.y, size.x / 2f, size.y / 2f, size.x, size.y, 1f, 1f, rotation.floatValue());
 
         batch.setColor(1f, 1f, 1f, 1f);
@@ -104,9 +103,10 @@ public abstract class Unit {
                 .pushPause(0.25f)
                 .push(
                         Timeline.createParallel()
-                              .push(Tween.to(pos, Vector2Accessor.Y, 0.75f).target(trough))
-                              .push(Tween.to(alpha, -1, 0.75f).target(0f))
-                              .push(Tween.to(rotation, -1, 0.75f).target(-360f * 4f).ease(Cubic.IN))
+                                .push(Tween.to(pos, Vector2Accessor.Y, 0.75f).target(trough))
+                                .push(Tween.to(color, ColorAccessor.A, 0.75f).target(0f))
+                                .push(Tween.to(shadowColor, ColorAccessor.A, 0.75f).target(0f))
+                                .push(Tween.to(rotation, -1, 0.75f).target(-360f * 4f).ease(Cubic.IN))
                 )
                 .setCallback(new TweenCallback() {
                     @Override

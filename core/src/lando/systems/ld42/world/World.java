@@ -3,11 +3,13 @@ package lando.systems.ld42.world;
 import aurelienribon.tweenengine.Tween;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.utils.*;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.accessors.Vector2Accessor;
-import lando.systems.ld42.screens.*;
+import lando.systems.ld42.screens.GameScreen;
 import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.utils.TileUtils;
 
@@ -19,6 +21,7 @@ public class World {
 
     public Array<Tile> adjacentTiles;
     public Array<Tile> tiles;
+    public Array<Tile> animatingTiles;
     public Rectangle bounds;
     public GameScreen screen;
 
@@ -33,6 +36,7 @@ public class World {
         generateWorldTiles();
         bounds = new Rectangle(0, 0,(Tile.tileWidth) * WORLD_WIDTH * .75f, Tile.tileHeight * WORLD_HEIGHT);
 
+        animatingTiles = new Array<Tile>();
         adjacentTiles = new Array<Tile>();
         tiles.get(0).owner = Team.Type.player;
         tiles.get(tiles.size-1).owner = Team.Type.enemy;
@@ -43,6 +47,8 @@ public class World {
     }
 
     public void update(float dt){
+        animatingTiles.clear();
+
         int maxCol = 0;
         int maxRow = 0;
         enemyTileCount = 0;
@@ -53,6 +59,9 @@ public class World {
             if (t != null) {
                 if (t.dead) {
                     tiles.set(i, null);
+                }
+                if (t.animating) {
+                    animatingTiles.add(t);
                 }
                 maxCol = Math.max(maxCol, t.col);
                 maxRow = Math.max(maxRow, t.row);
@@ -70,8 +79,17 @@ public class World {
     public void render(SpriteBatch batch){
         for (int i = tiles.size-1; i >= 0; i--){
             Tile t = tiles.get(i);
-            if (t != null){
+            if (t != null && !t.animating){
                 t.render(batch);
+            }
+        }
+
+        for (int i = animatingTiles.size - 1; i >= 0; --i) {
+            Tile tile = animatingTiles.get(i);
+            if (tile == null) {
+                animatingTiles.removeIndex(i);
+            } else {
+                tile.render(batch);
             }
         }
 
