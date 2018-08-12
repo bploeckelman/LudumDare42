@@ -96,6 +96,9 @@ public abstract class Unit {
         batch.draw(keyframe, pos.x, pos.y, size.x / 2f, size.y / 2f, size.x, size.y, 1f, 1f, rotation.floatValue());
 
         batch.setColor(1f, 1f, 1f, 1f);
+        if (actionAvailable > 0) {
+            batch.draw(LudumDare42.game.assets.bootTexture, pos.x, pos.y + size.y - 20, 20, 20);
+        }
     }
 
     public void takeOverTile(Tile tile, Team.Type team) {

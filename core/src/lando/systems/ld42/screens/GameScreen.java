@@ -186,6 +186,7 @@ public class GameScreen extends BaseScreen {
                 // if no action left, next
                 if (!playerTeam.isActionLeft()) { //TODO also able to early out with a button and leave movement on the field for the turn
                     turnAction.nextTurn();
+                    playerTeam.removeLeftoverActions();
                 }
             }
         }

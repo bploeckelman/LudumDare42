@@ -82,6 +82,11 @@ public abstract class Team {
             unit.actionAvailable = unit.actionPoint;
         }
     }
+    public void removeLeftoverActions() {
+        for (Unit unit : units) {
+            unit.actionAvailable = 0;
+        }
+    }
 
     public void addUnit(Unit unit, Tile t){
         unit.shadowColor.set(this.color.cpy());
