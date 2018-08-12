@@ -9,6 +9,7 @@
     <!-- Uncomment and add entries for packages / classes that require reflection (mainly pools)
     <extend-configuration-property name="gdx.reflect.include" value="lando.systems.ld39.PACKAGE.TO.REFLECT" />
     -->
+    <extend-configuration-property name="gdx.reflect.include" value="com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion" />
 
     <collapse-all-properties />
     
