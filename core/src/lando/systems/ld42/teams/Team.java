@@ -3,10 +3,10 @@ package lando.systems.ld42.teams;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import lando.systems.ld42.units.*;
 import lando.systems.ld42.utils.TileUtils;
-import lando.systems.ld42.world.Castle;
+import lando.systems.ld42.units.PeasantUnit;
+import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
 
@@ -16,19 +16,20 @@ public abstract class Team {
 
     public Color color;
     public World world;
-    public Castle castle;
+    public Tile castleTile;
     public Array<Unit> units;
     public Type owner;
     public Array<Tile> buildSpots;
+    protected Array<Tile> neighbors;
 
     public Team(World world) {
         this.buildSpots = new Array<Tile>();
         this.world = world;
         this.units = new Array<Unit>();
+        this.neighbors = new Array<Tile>();
     }
 
     public void update(float dt) {
-        castle.update(dt);
         for (int i = units.size - 1; i >= 0; --i) {
             Unit unit = units.get(i);
             unit.update(dt);
@@ -39,28 +40,26 @@ public abstract class Team {
     }
 
     public void render(SpriteBatch batch) {
-        castle.render(batch);
         for (Unit unit : units) {
             unit.render(batch);
         }
     }
 
     public boolean canBuildPeasant(){
-        return getUnitCount(PeasantUnit.class) < getMaxPeasant();
+        return getUnitCountPeasant() < getMaxPeasant();
     }
     public boolean canBuildSoldier(){
-        return getUnitCount(SoldierUnit.class) < getTileTypeCount(Tile.Type.mountain);
+        return getUnitCountSoldier() < getTileTypeCount(Tile.Type.mountain);
     }
     public boolean canBuildArcher(){
-        return getUnitCount(ArcherUnit.class) < getTileTypeCount(Tile.Type.forest);
+        return getUnitCountArcher() < getTileTypeCount(Tile.Type.forest);
     }
     public boolean canBuildWizard(){
-        return getUnitCount(WizardUnit.class) < getTileTypeCount(Tile.Type.crystal);
+        return getUnitCountWizard() < getTileTypeCount(Tile.Type.crystal);
     }
 
-
     public boolean buildsLeft(){
-        TileUtils.getNeighbors(castle.tile, world, buildSpots);
+        TileUtils.getNeighbors(castleTile, world, buildSpots);
         boolean freeSpace = false;
         for (Tile t : buildSpots){
             if (t.occupant == null) freeSpace = true;
@@ -98,10 +97,37 @@ public abstract class Team {
 
     }
 
-    public int getUnitCount(Class unitType){
+    public int getUnitCountPeasant(){
         int count = 0;
         for (Unit u : units){
-            if (unitType.isInstance(u)){
+            if (u instanceof PeasantUnit) {
+                count++;
+            }
+        }
+        return count;
+    }
+    public int getUnitCountSoldier(){
+        int count = 0;
+        for (Unit u : units){
+            if (u instanceof SoldierUnit) {
+                count++;
+            }
+        }
+        return count;
+    }
+    public int getUnitCountArcher(){
+        int count = 0;
+        for (Unit u : units){
+            if (u instanceof ArcherUnit) {
+                count++;
+            }
+        }
+        return count;
+    }
+    public int getUnitCountWizard(){
+        int count = 0;
+        for (Unit u : units){
+            if (u instanceof WizardUnit) {
                 count++;
             }
         }
