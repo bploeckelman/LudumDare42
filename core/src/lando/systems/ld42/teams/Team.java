@@ -23,8 +23,12 @@ public abstract class Team {
 
     public void update(float dt) {
         castle.update(dt);
-        for (Unit unit : units) {
+        for (int i = units.size - 1; i >= 0; --i) {
+            Unit unit = units.get(i);
             unit.update(dt);
+            if (unit.dead) {
+                units.removeIndex(i);
+            }
         }
     }
 

@@ -141,8 +141,10 @@ public class World {
     }
 
     public void removeTile(Tile t){
+        if (t.occupant != null) {
+            t.occupant.tileGotSquanched();
+        }
         t.killTile();
-        // TODO other stuff like kill things on the tile?
     }
 
     Array<Tile> unclaimedTiles = new Array<Tile>();
@@ -175,12 +177,14 @@ public class World {
         Tween.to(t.position, Vector2Accessor.XY, 1f)
                 .target(x, y)
                 .start(LudumDare42.game.tween);
-        // TODO move units as well
         t.row = row;
         t.col = col;
         t.pickColor = TileUtils.getColorFromPosition(row, col);
         tiles.set(col + row * WORLD_WIDTH, t);
         tiles.set(oldIndex, null);
+        if (t.occupant != null) {
+            t.occupant.moveTo(t);
+        }
     }
 
     public void squishHoles(){

@@ -1,8 +1,11 @@
 package lando.systems.ld42.units;
 
 import aurelienribon.tweenengine.BaseTween;
+import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
+import aurelienribon.tweenengine.equations.Cubic;
+import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -20,6 +23,8 @@ public abstract class Unit {
 
     public Vector2 pos;
     public Vector2 size;
+    public MutableFloat alpha;
+    public MutableFloat rotation;
     public Color color;
     public Color shadowColor;
     public Tile tile;
@@ -33,11 +38,14 @@ public abstract class Unit {
     public int defensePower;
     public int actionPoint;
     public int actionAvailable;
+    public boolean dead;
 
     public Unit(Animation<TextureRegion> animation) {
         this.tile = null;
         this.pos = new Vector2();
         this.size = new Vector2();
+        this.alpha = new MutableFloat(1f);
+        this.rotation = new MutableFloat(0f);
         this.color = new Color(1f, 1f, 1f, 1f);
         this.shadowColor = new Color(0f, 0f, 0f, 0.75f);
         this.moveDuration = 0.5f;
@@ -47,8 +55,9 @@ public abstract class Unit {
         this.dropShadow = LudumDare42.game.assets.whiteCircle; // brian frowny faces at self
         this.size.set(keyframe.getRegionWidth() * scale, keyframe.getRegionHeight() * scale);
         this.actionAvailable = 0;
-        attackPower = 0;
-        defensePower = 0;
+        this.attackPower = 0;
+        this.defensePower = 0;
+        this.dead = false;
     }
 
     public void update(float dt) {
@@ -76,14 +85,35 @@ public abstract class Unit {
     }
 
     public void render(SpriteBatch batch) {
-        batch.setColor(shadowColor);
+        batch.setColor(shadowColor.r, shadowColor.b, shadowColor.b, alpha.floatValue());
         batch.draw(dropShadow, pos.x, pos.y, size.x, size.y);
 
-        float offset = 1.5f * scale;
-        batch.setColor(color);
-        batch.draw(keyframe, pos.x, pos.y + offset, size.x, size.y);
+        batch.setColor(color.r, color.g, color.b, alpha.floatValue());
+        batch.draw(keyframe, pos.x, pos.y, size.x / 2f, size.y / 2f, size.x, size.y, 1f, 1f, rotation.floatValue());
 
         batch.setColor(1f, 1f, 1f, 1f);
+    }
+
+    public void tileGotSquanched() {
+        // TODO: kick off a particle effect
+        float peak = pos.y + 100f;
+        float trough = pos.y - 50f;
+        Timeline.createSequence()
+                .push(Tween.to(pos, Vector2Accessor.Y, 0.5f).target(peak))
+                .pushPause(0.1f)
+                .push(
+                        Timeline.createParallel()
+                              .push(Tween.to(pos, Vector2Accessor.Y, 0.75f).target(trough))
+                              .push(Tween.to(alpha, -1, 0.75f).target(0f))
+                              .push(Tween.to(rotation, -1, 0.75f).target(-360f * 4f).ease(Cubic.IN))
+                )
+                .setCallback(new TweenCallback() {
+                    @Override
+                    public void onEvent(int i, BaseTween<?> baseTween) {
+                        dead = true;
+                    }
+                })
+                .start(LudumDare42.game.tween);
     }
 
 }
