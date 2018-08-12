@@ -26,6 +26,7 @@ import lando.systems.ld42.particles.ParticleSystem;
 import lando.systems.ld42.teams.EnemyTeam;
 import lando.systems.ld42.teams.PlayerTeam;
 import lando.systems.ld42.teams.Team;
+import lando.systems.ld42.turns.EnemyAI;
 import lando.systems.ld42.turns.Turn;
 import lando.systems.ld42.turns.TurnAction;
 import lando.systems.ld42.ui.Button;
@@ -68,6 +69,7 @@ public class GameScreen extends BaseScreen {
     private TextureRegion pickRegion;
     private float accum;
 
+    public EnemyAI enemyAI;
     public ParticleSystem particleSystem;
 
     public GameScreen() {
@@ -108,6 +110,7 @@ public class GameScreen extends BaseScreen {
         this.endPhaseButton = new Button(LudumDare42.game.assets.whiteCircle, new Rectangle(690, 30, 50, 50), hudCamera);
         this.selectedUnitTile = playerTeam.castleTile;
 
+        enemyAI = new EnemyAI(world, this);
         initializeUserInterface();
     }
 
@@ -128,16 +131,17 @@ public class GameScreen extends BaseScreen {
         particleSystem.update(dt);
 
         if (turnAction.turn == Turn.ENEMY) {
-            dumbAIMovement();
-            turnAction.nextTurn();
-            selectedUnitTile = playerTeam.castleTile;
-            turnNumber++;
-            world.pickRemoveTileCleverly();
-            if (turnNumber % 8 == 0) {
-                world.squishHoles();
-                shaker.shakeDuration = 25f;
-                shaker.shake(2f);
-            }
+            enemyAI.update(dt);
+//            dumbAIMovement();
+//            turnAction.nextTurn();
+//            selectedUnitTile = playerTeam.castleTile;
+//            turnNumber++;
+//            world.pickRemoveTileCleverly();
+//            if (turnNumber % 8 == 0) {
+//                world.squishHoles();
+//                shaker.shakeDuration = 25f;
+//                shaker.shake(2f);
+//            }
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.Y)){
@@ -253,7 +257,7 @@ public class GameScreen extends BaseScreen {
 
         }
 
-        String turnText;
+        String turnText = "";
 
         if (turnAction.turn == Turn.PLAYER_RECRUITMENT) {
             turnText = "Player's Recruitment Turn " + turnNumber;
@@ -261,7 +265,25 @@ public class GameScreen extends BaseScreen {
         else if (turnAction.turn == Turn.PLAYER_ACTION) {
             turnText = "Player's Action Turn " + turnNumber;
         } else {
-            turnText = "Enemy's Turn " + turnNumber;
+            switch(enemyAI.phase){
+
+                case Recruit:
+                    turnText = "Enemy's Recruitment Turn " + turnNumber;
+                    break;
+                case Move:
+                    turnText = "Enemy's Move Turn " + turnNumber;
+                    break;
+                case RemoveTile:
+                    turnText = "The world is crumbling";
+                    break;
+                case Squish:
+                    turnText = "Heal the world";
+                    break;
+                case Finish:
+                    turnText = "Reticulating Spines";
+                    break;
+            }
+
         }
         Assets.drawString(batch, turnText, 0, 30, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
 
