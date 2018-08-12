@@ -74,6 +74,7 @@ public class Assets implements Disposable {
     public Animation<TextureRegion> unitAnimationPeasant;
     public Animation<TextureRegion> unitAnimationSoldier;
     public Animation<TextureRegion> unitAnimationArcher;
+    public Animation<TextureRegion> unitAnimationWizard;
 
     public static BitmapFont font;
     public ShaderProgram fontShader;
@@ -164,9 +165,11 @@ public class Assets implements Disposable {
         Array<TextureAtlas.AtlasRegion> peasant = atlas.findRegions("unit-peasant");
         Array<TextureAtlas.AtlasRegion> soldier = atlas.findRegions("unit-soldier");
         Array<TextureAtlas.AtlasRegion> archer = atlas.findRegions("unit-archer");
+        Array<TextureAtlas.AtlasRegion> wizard = atlas.findRegions("unit-wizard");
         unitAnimationPeasant = new Animation<TextureRegion>(0.33f, peasant, Animation.PlayMode.LOOP);
         unitAnimationSoldier = new Animation<TextureRegion>(0.33f, soldier, Animation.PlayMode.LOOP);
         unitAnimationArcher = new Animation<TextureRegion>(0.33f, archer, Animation.PlayMode.LOOP);
+        unitAnimationWizard = new Animation<TextureRegion>(0.33f, wizard, Animation.PlayMode.LOOP);
 
         titleTexture = mgr.get(titleTextureAsset);
 
