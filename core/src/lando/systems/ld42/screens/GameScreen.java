@@ -5,23 +5,20 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-import lando.systems.ld42.Assets;
 import lando.systems.ld42.Config;
-import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.teams.EnemyTeam;
 import lando.systems.ld42.teams.PlayerTeam;
 import lando.systems.ld42.teams.Team;
+import lando.systems.ld42.turns.Turn;
 import lando.systems.ld42.turns.TurnAction;
 import lando.systems.ld42.ui.Tooltip;
 import lando.systems.ld42.units.Unit;
@@ -29,41 +26,29 @@ import lando.systems.ld42.utils.Screenshake;
 import lando.systems.ld42.utils.TileUtils;
 import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
-
-import static com.badlogic.gdx.Gdx.input;
 
 public class GameScreen extends BaseScreen {
     public World world;
     public Array<Tile> adjacentTiles;
     public Array<Tile> adjacentBuildTiles;
-
     public PlayerTeam playerTeam;
     public EnemyTeam enemyTeam;
-
     public Tile selectedUnitTile;
-
     public float time;
     public TurnAction turnAction;
     public int turnNumber;
-
     public Vector3 cameraTouchStart;
     public Vector3 touchStart;
-
-    public boolean firstRun = false;
-
     public MutableFloat overlayAlpha;
     public boolean pauseGame;
     public boolean gameOver;
-    public boolean gameLost;
+    public boolean transitioning;
     public Vector2 cameraCenter;
-
     public Pixmap pickPixmap;
     public Color pickColor;
     public PlayerHUD hud;
     public Tooltip tooltip;
     public Screenshake shaker;
-
     public int pickMapScale = 8;
     private FrameBuffer pickBuffer;
     private TextureRegion pickRegion;
@@ -72,109 +57,93 @@ public class GameScreen extends BaseScreen {
     public GameScreen() {
         super();
  //       SoundManager.oceanWaves.play();
-        cameraCenter = new Vector2();
-        gameOver = false;
-        overlayAlpha = new MutableFloat(1);
-        pauseGame = true;
-        time = 0;
-        world = new World(this);
-        cameraTargetPos.set(world.bounds.width/2f, world.bounds.height/2f, 0);
-        worldCamera.position.set(cameraTargetPos);
-        targetZoom.setValue(MAX_ZOOM);
-        worldCamera.zoom = targetZoom.floatValue();
-        worldCamera.update();
-        adjacentTiles = new Array<Tile>();
-        adjacentBuildTiles = new Array<Tile>();
-        turnNumber = 1;
-        turnAction = new TurnAction();
-        tooltip = new Tooltip();
-        shaker = new Screenshake(120, 3);
-
-
-        cameraTouchStart = new Vector3();
-        touchStart = new Vector3();
-
-        playerTeam = new PlayerTeam(world, assets);
-        enemyTeam = new EnemyTeam(world, assets);
-
-        hud = new PlayerHUD(this);
-        pickBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int)worldCamera.viewportWidth / pickMapScale, (int)worldCamera.viewportHeight / pickMapScale, false, false);
-        pickRegion = new TextureRegion(pickBuffer.getColorBufferTexture());
-        pickRegion.flip(false, true);
-        pickPixmap = null;
-        pickColor = new Color();
+        this.cameraCenter = new Vector2();
+        this.gameOver = false;
+        this.overlayAlpha = new MutableFloat(1);
+        this.pauseGame = true;
+        this.transitioning = true;
+        this.time = 0;
+        this.world = new World(this);
+        this.cameraTargetPos.set(world.bounds.width/2f, world.bounds.height/2f, 0);
+        this.worldCamera.position.set(cameraTargetPos);
+        this.targetZoom.setValue(MAX_ZOOM);
+        this.worldCamera.zoom = targetZoom.floatValue();
+        this.worldCamera.update();
+        this.adjacentTiles = new Array<Tile>();
+        this.adjacentBuildTiles = new Array<Tile>();
+        this.turnNumber = 1;
+        this.turnAction = new TurnAction();
+        this.tooltip = new Tooltip();
+        this.shaker = new Screenshake(120, 3);
+        this.cameraTouchStart = new Vector3();
+        this.touchStart = new Vector3();
+        this.playerTeam = new PlayerTeam(world, assets);
+        this.enemyTeam = new EnemyTeam(world, assets);
+        this.hud = new PlayerHUD(this);
+        this.pickBuffer = new FrameBuffer(Pixmap.Format.RGBA8888,
+                                          (int) worldCamera.viewportWidth / pickMapScale,
+                                          (int) worldCamera.viewportHeight / pickMapScale,
+                                          false, false);
+        this.pickRegion = new TextureRegion(pickBuffer.getColorBufferTexture());
+        this.pickRegion.flip(false, true);
+        this.pickPixmap = null;
+        this.pickColor = new Color();
     }
 
     @Override
     public void update(float dt) {
         accum += dt;
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
-            if (turnAction.turn == turnAction.turn.ENEMY) {
+            if (turnAction.turn == Turn.ENEMY) {
                 turnNumber++;
             }
             turnAction.doAction();
         }
 
-        if (Gdx.input.justTouched()) {
-            if (pickPixmap != null){
-                Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
-                if (t != null && t.occupant == null && selectedUnitTile != null && adjacentTiles.contains(t, true)) {
-                    selectedUnitTile.occupant.moveTo(t);
-                    selectedUnitTile = null;
-                }
-                else if (t != null && t.occupant != null && t.occupant.team.getClass() == PlayerTeam.class) {
-                    selectedUnitTile = t;
-                } else {
-                    selectedUnitTile = null;
-                }
+        if (Gdx.input.justTouched() && !transitioning) {
+            Tile touchedTile = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
+            if (touchedTile != null && touchedTile.occupant == null && selectedUnitTile != null && adjacentTiles.contains(touchedTile, true)) {
+                selectedUnitTile.occupant.moveTo(touchedTile);
+                selectedUnitTile = null;
+            } else if (touchedTile != null && touchedTile.occupant != null && touchedTile.occupant.team.getClass() == PlayerTeam.class) {
+                selectedUnitTile = touchedTile;
+            } else {
+                selectedUnitTile = null;
             }
         }
 
-        // TODO: removeme, just for testing
-//        if (Gdx.input.justTouched()) {
-//            Array<Unit> units = MathUtils.randomBoolean() ? playerTeam.units : enemyTeam.units;
-//            Unit testUnit = units.get(MathUtils.random(0, units.size - 1));
-//            int currCol = testUnit.tile.col;
-//            int currRow = testUnit.tile.row;
-//            int nextCol = currCol;
-//            int nextRow = currRow;
-//            boolean moveCol = MathUtils.randomBoolean();
-//            if (moveCol) {
-//                nextCol = MathUtils.clamp(currCol + MathUtils.randomSign(), 0, World.WORLD_WIDTH - 1);
-//            } else {
-//                nextRow = MathUtils.clamp(currRow + MathUtils.randomSign(), 0, World.WORLD_HEIGHT - 1);
-//            }
-//            Gdx.app.log("MOVE", "(" + currCol + ", " + currRow + ") -> (" + nextCol + ", " + nextRow + ")");
-//            testUnit.moveTo(world.getTile(nextCol, nextRow));
-//        }
         if (Gdx.input.isKeyJustPressed(Input.Keys.Y)){
             world.pickRemoveTile();
         }
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)){
             shaker.shakeDuration = 25f;
             shaker.shake(2f);
             world.squishHoles();
         }
 
-
         time += dt;
+
         world.update(dt);
         playerTeam.update(dt);
         enemyTeam.update(dt);
         hud.update(dt);
+
         updateCamera();
         targetZoom.setValue(Math.max(world.bounds.width / worldCamera.viewportWidth, world.bounds.height / worldCamera.viewportHeight));
         cameraTargetPos.set(world.bounds.width/2, world.bounds.height/2, 0);
         shaker.update(dt, worldCamera, worldCamera.position.x, worldCamera.position.y);
     }
 
-
     @Override
     public void render(SpriteBatch batch, boolean inTransition) {
+        transitioning = inTransition;
+
         // Draw picking frame buffer
         if (!inTransition) {
             batch.setProjectionMatrix(worldCamera.combined);
@@ -208,23 +177,18 @@ public class GameScreen extends BaseScreen {
         batch.setProjectionMatrix(worldCamera.combined);
         batch.begin();
         {
-
             world.render(batch);
+
             playerTeam.render(batch);
             enemyTeam.render(batch);
 
-            if (pickPixmap != null) {
-                Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
-                if (t != null) {
-//                    t.renderHightlight(batch, Color.YELLOW);
-//                    TileUtils.getNeighbors(t, world, adjacentTiles);
-//                    for (Tile a : adjacentTiles) {
-//                        a.renderHightlight(batch, Color.BLUE);
-//                    }
-                    if (t.owner == Team.Type.player) {
-                        calculateInformationForPlayerTile(adjacentTiles, t);
-                    } else if (t.owner == Team.Type.enemy) {
-                        calculateInformationForEnemyTile(adjacentTiles, t);
+            if (!transitioning) {
+                Tile touchedTile = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
+                if (touchedTile != null) {
+                    if (touchedTile.owner == Team.Type.player) {
+                        calculateInformationForPlayerTile(adjacentTiles, touchedTile);
+                    } else if (touchedTile.owner == Team.Type.enemy) {
+                        calculateInformationForEnemyTile(adjacentTiles, touchedTile);
                     } else {
                         tooltip.text = null;
                     }
@@ -232,24 +196,14 @@ public class GameScreen extends BaseScreen {
                     tooltip.text = null;
                 }
             }
+
             if (selectedUnitTile != null) {
-                selectedUnitTile.renderHightlight(batch, Color.YELLOW);
+                selectedUnitTile.renderHighlight(batch, Color.YELLOW);
                 TileUtils.getNeighbors(selectedUnitTile, world, adjacentTiles);
-                for (Tile a : adjacentTiles){
-                    a.renderHightlight(batch, Color.BLUE);
+                for (Tile adjacentTile : adjacentTiles){
+                    adjacentTile.renderHighlight(batch, Color.BLUE);
                 }
             }
-
-//            if (pickPixmap != null){
-//                Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
-//                if (t != null) {
-//                    t.renderHightlight(batch, Color.YELLOW);
-//                    TileUtils.getNeighbors(t, world, adjacentTiles);
-//                    for (Tile a : adjacentTiles){
-//                        a.renderHightlight(batch, Color.BLUE);
-//                    }
-//                }
-//            }
         }
         batch.end();
 
@@ -258,14 +212,18 @@ public class GameScreen extends BaseScreen {
         {
             batch.setColor(Color.WHITE);
             hud.render(batch, inTransition);
+
             if (tooltip != null) {
                 tooltip.render(batch, hudCamera);
             }
-//            batch.draw(pickRegion, 0, 0, 100, 80);
+
+            if (Config.debug) {
+                batch.draw(pickRegion, 0, 0, 100, 80);
+            }
         }
 
         String turnText;
-        if (turnAction.turn == turnAction.turn.PLAYER) {
+        if (turnAction.turn == Turn.PLAYER) {
             turnText = "Player's Turn " + turnNumber;
         } else {
             turnText = "Enemy's Turn " + turnNumber;
@@ -275,7 +233,7 @@ public class GameScreen extends BaseScreen {
         batch.end();
     }
 
-    public void calculateInformationForPlayerTile(Array<Tile> neighbors, Tile currentTile) {
+    private void calculateInformationForPlayerTile(Array<Tile> neighbors, Tile currentTile) {
         if (neighbors == null || currentTile == null) return;
 
         int playerDefense = calculateDefense(neighbors, currentTile, playerTeam.units);
@@ -285,7 +243,7 @@ public class GameScreen extends BaseScreen {
         tooltip.setText(str);
     }
 
-    public void calculateInformationForEnemyTile(Array<Tile> neighbors, Tile currentTile) {
+    private void calculateInformationForEnemyTile(Array<Tile> neighbors, Tile currentTile) {
         if (neighbors == null || currentTile == null) return;
 
         int enemyDefense = calculateDefense(neighbors, currentTile, enemyTeam.units);
@@ -295,7 +253,7 @@ public class GameScreen extends BaseScreen {
         tooltip.setText(str);
     }
 
-    public int calculateDefense(Array<Tile> neighbors, Tile currentTile, Array<Unit> units) {
+    private int calculateDefense(Array<Tile> neighbors, Tile currentTile, Array<Unit> units) {
         int defense = 0;
         for (Unit unit : units) {
             if (unit.tile != null) {
@@ -312,7 +270,7 @@ public class GameScreen extends BaseScreen {
         return defense;
     }
 
-    public int calculateAttack(Array<Tile> neighbors, Array<Unit> units) {
+    private int calculateAttack(Array<Tile> neighbors, Array<Unit> units) {
         int attack = 0;
         for (Unit unit : units) {
             if (unit.tile != null) {
@@ -326,26 +284,28 @@ public class GameScreen extends BaseScreen {
         return attack;
     }
 
-    // required Konami code
-    int[] sequence = new int [] { Input.Keys.UP, Input.Keys.UP, Input.Keys.DOWN, Input.Keys.DOWN, Input.Keys.LEFT, Input.Keys.RIGHT, Input.Keys.LEFT, Input.Keys.RIGHT, Input.Keys.B, Input.Keys.A};
-    int index = 0;
-    public boolean keyUp(int keyCode) {
-        if (index >= sequence.length) index = 0;
-        if (sequence[index] == keyCode) {
-            if (++index == sequence.length) {
-                // insert magic here
-                index = 0;
-            }
-        } else {
-            index = 0;
-        }
-        return false;
-    }
-
-    Vector3 tempVec3 = new Vector3();
-    public Tile getTileFromScreen(int screenX, int screenY) {
+    private Vector3 tempVec3 = new Vector3();
+    private Tile getTileFromScreen(int screenX, int screenY) {
         hudCamera.unproject(tempVec3.set(screenX, screenY, 0));
         pickColor.set(pickPixmap.getPixel((int)(tempVec3.x / pickMapScale), (int)(tempVec3.y / pickMapScale)));
         return TileUtils.parsePickColorForTileInWorld(pickColor, world);
     }
+
+//    // required Konami code
+//    private int[] sequence = new int [] { Input.Keys.UP, Input.Keys.UP, Input.Keys.DOWN, Input.Keys.DOWN, Input.Keys.LEFT, Input.Keys.RIGHT, Input.Keys.LEFT, Input.Keys.RIGHT, Input.Keys.B, Input.Keys.A};
+//    private int index = 0;
+//    @Override
+//    public boolean keyUp(int keyCode) {
+//        if (index >= sequence.length) index = 0;
+//        if (sequence[index] == keyCode) {
+//            if (++index == sequence.length) {
+//                // insert magic here
+//                index = 0;
+//            }
+//        } else {
+//            index = 0;
+//        }
+//        return false;
+//    }
+
 }

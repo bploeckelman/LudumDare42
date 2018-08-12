@@ -108,7 +108,7 @@ public class Tile {
         batch.draw(LudumDare42.game.assets.whiteHex, position.x, position.y, tileWidth, tileHeight);
     }
 
-    public void renderHightlight(SpriteBatch batch, Color c){
+    public void renderHighlight(SpriteBatch batch, Color c){
         batch.setColor(c.r, c.g, c.b, alpha.floatValue());
         batch.draw(LudumDare42.game.assets.highlightHex, position.x, position.y, tileWidth, tileHeight);
     }
