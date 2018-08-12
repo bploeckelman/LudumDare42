@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -15,17 +16,23 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
+import lando.systems.ld42.Assets;
 import lando.systems.ld42.Config;
+import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.teams.EnemyTeam;
 import lando.systems.ld42.teams.PlayerTeam;
+import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.turns.TurnAction;
+import lando.systems.ld42.ui.Tooltip;
 import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.utils.TileUtils;
 import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
+
+import static com.badlogic.gdx.Gdx.input;
 
 public class GameScreen extends BaseScreen {
-
     public World world;
     public Array<Tile> adjacentTiles;
     public Array<Tile> adjacentBuildTiles;
@@ -50,6 +57,7 @@ public class GameScreen extends BaseScreen {
     public Pixmap pickPixmap;
     public Color pickColor;
     public PlayerHUD hud;
+    public Tooltip tooltip;
 
     public int pickMapScale = 8;
     private FrameBuffer pickBuffer;
@@ -73,6 +81,7 @@ public class GameScreen extends BaseScreen {
         adjacentTiles = new Array<Tile>();
         adjacentBuildTiles = new Array<Tile>();
         turnAction = new TurnAction();
+        tooltip = new Tooltip();
 
         cameraTouchStart = new Vector3();
         touchStart = new Vector3();
@@ -186,6 +195,15 @@ public class GameScreen extends BaseScreen {
                     for (Tile a : adjacentTiles){
                         a.renderHightlight(batch, Color.BLUE);
                     }
+                    if (t.owner == 1) {
+                        calculateInformationForPlayerTile(adjacentTiles, t);
+                    } else if (t.owner == 2) {
+                        calculateInformationForEnemyTile(adjacentTiles, t);
+                    } else {
+                        tooltip.text = null;
+                    }
+                } else {
+                    tooltip.text = null;
                 }
             }
         }
@@ -196,6 +214,9 @@ public class GameScreen extends BaseScreen {
         {
             batch.setColor(Color.WHITE);
             hud.render(batch, inTransition);
+            if (tooltip != null) {
+                tooltip.render(batch, hudCamera);
+            }
 //            batch.draw(pickRegion, 0, 0, 100, 80);
         }
         String turnText;
@@ -207,6 +228,57 @@ public class GameScreen extends BaseScreen {
 
         lando.systems.ld42.Assets.drawString(batch, turnText, 0, 30, Color.BLACK, .5f, lando.systems.ld42.Assets.font, Config.window_width, Align.center);
         batch.end();
+    }
+
+    public void calculateInformationForPlayerTile(Array<Tile> neighbors, Tile currentTile) {
+        if (neighbors == null || currentTile == null) return;
+
+        int playerDefense = calculateDefense(neighbors, currentTile, playerTeam.units);
+        int enemyAttack = calculateAttack(neighbors, enemyTeam.units);
+
+        String str = "Player Defense: " + playerDefense + "\nEnemy Attack: " + enemyAttack;
+        tooltip.setText(str);
+    }
+
+    public void calculateInformationForEnemyTile(Array<Tile> neighbors, Tile currentTile) {
+        if (neighbors == null || currentTile == null) return;
+
+        int enemyDefense = calculateDefense(neighbors, currentTile, enemyTeam.units);
+        int playerAttack = calculateAttack(neighbors, playerTeam.units);
+
+        String str = "Enemy Defense: " + enemyDefense + "\nPlayer Attack: " + playerAttack;
+        tooltip.setText(str);
+    }
+
+    public int calculateDefense(Array<Tile> neighbors, Tile currentTile, Array<Unit> units) {
+        int defense = 0;
+        for (Unit unit : units) {
+            if (unit.tile != null) {
+                for (Tile tile : neighbors) {
+                    if (tile.position == unit.tile.position) {
+                        defense += unit.defensePower;
+                    }
+                }
+                if (unit.tile.position == currentTile.position) {
+                    defense += unit.defensePower;
+                }
+            }
+        }
+        return defense;
+    }
+
+    public int calculateAttack(Array<Tile> neighbors, Array<Unit> units) {
+        int attack = 0;
+        for (Unit unit : units) {
+            if (unit.tile != null) {
+                for (Tile tile : neighbors) {
+                    if (tile.position == unit.tile.position) {
+                        attack += unit.attackPower;
+                    }
+                }
+            }
+        }
+        return attack;
     }
 
     // required Konami code

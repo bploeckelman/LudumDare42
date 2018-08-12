@@ -27,6 +27,8 @@ public abstract class Unit {
     public TextureRegion keyframe;
     public TextureRegion dropShadow;
     public Animation<TextureRegion> animation;
+    public int attackPower;
+    public int defensePower;
 
     public Unit(Animation<TextureRegion> animation) {
         this.tile = null;
@@ -40,6 +42,8 @@ public abstract class Unit {
         this.keyframe = animation.getKeyFrame(animTime);
         this.dropShadow = LudumDare42.game.assets.whiteCircle; // brian frowny faces at self
         this.size.set(keyframe.getRegionWidth() * scale, keyframe.getRegionHeight() * scale);
+        attackPower = 0;
+        defensePower = 0;
     }
 
     public void update(float dt) {

@@ -92,6 +92,7 @@ public class Assets implements Disposable {
     public ShaderProgram waterShader;
 
     public ShaderProgram cloudShader;
+    public static NinePatch tooltipNinePatch;
 
     public boolean initialized;
 
@@ -140,6 +141,7 @@ public class Assets implements Disposable {
 
         // Cache TextureRegions from TextureAtlas in fields for quicker access
         atlas = mgr.get(atlasAsset);
+        tooltipNinePatch = new NinePatch(atlas.findRegion("tooltip-ninepatch"), 10, 10, 10, 10);
         testTexture = atlas.findRegion("badlogic");
 
         whitePixel = atlas.findRegion("white-pixel");
