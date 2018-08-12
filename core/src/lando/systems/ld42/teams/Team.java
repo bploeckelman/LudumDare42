@@ -14,6 +14,8 @@ public abstract class Team {
 
     public enum Type { none, enemy, player }
 
+    public static int maxOfUnitType = 4;
+
     public Color color;
     public World world;
     public Tile castleTile;
@@ -157,7 +159,7 @@ public abstract class Team {
     }
 
     public int getMaxPeasant(){
-        return getTileTotalCount() /4;
+        return Math.min((getTileTotalCount() /6) + 1, maxOfUnitType); // always be able to have at least one peasant
     }
 
 }

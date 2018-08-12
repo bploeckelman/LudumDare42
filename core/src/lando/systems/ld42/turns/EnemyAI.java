@@ -5,19 +5,22 @@ import com.badlogic.gdx.utils.Array;
 import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.screens.GameScreen;
 import lando.systems.ld42.teams.EnemyTeam;
-import lando.systems.ld42.units.ArcherUnit;
-import lando.systems.ld42.units.PeasantUnit;
-import lando.systems.ld42.units.SoldierUnit;
-import lando.systems.ld42.units.WizardUnit;
+import lando.systems.ld42.teams.Team;
+import lando.systems.ld42.units.*;
 import lando.systems.ld42.utils.TileUtils;
 import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
+
+import java.util.Collections;
 
 public class EnemyAI {
 
     public enum Phase {Recruit, Move, RemoveTile, Squish, Finish}
 
+    public static int turnsPerSquanch = 6;
+
     private Array<Tile> neighbors;
+    private Array<Tile> tempTileArray;
     public World world;
     public GameScreen screen;
     private float delay = 1f;
@@ -26,6 +29,7 @@ public class EnemyAI {
 
     public EnemyAI(World world, GameScreen screen){
         this.neighbors = new Array<Tile>();
+        this.tempTileArray = new Array<Tile>();
         this.world = world;
         this.screen = screen;
         phase = Phase.Recruit;
@@ -37,7 +41,7 @@ public class EnemyAI {
         delay -= dt;
 
         if (delay <= 0){
-            delay = 2f;
+            delay = 1f;
             switch (phase){
 
                 case Recruit:
@@ -71,37 +75,129 @@ public class EnemyAI {
         }
 
         while (neighbors.size > 0 && (enemyTeam.canBuildPeasant() || enemyTeam.canBuildSoldier() || enemyTeam.canBuildArcher() || enemyTeam.canBuildWizard())){
+            Tile buildTile = neighbors.get(MathUtils.random(neighbors.size-1));
             if (enemyTeam.canBuildWizard()){
-                enemyTeam.addUnit(new WizardUnit(LudumDare42.game.assets), neighbors.get(MathUtils.random(neighbors.size-1)));
+                enemyTeam.addUnit(new WizardUnit(LudumDare42.game.assets), buildTile);
+                neighbors.removeValue(buildTile, true);
+                continue;
             }
             if (enemyTeam.canBuildArcher()){
-                enemyTeam.addUnit(new ArcherUnit(LudumDare42.game.assets), neighbors.get(MathUtils.random(neighbors.size-1)));
+                enemyTeam.addUnit(new ArcherUnit(LudumDare42.game.assets), buildTile);
+                neighbors.removeValue(buildTile, true);
+                continue;
             }
             if (enemyTeam.canBuildSoldier()){
-                enemyTeam.addUnit(new SoldierUnit(LudumDare42.game.assets), neighbors.get(MathUtils.random(neighbors.size-1)));
+                enemyTeam.addUnit(new SoldierUnit(LudumDare42.game.assets), buildTile);
+                neighbors.removeValue(buildTile, true);
+                continue;
             }
             if (enemyTeam.canBuildPeasant()){
-                enemyTeam.addUnit(new PeasantUnit(LudumDare42.game.assets), neighbors.get(MathUtils.random(neighbors.size-1)));
+                enemyTeam.addUnit(new PeasantUnit(LudumDare42.game.assets), buildTile);
+                neighbors.removeValue(buildTile, true);
+                continue;
             }
         }
+        enemyTeam.replenishAction();
 
     }
 
     private void doMove(){
-        // Try to attack smartly
+        for (Unit unit : enemyTeam.units){
+            if (unit.actionAvailable <= 0) continue;
+            TileUtils.getNeighbors(unit.tile, world, neighbors);
 
-        // Try to gain resources
+            // Try to attack smartly
+            if(tryToAttack(unit)) return;
 
-        // Try to gain more land
+            // Try to gain resources
+            if(tryToGetResource(unit)) return;
 
+            // Try to gain more land
+            if (tryToGetMoreLand(unit)) return;
+
+            // Move towards the enemy
+            if (tryToMoveTowardsCastle(unit)) return;
+
+            // RandomWander
+            if (tryRandomWander(unit)) return;
+        }
+
+        delay = Unit.moveDuration + .5f;
         phase = Phase.RemoveTile;
+
+    }
+
+    private boolean tryToAttack(Unit unit){
+        return false;
+    }
+
+    private boolean tryToGetResource(Unit unit){
+        tempTileArray.clear();
+        for (Tile t : neighbors){
+            if (t.type != Tile.Type.none && t.owner != Team.Type.enemy && t.occupant == null){
+                tempTileArray.add(t);
+            }
+        }
+        if (tempTileArray.size > 0){
+            moveUnit(unit, tempTileArray.random());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean tryToGetMoreLand(Unit unit) {
+        tempTileArray.clear();
+        for (Tile t : neighbors){
+            if (t.owner != Team.Type.enemy && t.occupant == null){
+                tempTileArray.add(t);
+            }
+        }
+        if (tempTileArray.size > 0){
+            moveUnit(unit, tempTileArray.random());
+            return true;
+        }
+        return false;
+    }
+    private boolean tryToMoveTowardsCastle(Unit unit){
+        tempTileArray.clear();
+        for (Tile t : neighbors){
+            if (t.col < unit.tile.col && t.occupant == null){
+                tempTileArray.add(t);
+            }
+        }
+        if (tempTileArray.size > 0){
+            moveUnit(unit, tempTileArray.random());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean tryRandomWander(Unit unit) {
+        tempTileArray.clear();
+        for (Tile t : neighbors){
+            if (t.occupant == null){
+                tempTileArray.add(t);
+            }
+        }
+        if (tempTileArray.size > 0){
+            moveUnit(unit, tempTileArray.random());
+            return true;
+        }
+        return false;
+    }
+
+    private void moveUnit(Unit u, Tile t){
+        u.moveTo(t);
+        u.actionAvailable--;
+        delay = Unit.moveDuration + .1f; // This needs to be longer than the tween, so the new tile is occupied
 
     }
 
     private void doRemoveTile(){
         screen.turnNumber++;
+        delay = 4f;
         world.pickRemoveTileCleverly();
-        if (screen.turnNumber % 8 == 0){
+        if (screen.turnNumber % turnsPerSquanch == 0){
             phase = Phase.Squish;
         } else {
             phase = Phase.Finish;

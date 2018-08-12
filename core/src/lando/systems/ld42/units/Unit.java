@@ -22,6 +22,7 @@ import lando.systems.ld42.world.Tile;
 public abstract class Unit {
 
     protected static float scale = 4f;
+    public static float moveDuration = .5f;
 
     public Vector2 pos;
     public Vector2 size;
@@ -30,7 +31,6 @@ public abstract class Unit {
     public Color shadowColor;
     public Tile tile;
     public Team.Type team;
-    public float moveDuration;
     public float animTime;
     public TextureRegion keyframe;
     public TextureRegion dropShadow;
@@ -48,7 +48,6 @@ public abstract class Unit {
         this.rotation = new MutableFloat(0f);
         this.color = new Color(1f, 1f, 1f, 1f);
         this.shadowColor = new Color(0f, 0f, 0f, 0.75f);
-        this.moveDuration = 1f;
         this.animTime = 0f;
         this.animation = animation;
         this.keyframe = animation.getKeyFrame(animTime);
