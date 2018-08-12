@@ -118,7 +118,7 @@ public class GameScreen extends BaseScreen {
                     selectedUnitTile.occupant.actionAvailable--;
                     selectedUnitTile = null;
                 }
-                else if (t != null && t.occupant != null && t.occupant.team.getClass() == PlayerTeam.class) {
+                else if (t != null && t.occupant != null && t.occupant.team.getClass() == PlayerTeam.class && t.occupant.actionAvailable > 0) {
                     selectedUnitTile = t;
                 } else {
                     selectedUnitTile = null;
