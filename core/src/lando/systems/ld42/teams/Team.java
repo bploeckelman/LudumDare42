@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import lando.systems.ld42.units.*;
+import lando.systems.ld42.utils.TileUtils;
 import lando.systems.ld42.world.Castle;
 import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
@@ -18,8 +19,10 @@ public abstract class Team {
     public Castle castle;
     public Array<Unit> units;
     public Type owner;
+    public Array<Tile> buildSpots;
 
     public Team(World world) {
+        this.buildSpots = new Array<Tile>();
         this.world = world;
         this.units = new Array<Unit>();
     }
@@ -46,18 +49,23 @@ public abstract class Team {
         return getUnitCount(PeasantUnit.class) < getMaxPeasant();
     }
     public boolean canBuildSoldier(){
-        return getUnitCount(SoldierUnit.class) < getTileTypeCount(Tile.TileType.mountain);
+        return getUnitCount(SoldierUnit.class) < getTileTypeCount(Tile.Type.mountain);
     }
     public boolean canBuildArcher(){
-        return getUnitCount(ArcherUnit.class) < getTileTypeCount(Tile.TileType.forest);
+        return getUnitCount(ArcherUnit.class) < getTileTypeCount(Tile.Type.forest);
     }
     public boolean canBuildWizard(){
-        return getUnitCount(WizardUnit.class) < getTileTypeCount(Tile.TileType.crystal);
+        return getUnitCount(WizardUnit.class) < getTileTypeCount(Tile.Type.crystal);
     }
 
 
     public boolean buildsLeft(){
-        return canBuildPeasant() || canBuildSoldier() || canBuildArcher() || canBuildWizard();
+        TileUtils.getNeighbors(castle.tile, world, buildSpots);
+        boolean freeSpace = false;
+        for (Tile t : buildSpots){
+            if (t.occupant == null) freeSpace = true;
+        }
+        return freeSpace && (canBuildPeasant() || canBuildSoldier() || canBuildArcher() || canBuildWizard());
     }
 
     public boolean isActionLeft() {
@@ -95,7 +103,7 @@ public abstract class Team {
         return count;
     }
 
-    public int getTileTypeCount(Tile.TileType type){
+    public int getTileTypeCount(Tile.Type type){
         int count = 0;
         for (Tile tile : world.tiles){
             if (tile != null && tile.owner == this.owner && tile.type == type){
