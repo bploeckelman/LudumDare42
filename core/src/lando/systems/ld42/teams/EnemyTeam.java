@@ -33,6 +33,7 @@ public class EnemyTeam extends Team {
         for (Unit unit : units) {
             unit.shadowColor.set(this.color.cpy());
             unit.shadowColor.a = 0.75f;
+            unit.team = this;
         }
 
         this.castle = new Castle(assets, Type.enemy, world.getTile(World.WORLD_WIDTH - 1, World.WORLD_HEIGHT / 2));

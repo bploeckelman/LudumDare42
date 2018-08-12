@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.accessors.Vector2Accessor;
+import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.utils.TileUtils;
 import lando.systems.ld42.world.Tile;
 
@@ -22,6 +23,7 @@ public abstract class Unit {
     public Color color;
     public Color shadowColor;
     public Tile tile;
+    public Team team;
     public float moveDuration;
     public float animTime;
     public TextureRegion keyframe;

@@ -40,8 +40,11 @@ public class GameScreen extends BaseScreen {
     public PlayerTeam playerTeam;
     public EnemyTeam enemyTeam;
 
+    public Tile selectedUnitTile;
+
     public float time;
     public TurnAction turnAction;
+    public int turnNumber;
 
     public Vector3 cameraTouchStart;
     public Vector3 touchStart;
@@ -80,8 +83,10 @@ public class GameScreen extends BaseScreen {
         worldCamera.update();
         adjacentTiles = new Array<Tile>();
         adjacentBuildTiles = new Array<Tile>();
+        turnNumber = 1;
         turnAction = new TurnAction();
         tooltip = new Tooltip();
+
 
         cameraTouchStart = new Vector3();
         touchStart = new Vector3();
@@ -106,26 +111,44 @@ public class GameScreen extends BaseScreen {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
+            if (turnAction.turn == turnAction.turn.ENEMY) {
+                turnNumber++;
+            }
             turnAction.doAction();
         }
 
-        // TODO: removeme, just for testing
         if (Gdx.input.justTouched()) {
-            Array<Unit> units = MathUtils.randomBoolean() ? playerTeam.units : enemyTeam.units;
-            Unit testUnit = units.get(MathUtils.random(0, units.size - 1));
-            int currCol = testUnit.tile.col;
-            int currRow = testUnit.tile.row;
-            int nextCol = currCol;
-            int nextRow = currRow;
-            boolean moveCol = MathUtils.randomBoolean();
-            if (moveCol) {
-                nextCol = MathUtils.clamp(currCol + MathUtils.randomSign(), 0, World.WORLD_WIDTH - 1);
-            } else {
-                nextRow = MathUtils.clamp(currRow + MathUtils.randomSign(), 0, World.WORLD_HEIGHT - 1);
+            if (pickPixmap != null){
+                Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
+                if (t != null && t.occupant == null && selectedUnitTile != null && adjacentTiles.contains(t, true)) {
+                    selectedUnitTile.occupant.moveTo(t);
+                    selectedUnitTile = null;
+                }
+                else if (t != null && t.occupant != null && t.occupant.team.getClass() == PlayerTeam.class) {
+                    selectedUnitTile = t;
+                } else {
+                    selectedUnitTile = null;
+                }
             }
-            Gdx.app.log("MOVE", "(" + currCol + ", " + currRow + ") -> (" + nextCol + ", " + nextRow + ")");
-            testUnit.moveTo(world.getTile(nextCol, nextRow));
         }
+
+        // TODO: removeme, just for testing
+//        if (Gdx.input.justTouched()) {
+//            Array<Unit> units = MathUtils.randomBoolean() ? playerTeam.units : enemyTeam.units;
+//            Unit testUnit = units.get(MathUtils.random(0, units.size - 1));
+//            int currCol = testUnit.tile.col;
+//            int currRow = testUnit.tile.row;
+//            int nextCol = currCol;
+//            int nextRow = currRow;
+//            boolean moveCol = MathUtils.randomBoolean();
+//            if (moveCol) {
+//                nextCol = MathUtils.clamp(currCol + MathUtils.randomSign(), 0, World.WORLD_WIDTH - 1);
+//            } else {
+//                nextRow = MathUtils.clamp(currRow + MathUtils.randomSign(), 0, World.WORLD_HEIGHT - 1);
+//            }
+//            Gdx.app.log("MOVE", "(" + currCol + ", " + currRow + ") -> (" + nextCol + ", " + nextRow + ")");
+//            testUnit.moveTo(world.getTile(nextCol, nextRow));
+//        }
         if (Gdx.input.isKeyJustPressed(Input.Keys.Y)){
             world.pickRemoveTile();
         }
@@ -187,14 +210,14 @@ public class GameScreen extends BaseScreen {
             playerTeam.render(batch);
             enemyTeam.render(batch);
 
-            if (pickPixmap != null){
+            if (pickPixmap != null) {
                 Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
                 if (t != null) {
-                    t.renderHightlight(batch, Color.YELLOW);
-                    TileUtils.getNeighbors(t, world, adjacentTiles);
-                    for (Tile a : adjacentTiles){
-                        a.renderHightlight(batch, Color.BLUE);
-                    }
+//                    t.renderHightlight(batch, Color.YELLOW);
+//                    TileUtils.getNeighbors(t, world, adjacentTiles);
+//                    for (Tile a : adjacentTiles) {
+//                        a.renderHightlight(batch, Color.BLUE);
+//                    }
                     if (t.owner == Team.Type.player) {
                         calculateInformationForPlayerTile(adjacentTiles, t);
                     } else if (t.owner == Team.Type.enemy) {
@@ -206,6 +229,24 @@ public class GameScreen extends BaseScreen {
                     tooltip.text = null;
                 }
             }
+            if (selectedUnitTile != null) {
+                selectedUnitTile.renderHightlight(batch, Color.YELLOW);
+                TileUtils.getNeighbors(selectedUnitTile, world, adjacentTiles);
+                for (Tile a : adjacentTiles){
+                    a.renderHightlight(batch, Color.BLUE);
+                }
+            }
+
+//            if (pickPixmap != null){
+//                Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
+//                if (t != null) {
+//                    t.renderHightlight(batch, Color.YELLOW);
+//                    TileUtils.getNeighbors(t, world, adjacentTiles);
+//                    for (Tile a : adjacentTiles){
+//                        a.renderHightlight(batch, Color.BLUE);
+//                    }
+//                }
+//            }
         }
         batch.end();
 
@@ -219,14 +260,15 @@ public class GameScreen extends BaseScreen {
             }
 //            batch.draw(pickRegion, 0, 0, 100, 80);
         }
+
         String turnText;
         if (turnAction.turn == turnAction.turn.PLAYER) {
-            turnText = "Player's Turn " + turnAction.turnNumber;
+            turnText = "Player's Turn " + turnNumber;
         } else {
-            turnText = "Enemy's Turn " + turnAction.turnNumber;
+            turnText = "Enemy's Turn " + turnNumber;
         }
-
         lando.systems.ld42.Assets.drawString(batch, turnText, 0, 30, Color.BLACK, .5f, lando.systems.ld42.Assets.font, Config.window_width, Align.center);
+
         batch.end();
     }
 
