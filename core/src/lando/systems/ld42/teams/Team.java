@@ -35,4 +35,19 @@ public abstract class Team {
         }
     }
 
+    public boolean isActionLeft() {
+        for (Unit unit : units) {
+            if (unit.actionAvailable > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void replenishAction() {
+        for (Unit unit : units) {
+            unit.actionAvailable = unit.actionPoint;
+        }
+    }
+
 }

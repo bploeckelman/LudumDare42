@@ -1,33 +1,48 @@
 package lando.systems.ld42.turns;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
+import lando.systems.ld42.teams.EnemyTeam;
+import lando.systems.ld42.teams.PlayerTeam;
 import lando.systems.ld42.units.Unit;
+import lando.systems.ld42.world.World;
 
 public class TurnAction {
 
     public Turn turn;
     public Unit unit;
     public TurnAction() {
-        this.turn = turn.PLAYER;
+        this.turn = turn.PLAYER_RECRUITMENT;
     }
 
-    public void doAction() {
-        if (turn == turn.PLAYER) {
-            //TODO: recruitment Action
-            //TODO: move Character Action
-            //TODO: resolution
+//    public void doAction() {
+//        if (turn == turn.PLAYER_RECRUITMENT) {
+//            //TODO: recruitment Action
+//            //TODO: resolution
+//
+//        }
+//        else if (turn == Turn.PLAYER_MOVEMENT) {
+//            //TODO: move Character Action
+//
+//        }
+//        else if (turn == Turn.ENEMY) {
+//            //TODO: handle AI action
+//        }
+//        nextTurn();
+//    }
 
-        }
-        else if (turn == turn.ENEMY) {
-            //TODO: handle AI action
-        }
-        nextTurn();
-    }
-
-    private void nextTurn() {
-        if (turn == turn.PLAYER) {
-            turn = turn.ENEMY;
-        } else {
-            turn = turn.PLAYER;
+    public void nextTurn() {
+        switch (turn) {
+            case PLAYER_RECRUITMENT:
+                this.turn = Turn.PLAYER_ACTION;
+                break;
+            case PLAYER_ACTION:
+                this.turn = Turn.ENEMY;
+                break;
+            case ENEMY:
+                this.turn = Turn.PLAYER_RECRUITMENT;
+                break;
         }
     }
 

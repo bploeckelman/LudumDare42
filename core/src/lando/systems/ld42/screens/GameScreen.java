@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
@@ -98,22 +99,34 @@ public class GameScreen extends BaseScreen {
             Gdx.app.exit();
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
-            if (turnAction.turn == Turn.ENEMY) {
-                turnNumber++;
-            }
-            turnAction.doAction();
+        if (turnAction.turn == Turn.ENEMY) {
+            dumbAIMovement();
+            turnAction.nextTurn();
+            turnNumber++;
         }
 
         if (Gdx.input.justTouched() && !transitioning) {
-            Tile touchedTile = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
-            if (touchedTile != null && touchedTile.occupant == null && selectedUnitTile != null && adjacentTiles.contains(touchedTile, true)) {
-                selectedUnitTile.occupant.moveTo(touchedTile);
-                selectedUnitTile = null;
-            } else if (touchedTile != null && touchedTile.occupant != null && touchedTile.occupant.team.getClass() == PlayerTeam.class) {
-                selectedUnitTile = touchedTile;
-            } else {
-                selectedUnitTile = null;
+            if (turnAction.turn == Turn.PLAYER_RECRUITMENT) {
+                playerTeam.replenishAction();
+                enemyTeam.replenishAction();
+                turnAction.nextTurn();
+            }
+            else if (pickPixmap != null && turnAction.turn == Turn.PLAYER_ACTION){
+                Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
+                if (t != null && t.occupant == null && selectedUnitTile != null && adjacentTiles.contains(t, true)) {
+                    selectedUnitTile.occupant.moveTo(t);
+                    selectedUnitTile.occupant.actionAvailable--;
+                    selectedUnitTile = null;
+                }
+                else if (t != null && t.occupant != null && t.occupant.team.getClass() == PlayerTeam.class) {
+                    selectedUnitTile = t;
+                } else {
+                    selectedUnitTile = null;
+                }
+                // if no action left, next
+                if (!playerTeam.isActionLeft()) {
+                    turnAction.nextTurn();
+                }
             }
         }
 
@@ -223,8 +236,12 @@ public class GameScreen extends BaseScreen {
         }
 
         String turnText;
-        if (turnAction.turn == Turn.PLAYER) {
-            turnText = "Player's Turn " + turnNumber;
+
+        if (turnAction.turn == Turn.PLAYER_RECRUITMENT) {
+            turnText = "Player's Recruitment Turn " + turnNumber;
+        }
+        else if (turnAction.turn == Turn.PLAYER_ACTION) {
+            turnText = "Player's Action Turn " + turnNumber;
         } else {
             turnText = "Enemy's Turn " + turnNumber;
         }
@@ -289,6 +306,28 @@ public class GameScreen extends BaseScreen {
         hudCamera.unproject(tempVec3.set(screenX, screenY, 0));
         pickColor.set(pickPixmap.getPixel((int)(tempVec3.x / pickMapScale), (int)(tempVec3.y / pickMapScale)));
         return TileUtils.parsePickColorForTileInWorld(pickColor, world);
+    }
+
+    public void dumbAIMovement() {
+        Array<Unit> units = enemyTeam.units;
+        for (Unit unit : units) {
+            if (unit.actionAvailable > 0) {
+                int currCol = unit.tile.col;
+                int currRow = unit.tile.row;
+                int nextCol = currCol;
+                int nextRow = currRow;
+                boolean moveCol = MathUtils.randomBoolean();
+                if (moveCol) {
+                    nextCol = MathUtils.clamp(currCol + MathUtils.randomSign(), 0, World.WORLD_WIDTH - 1);
+                } else {
+                    nextRow = MathUtils.clamp(currRow + MathUtils.randomSign(), 0, World.WORLD_HEIGHT - 1);
+                }
+                Gdx.app.log("MOVE", "(" + currCol + ", " + currRow + ") -> (" + nextCol + ", " + nextRow + ")");
+                unit.moveTo(world.getTile(nextCol, nextRow));
+                unit.actionAvailable--;
+            }
+        }
+
     }
 
 //    // required Konami code

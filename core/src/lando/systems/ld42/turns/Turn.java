@@ -1,6 +1,7 @@
 package lando.systems.ld42.turns;
 
 public enum Turn {
-    PLAYER,
+    PLAYER_RECRUITMENT,
+    PLAYER_ACTION,
     ENEMY
 }
