@@ -57,6 +57,7 @@ public abstract class Unit {
                  @Override
                  public void onEvent(int i, BaseTween<?> baseTween) {
                      Unit.this.tile = tile;
+                     tile.occupant = Unit.this;
                  }
              })
              .start(LudumDare42.game.tween);

@@ -7,6 +7,7 @@ import lando.systems.ld42.units.PeasantUnit;
 import lando.systems.ld42.units.SoldierUnit;
 import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.world.Castle;
+import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
 
 public class PlayerTeam extends Team {
@@ -19,9 +20,14 @@ public class PlayerTeam extends Team {
         Unit peasant = new PeasantUnit(assets);
         Unit soldier = new SoldierUnit(assets);
         Unit archer  = new ArcherUnit(assets);
-        peasant.moveTo(world.getTile(0, World.WORLD_HEIGHT / 2 - 1));
-        soldier.moveTo(world.getTile(1, World.WORLD_HEIGHT / 2 - 1));
-        archer.moveTo(world.getTile(0, World.WORLD_HEIGHT / 2 - 2));
+
+        Tile peasantTile = world.getTile(0, World.WORLD_HEIGHT / 2 - 1);
+        Tile soldierTile = world.getTile(1, World.WORLD_HEIGHT / 2 - 1);
+        Tile archerTile = world.getTile(0, World.WORLD_HEIGHT / 2 - 2);
+
+        peasant.moveTo(peasantTile);
+        soldier.moveTo(soldierTile);
+        archer.moveTo(archerTile);
 
         this.units.add(peasant, soldier, archer);
         for (Unit unit : units) {

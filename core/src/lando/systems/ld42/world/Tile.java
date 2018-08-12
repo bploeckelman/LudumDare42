@@ -14,6 +14,7 @@ import lando.systems.ld42.Config;
 import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.accessors.Vector2Accessor;
 import lando.systems.ld42.teams.Team;
+import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.utils.TileUtils;
 
 public class Tile {
@@ -40,6 +41,7 @@ public class Tile {
     public TileType type;
     public boolean dead;
     public Team.Type owner;
+    public Unit occupant;
 
     public Tile (int col, int row){
         this.world = World.THE_WORLD;
@@ -62,6 +64,7 @@ public class Tile {
                 .start(LudumDare42.game.tween);
         this.type = TileType.None;
         this.owner = Team.Type.none;
+        this.occupant = null;
     }
 
 
