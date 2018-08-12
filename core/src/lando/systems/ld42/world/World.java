@@ -127,11 +127,11 @@ public class World {
         }
     }
 
-    public Tile.TileType getTileTypeFromInt(int num) {
-        Tile.TileType type = Tile.TileType.None;
+    public Tile.Type getTileTypeFromInt(int num) {
+        Tile.Type type = Tile.Type.none;
         switch (num) {
-            case 0: type = Tile.TileType.forest; break;
-            case 1: type = Tile.TileType.mountain; break;
+            case 0: type = Tile.Type.forest; break;
+            case 1: type = Tile.Type.mountain; break;
             default: break;
         }
 
@@ -189,6 +189,8 @@ public class World {
         int maxRowAccum = 0;
         for (Tile tile : tiles) {
             if (tile == null) continue;
+            if (tile == screen.playerTeam.castle.tile) continue;
+            if (tile == screen.enemyTeam.castle.tile) continue;
             removalCandidateTiles.add(tile);
             if (tile.col > maxColAccum) maxColAccum = tile.col;
             if (tile.row > maxRowAccum) maxRowAccum = tile.row;

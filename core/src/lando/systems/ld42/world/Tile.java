@@ -18,8 +18,8 @@ import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.utils.TileUtils;
 
 public class Tile {
-    public enum TileType {
-        None,
+    public enum Type {
+        none,
         forest,
         mountain,
         playerBase,
@@ -38,7 +38,7 @@ public class Tile {
     public TextureRegion texture;
     public MutableFloat alpha;
     public Color renderColor;
-    public TileType type;
+    public Type type;
     public boolean dead;
     public boolean animating;
     public Team.Type owner;
@@ -63,7 +63,7 @@ public class Tile {
                         .target(1))
                 .end()
                 .start(LudumDare42.game.tween);
-        this.type = TileType.None;
+        this.type = Type.none;
         this.owner = Team.Type.none;
         this.occupant = null;
         this.dead = false;
@@ -96,6 +96,7 @@ public class Tile {
         switch (type) {
             case forest: typeTexture = LudumDare42.game.assets.tree; break;
             case mountain: typeTexture = LudumDare42.game.assets.mountain; break;
+            // TODO: castles in here?
             default: break;
         }
 
