@@ -303,7 +303,7 @@ public class GameScreen extends BaseScreen {
     @Override
     public boolean touchUp (int screenX, int screenY, int pointer, int button) {
 
-        if (endPhaseButton.checkForTouch(screenX, screenY)){
+        if (endPhaseButton.checkForTouch(screenX, screenY) && turnAction.turn != Turn.ENEMY){
             turnAction.nextTurn();
         }
 
