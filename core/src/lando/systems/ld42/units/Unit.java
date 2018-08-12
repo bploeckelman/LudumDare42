@@ -4,6 +4,7 @@ import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
+import aurelienribon.tweenengine.equations.Back;
 import aurelienribon.tweenengine.equations.Cubic;
 import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.graphics.Color;
@@ -96,11 +97,11 @@ public abstract class Unit {
 
     public void tileGotSquanched() {
         // TODO: kick off a particle effect
-        float peak = pos.y + 100f;
+        float peak = pos.y + 160f;
         float trough = pos.y - 50f;
         Timeline.createSequence()
-                .push(Tween.to(pos, Vector2Accessor.Y, 0.5f).target(peak))
-                .pushPause(0.1f)
+                .push(Tween.to(pos, Vector2Accessor.Y, 1.0f).target(peak).ease(Back.IN))
+                .pushPause(0.25f)
                 .push(
                         Timeline.createParallel()
                               .push(Tween.to(pos, Vector2Accessor.Y, 0.75f).target(trough))
