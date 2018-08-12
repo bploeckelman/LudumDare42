@@ -376,7 +376,6 @@ public class GameScreen extends BaseScreen {
                 }
             }
         }
-
     }
 
 //    // required Konami code

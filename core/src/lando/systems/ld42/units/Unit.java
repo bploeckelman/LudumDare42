@@ -83,6 +83,9 @@ public abstract class Unit {
                  }
              })
              .start(LudumDare42.game.tween);
+        if (this.team != null) {
+            takeOverTile(tile, this.team);
+        }
     }
 
     public void render(SpriteBatch batch) {
@@ -93,6 +96,10 @@ public abstract class Unit {
         batch.draw(keyframe, pos.x, pos.y, size.x / 2f, size.y / 2f, size.x, size.y, 1f, 1f, rotation.floatValue());
 
         batch.setColor(1f, 1f, 1f, 1f);
+    }
+
+    public void takeOverTile(Tile tile, Team.Type team) {
+        tile.owner = team;
     }
 
     public void tileGotSquanched() {
