@@ -56,8 +56,11 @@ public abstract class Unit {
              .setCallback(new TweenCallback() {
                  @Override
                  public void onEvent(int i, BaseTween<?> baseTween) {
+                     if (Unit.this.tile != null) {
+                         Unit.this.tile.occupant = null;
+                     }
                      Unit.this.tile = tile;
-                     tile.occupant = Unit.this;
+                     Unit.this.tile.occupant = Unit.this;
                  }
              })
              .start(LudumDare42.game.tween);
