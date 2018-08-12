@@ -3,7 +3,6 @@ package lando.systems.ld42.world;
 import aurelienribon.tweenengine.Tween;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
@@ -12,6 +11,8 @@ import lando.systems.ld42.accessors.Vector2Accessor;
 import lando.systems.ld42.screens.GameScreen;
 import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.utils.TileUtils;
+
+import java.util.Comparator;
 
 public class World {
 
@@ -107,17 +108,6 @@ public class World {
         batch.setColor(Color.WHITE);
     }
 
-
-    public Tile getUpperLeftTile(int row, int col){
-        int offset = row % 2 == 1 ? -1 : 0;
-        return getTile(col + 1, row + offset);
-    }
-
-    public Tile getUpperRightTile(int row, int col){
-        int offset = row % 2 == 1 ? 0 : 1;
-        return getTile(col + 1, row + offset);
-    }
-
     private void generateWorldTiles() {
         tiles = new Array<Tile>(WORLD_WIDTH * WORLD_HEIGHT );
         // Create the tiles.
@@ -148,10 +138,6 @@ public class World {
         return type;
     }
 
-    public Tile getTile(GridPoint2 location) {
-        return getTile(location.x, location.y);
-    }
-
     public int getTileIndex(Tile t){
         if (t == null) return -1;
         return t.col + t.row * WORLD_WIDTH;
@@ -173,19 +159,19 @@ public class World {
         t.killTile();
     }
 
-    Array<Tile> unclaimedTiles = new Array<Tile>();
-    public void pickRemoveTile(){
+    private Array<Tile> removalCandidateTiles = new Array<Tile>();
+    public void pickRemoveTileStraightforwardly(){
         Tile removeTile = null;
-        unclaimedTiles.clear();
+        removalCandidateTiles.clear();
         for (Tile t : tiles){
             if (t != null && t.owner == Team.Type.none){
-                unclaimedTiles.add(t);
+                removalCandidateTiles.add(t);
             }
         }
 
         Array<Tile> tilesToRemove = tiles;
-        if (unclaimedTiles.size > 0) {
-            tilesToRemove = unclaimedTiles;
+        if (removalCandidateTiles.size > 0) {
+            tilesToRemove = removalCandidateTiles;
         }
 
         if (tilesToRemove.size < 2) return;
@@ -194,6 +180,64 @@ public class World {
             removeTile = tilesToRemove.get(index);
         }
         removeTile(removeTile);
+    }
+
+    public void pickRemoveTileCleverly() {
+        removalCandidateTiles.clear();
+
+        int maxColAccum = 0;
+        int maxRowAccum = 0;
+        for (Tile tile : tiles) {
+            if (tile == null) continue;
+            removalCandidateTiles.add(tile);
+            if (tile.col > maxColAccum) maxColAccum = tile.col;
+            if (tile.row > maxRowAccum) maxRowAccum = tile.row;
+        }
+        final int maxCol = maxColAccum;
+        final int maxRow = maxRowAccum;
+
+        if (removalCandidateTiles.size <= 4) return;
+
+        // Sort removalCandidates by 1) unclaimed 2) middleX 3) middleY
+        removalCandidateTiles.sort(new Comparator<Tile>() {
+            @Override
+            public int compare(Tile tile1, Tile tile2) {
+                if (tile1 == tile2) return 0;
+
+                int ownerComparison = tile1.owner.compareTo(tile2.owner);
+                if (ownerComparison != 0) return ownerComparison;
+
+                int colMiddle = maxCol / 2;
+                int colDist1 = Math.abs(colMiddle - tile1.col);
+                int colDist2 = Math.abs(colMiddle - tile2.col);
+                int colComparison = Integer.compare(colDist1, colDist2);
+                if (colComparison != 0) return colComparison;
+
+                int rowMiddle = maxRow / 2;
+                int rowDist1 = Math.abs(rowMiddle - tile1.row);
+                int rowDist2 = Math.abs(rowMiddle - tile2.row);
+                int rowComparison = Integer.compare(rowDist1, rowDist2);
+                return rowComparison;
+            }
+        });
+
+        // Pick randomly from candidates, favoring lower indices (as they are 'better' candidates based on sorting criterio
+        int numIntervals = 3;
+        int range = removalCandidateTiles.size / numIntervals;
+        int indexToRemove = 0;
+        float random = MathUtils.random();
+        if (random >= 0.6f) {
+            indexToRemove = MathUtils.random(0, range - 1);
+        } else if (random >= 0.3f) {
+            indexToRemove = MathUtils.random(range - 1, 2 * range - 1);
+        } else {
+            indexToRemove = MathUtils.random(2 * range - 1, removalCandidateTiles.size - 1);
+        }
+
+        Tile tileToRemove = removalCandidateTiles.get(indexToRemove);
+        if (tileToRemove != null) {
+            removeTile(tileToRemove);
+        }
     }
 
     public void moveTile(Tile t, int col, int row){

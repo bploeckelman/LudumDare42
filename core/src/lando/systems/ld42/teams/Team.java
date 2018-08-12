@@ -9,7 +9,7 @@ import lando.systems.ld42.world.World;
 
 public abstract class Team {
 
-    public enum Type { none, player, enemy }
+    public enum Type { none, enemy, player }
 
     public Color color;
     public World world;

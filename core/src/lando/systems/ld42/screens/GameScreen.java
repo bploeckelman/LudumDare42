@@ -16,8 +16,6 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import lando.systems.ld42.Config;
-
-import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.particles.ParticleSystem;
 import lando.systems.ld42.teams.EnemyTeam;
 import lando.systems.ld42.teams.PlayerTeam;
@@ -166,7 +164,7 @@ public class GameScreen extends BaseScreen {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.Y)){
-            world.pickRemoveTile();
+            world.pickRemoveTileCleverly();
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)){
