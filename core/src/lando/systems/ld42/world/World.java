@@ -14,8 +14,8 @@ import lando.systems.ld42.utils.TileUtils;
 public class World {
 
     public static World THE_WORLD;
-    public static final int WORLD_WIDTH = 15;
-    public static final int WORLD_HEIGHT = 10;
+    public static final int WORLD_WIDTH = 11;
+    public static final int WORLD_HEIGHT = 7;
 
     public Array<Tile> adjacentTiles;
     public Array<Tile> tiles;
@@ -43,14 +43,20 @@ public class World {
     }
 
     public void update(float dt){
-        // ...
+        int maxCol = 0;
+        int maxRow = 0;
         for (int i = 0; i < tiles.size; i++){
             Tile t = tiles.get(i);
-            if (t != null && t.dead){
-                tiles.set(i, null);
+            if (t != null) {
+                if (t.dead) {
+                    tiles.set(i, null);
+                }
+                maxCol = Math.max(maxCol, t.col);
+                maxRow = Math.max(maxRow, t.row);
             }
         }
-
+        bounds.setWidth(Tile.tileWidth * (maxCol+1.5f) * .75f);
+        bounds.setHeight(Tile.tileHeight * (maxRow+2));
     }
 
     public void render(SpriteBatch batch){
@@ -61,8 +67,8 @@ public class World {
             }
         }
 
-
         batch.setColor(Color.WHITE);
+
     }
 
     public void renderPickBuffer(SpriteBatch batch){
