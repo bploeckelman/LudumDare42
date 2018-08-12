@@ -53,6 +53,53 @@ public class ParticleSystem {
         }
     }
 
+    public void addBattleCloud(Tile t1, Tile t2){
+        int smokeParticles = 400;
+        float vel = 40;
+        float minScale = 10;
+        float maxScale = 20;
+        float minTTL = 1;
+        float maxTTL = 2;
+        float gray = .5f;
+        for (int i = 0; i < smokeParticles; i++){
+            Particle particle = particlePool.obtain();
+            float scale = MathUtils.random(minScale, maxScale);
+            float dir = MathUtils.random(360);
+            float dist = MathUtils.random(Tile.tileHeight/2f);
+            float posX = t1.position.x + Tile.tileWidth /2f - scale/2f + MathUtils.cosDeg(dir) * dist;
+            float posY = t1.position.y + Tile.tileHeight /2f - scale/2f + MathUtils.sinDeg(dir) * dist;
+
+            float velX = MathUtils.random(-vel, vel);
+            float velY =  MathUtils.random(-vel, vel);
+            float ttl = MathUtils.random(minTTL, maxTTL);
+            float grayValue = MathUtils.random(gray) + (1f - gray);
+
+            particle.init(posX, posY, velX, velY, -velX, -velY,
+                    0.5f, grayValue, grayValue, grayValue, 1f,
+                    grayValue, grayValue, grayValue, 0f, scale, ttl, LudumDare42.game.assets.smokeTexture);
+            activeParticles.add(particle);
+
+
+
+            particle = particlePool.obtain();
+            scale = MathUtils.random(minScale, maxScale);
+            dir = MathUtils.random(360);
+            dist = MathUtils.random(Tile.tileHeight/2f);
+            posX = t2.position.x + Tile.tileWidth /2f - scale/2f +MathUtils.cosDeg(dir) * dist;
+            posY = t2.position.y + Tile.tileHeight /2f - scale/2f + MathUtils.sinDeg(dir) * dist;
+
+            velX = MathUtils.random(-vel, vel);
+            velY =  MathUtils.random(-vel, vel);
+            ttl = MathUtils.random(minTTL, maxTTL);
+            grayValue = MathUtils.random(gray) + (1f - gray);
+
+            particle.init(posX, posY, velX, velY, -velX, -velY,
+                    0.5f, grayValue, grayValue, grayValue, 1f,
+                    grayValue, grayValue, grayValue, 0f, scale, ttl, LudumDare42.game.assets.smokeTexture);
+            activeParticles.add(particle);
+        }
+    }
+
     public void addTileDestroyParticles(Tile t){
         int tiles = 10;
         float width = Tile.tileWidth/tiles;

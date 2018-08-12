@@ -123,18 +123,32 @@ public class EnemyAI {
         }
 
         delay = Unit.moveDuration + .5f;
+        enemyTeam.removeLeftoverActions();
         phase = Phase.RemoveTile;
 
     }
 
     private boolean tryToAttack(Unit unit){
+        tempTileArray.clear();
+        for (Tile t : neighbors){
+            if (t.occupant != null && t.occupant.team == Team.Type.player){ // find tile with enemy on it
+                if (screen.willAttackSucceed(unit, t) >= 0) {
+                    tempTileArray.add(t);
+                }
+            }
+        }
+        if (tempTileArray.size > 0){
+            unit.actionAvailable--;
+            screen.resolveAttack(unit, tempTileArray.random());
+            delay = 1f;
+        }
         return false;
     }
 
     private boolean tryToGetResource(Unit unit){
         tempTileArray.clear();
         for (Tile t : neighbors){
-            if (t.type != Tile.Type.none && t.owner != Team.Type.enemy && t.occupant == null){
+            if (t.type != Tile.Type.none && t.owner != Team.Type.enemy && t.occupant == null){ // find empty unowned resource tile
                 tempTileArray.add(t);
             }
         }
@@ -148,7 +162,7 @@ public class EnemyAI {
     private boolean tryToGetMoreLand(Unit unit) {
         tempTileArray.clear();
         for (Tile t : neighbors){
-            if (t.owner != Team.Type.enemy && t.occupant == null){
+            if (t.owner != Team.Type.enemy && t.occupant == null){ // find empty tile that is not owned by enemy
                 tempTileArray.add(t);
             }
         }
@@ -161,7 +175,7 @@ public class EnemyAI {
     private boolean tryToMoveTowardsCastle(Unit unit){
         tempTileArray.clear();
         for (Tile t : neighbors){
-            if (t.col < unit.tile.col && t.occupant == null){
+            if (t.col < unit.tile.col && t.occupant == null){ // find empty tile to the left
                 tempTileArray.add(t);
             }
         }
@@ -175,7 +189,7 @@ public class EnemyAI {
     private boolean tryRandomWander(Unit unit) {
         tempTileArray.clear();
         for (Tile t : neighbors){
-            if (t.occupant == null){
+            if (t.occupant == null){ // Find empty tile to wander
                 tempTileArray.add(t);
             }
         }
