@@ -25,6 +25,7 @@ import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.turns.TurnAction;
 import lando.systems.ld42.ui.Tooltip;
 import lando.systems.ld42.units.Unit;
+import lando.systems.ld42.utils.Screenshake;
 import lando.systems.ld42.utils.TileUtils;
 import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
@@ -61,6 +62,7 @@ public class GameScreen extends BaseScreen {
     public Color pickColor;
     public PlayerHUD hud;
     public Tooltip tooltip;
+    public Screenshake shaker;
 
     public int pickMapScale = 8;
     private FrameBuffer pickBuffer;
@@ -86,11 +88,11 @@ public class GameScreen extends BaseScreen {
         turnNumber = 1;
         turnAction = new TurnAction();
         tooltip = new Tooltip();
+        shaker = new Screenshake(120, 3);
 
 
         cameraTouchStart = new Vector3();
         touchStart = new Vector3();
-//        shaker = new Screenshake(120, 3);
 
         playerTeam = new PlayerTeam(world, assets);
         enemyTeam = new EnemyTeam(world, assets);
@@ -153,6 +155,8 @@ public class GameScreen extends BaseScreen {
             world.pickRemoveTile();
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)){
+            shaker.shakeDuration = 25f;
+            shaker.shake(2f);
             world.squishHoles();
         }
 
@@ -166,7 +170,7 @@ public class GameScreen extends BaseScreen {
         Gdx.app.log("Zoom", targetZoom.floatValue()+"");
         targetZoom.setValue(Math.max(world.bounds.width / worldCamera.viewportWidth, world.bounds.height / worldCamera.viewportHeight));
         cameraTargetPos.set(world.bounds.width/2, world.bounds.height/2, 0);
-//        shaker.update(dt, camera, camera.position.x, camera.position.y);
+        shaker.update(dt, worldCamera, worldCamera.position.x, worldCamera.position.y);
     }
 
 
