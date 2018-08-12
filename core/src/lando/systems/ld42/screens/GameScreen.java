@@ -508,7 +508,7 @@ public class GameScreen extends BaseScreen {
             this.gameOver = true;
             return true;
         }
-        else if (enemyTeam.getTileTotalCount() < 1 && world.unclaimedTileCount == 0) {
+        else if (enemyTeam.getTileTotalCount() < 2 && world.unclaimedTileCount == 0) {
             this.gameOver = true;
             return true;
         }
