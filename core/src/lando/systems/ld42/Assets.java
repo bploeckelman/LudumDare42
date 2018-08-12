@@ -64,8 +64,6 @@ public class Assets implements Disposable {
 
     public TextureRegion tree;
     public TextureRegion mountain;
-    public TextureRegion castlePurple;
-    public TextureRegion castleYellow;
 
     public TextureRegion shadowUL;
     public TextureRegion shadowUR;
@@ -82,6 +80,8 @@ public class Assets implements Disposable {
     public Animation<TextureRegion> unitAnimationSoldier;
     public Animation<TextureRegion> unitAnimationArcher;
     public Animation<TextureRegion> unitAnimationWizard;
+    public Animation<TextureRegion> castleAnimationPlayer;
+    public Animation<TextureRegion> castleAnimationEnemy;
 
     public static BitmapFont font;
     public ShaderProgram fontShader;
@@ -159,8 +159,6 @@ public class Assets implements Disposable {
         shadowU = atlas.findRegion("shadow_u");
         shadowUR = atlas.findRegion("shadow_ur");
         shadowUL = atlas.findRegion("shadow_ul");
-        castlePurple = atlas.findRegion("castle-purple");
-        castleYellow = atlas.findRegion("castle-yellow");
         highlightHex = atlas.findRegion("tile-outline");
         emptyHex = atlas.findRegion("tile-empty");
         blankTile = atlas.findRegion("tile-blank");
@@ -180,6 +178,11 @@ public class Assets implements Disposable {
         unitAnimationSoldier = new Animation<TextureRegion>(0.33f, soldier, Animation.PlayMode.LOOP);
         unitAnimationArcher = new Animation<TextureRegion>(0.33f, archer, Animation.PlayMode.LOOP);
         unitAnimationWizard = new Animation<TextureRegion>(0.33f, wizard, Animation.PlayMode.LOOP);
+
+        Array<TextureAtlas.AtlasRegion> castlePlayer = atlas.findRegions("castle-yellow");
+        Array<TextureAtlas.AtlasRegion> castleEnemy = atlas.findRegions("castle-purple");
+        castleAnimationPlayer = new Animation<TextureRegion>(0.16f, castlePlayer, Animation.PlayMode.LOOP);
+        castleAnimationEnemy = new Animation<TextureRegion>(0.16f, castleEnemy, Animation.PlayMode.LOOP);
 
         titleTexture = mgr.get(titleTextureAsset);
 

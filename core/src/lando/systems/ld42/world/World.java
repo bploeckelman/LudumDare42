@@ -60,6 +60,8 @@ public class World {
             if (t != null) {
                 if (t.dead) {
                     tiles.set(i, null);
+                } else {
+                    t.update(dt);
                 }
                 if (t.animating) {
                     animatingTiles.add(t);
@@ -189,8 +191,8 @@ public class World {
         int maxRowAccum = 0;
         for (Tile tile : tiles) {
             if (tile == null) continue;
-            if (tile == screen.playerTeam.castle.tile) continue;
-            if (tile == screen.enemyTeam.castle.tile) continue;
+            if (tile == screen.playerTeam.castleTile) continue;
+            if (tile == screen.enemyTeam.castleTile) continue;
             removalCandidateTiles.add(tile);
             if (tile.col > maxColAccum) maxColAccum = tile.col;
             if (tile.row > maxRowAccum) maxRowAccum = tile.row;

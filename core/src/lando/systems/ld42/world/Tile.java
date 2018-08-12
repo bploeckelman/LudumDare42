@@ -37,9 +37,12 @@ public class Tile {
     public World world;
     public Vector2 position;
     public TextureRegion texture;
+    public TextureRegion hexBase;
+    public TextureRegion hexOverlay;
     public MutableFloat alpha;
     public Color renderColor;
     public Type type;
+    public float animState;
     public boolean dead;
     public boolean animating;
     public Team.Type owner;
@@ -51,9 +54,12 @@ public class Tile {
         this.row = row;
         this.renderColor = new Color(1,1,1,1);
         this.alpha = new MutableFloat(0);
+        this.animState = 0f;
         this.position = new Vector2(TileUtils.getX(col, tileWidth), TileUtils.getY(row, col, tileHeight) - 120);
         this.pickColor = TileUtils.getColorFromPosition(row, col);
         this.texture = LudumDare42.game.assets.blankTile;
+        this.hexBase = LudumDare42.game.assets.whiteHex;
+        this.hexOverlay = LudumDare42.game.assets.emptyHex;
         Timeline.createSequence()
                 .pushPause((35 - (row + col))/15f)
                 .beginParallel()
@@ -71,6 +77,9 @@ public class Tile {
         this.animating = false;
     }
 
+    public void update(float dt) {
+        animState += dt;
+    }
 
     public void render(SpriteBatch batch){
         renderColor.a = alpha.floatValue();
@@ -97,14 +106,32 @@ public class Tile {
         switch (type) {
             case forest: typeTexture = LudumDare42.game.assets.tree; break;
             case mountain: typeTexture = LudumDare42.game.assets.mountain; break;
-            // TODO: castles in here?
+            case playerBase: {
+                    typeTexture = LudumDare42.game.assets.castleAnimationPlayer.getKeyFrame(animState);
+            } break;
+            case enemyBase: {
+                typeTexture = LudumDare42.game.assets.castleAnimationEnemy.getKeyFrame(animState);
+            } break;
             default: break;
         }
 
         if (typeTexture != null) {
-            int typeXTexOffset = texture.getRegionWidth() / 2;
-            int typeYTextOffset = texture.getRegionHeight() / 2;
-            batch.draw(typeTexture, position.x + typeXTexOffset, position.y + typeYTextOffset);
+            if (type == Type.playerBase || type == Type.enemyBase) {
+                Color color = (type == Type.playerBase) ? Config.player_color : Config.enemy_color;
+                color.a = alpha.floatValue();
+
+                batch.setColor(color);
+                batch.draw(hexBase, position.x, position.y, Tile.tileWidth, Tile.tileHeight);
+
+                batch.setColor(1f, 1f, 1f, alpha.floatValue());
+                batch.draw(hexOverlay, position.x, position.y, Tile.tileWidth, Tile.tileHeight);
+
+                batch.draw(typeTexture, position.x, position.y, Tile.tileWidth, Tile.tileHeight);
+            } else {
+                int typeXTexOffset = texture.getRegionWidth() / 2;
+                int typeYTextOffset = texture.getRegionHeight() / 2;
+                batch.draw(typeTexture, position.x + typeXTexOffset, position.y + typeYTextOffset);
+            }
         }
     }
 

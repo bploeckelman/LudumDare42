@@ -101,7 +101,7 @@ public class GameScreen extends BaseScreen {
         this.pickRegion.flip(false, true);
         this.pickPixmap = null;
         this.pickColor = new Color();
-        this.selectedUnitTile = playerTeam.castle.tile;
+        this.selectedUnitTile = playerTeam.castleTile;
 
         initializeUserInterface();
     }
@@ -125,7 +125,7 @@ public class GameScreen extends BaseScreen {
         if (turnAction.turn == Turn.ENEMY) {
             dumbAIMovement();
             turnAction.nextTurn();
-            selectedUnitTile = playerTeam.castle.tile;
+            selectedUnitTile = playerTeam.castleTile;
             turnNumber++;
             world.pickRemoveTileCleverly();
             if (turnNumber % 8 == 0) {
