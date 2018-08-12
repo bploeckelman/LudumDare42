@@ -3,8 +3,10 @@ package lando.systems.ld42.teams;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
+import lando.systems.ld42.units.PeasantUnit;
 import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.world.Castle;
+import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
 
 public abstract class Team {
@@ -15,6 +17,7 @@ public abstract class Team {
     public World world;
     public Castle castle;
     public Array<Unit> units;
+    public Type owner;
 
     public Team(World world) {
         this.world = world;
@@ -39,6 +42,18 @@ public abstract class Team {
         }
     }
 
+
+
+    public boolean buildsLeft(){
+        int peasantCount = 0;
+        for (Unit u : units){
+            if (u instanceof PeasantUnit){
+                peasantCount++;
+            }
+        }
+        return peasantCount < world.playerTileCount /3;
+    }
+
     public boolean isActionLeft() {
         for (Unit unit : units) {
             if (unit.actionAvailable > 0) {
@@ -52,6 +67,16 @@ public abstract class Team {
         for (Unit unit : units) {
             unit.actionAvailable = unit.actionPoint;
         }
+    }
+
+    public void addUnit(Unit unit, Tile t){
+        unit.shadowColor.set(this.color.cpy());
+        unit.shadowColor.a = 0.75f;
+        unit.team = owner;
+        unit.pos.set(t.position);
+        unit.moveTo(t);
+        units.add(unit);
+
     }
 
 }

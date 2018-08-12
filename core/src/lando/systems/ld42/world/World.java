@@ -39,8 +39,8 @@ public class World {
 
         animatingTiles = new Array<Tile>();
         adjacentTiles = new Array<Tile>();
-        tiles.get(0).owner = Team.Type.player;
-        tiles.get(tiles.size-1).owner = Team.Type.enemy;
+//        tiles.get(0).owner = Team.Type.player;
+//        tiles.get(tiles.size-1).owner = Team.Type.enemy;
 
         unclaimedTileCount = tiles.size - 2;
         enemyTileCount = 1;

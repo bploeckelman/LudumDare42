@@ -23,6 +23,7 @@ import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.turns.Turn;
 import lando.systems.ld42.turns.TurnAction;
 import lando.systems.ld42.ui.Tooltip;
+import lando.systems.ld42.units.PeasantUnit;
 import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.utils.Screenshake;
 import lando.systems.ld42.utils.TileUtils;
@@ -93,6 +94,8 @@ public class GameScreen extends BaseScreen {
         this.pickRegion.flip(false, true);
         this.pickPixmap = null;
         this.pickColor = new Color();
+        selectedUnitTile = playerTeam.castle.tile;
+
 
     }
 
@@ -109,6 +112,7 @@ public class GameScreen extends BaseScreen {
         if (turnAction.turn == Turn.ENEMY) {
             dumbAIMovement();
             turnAction.nextTurn();
+            selectedUnitTile = playerTeam.castle.tile;
             turnNumber++;
             world.pickRemoveTileCleverly();
             if (turnNumber % 8 == 0) {
@@ -120,9 +124,16 @@ public class GameScreen extends BaseScreen {
 
         if (Gdx.input.justTouched() && !transitioning) {
             if (turnAction.turn == Turn.PLAYER_RECRUITMENT) {
-                playerTeam.replenishAction();
-                enemyTeam.replenishAction();
-                turnAction.nextTurn();
+                Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
+                if (t != null && t.occupant == null && adjacentTiles.contains(t, true) && playerTeam.buildsLeft()){
+                    playerTeam.addUnit(new PeasantUnit(assets), t);
+                }
+                if (!playerTeam.buildsLeft()) {
+                    selectedUnitTile = null;
+                    playerTeam.replenishAction();
+                    enemyTeam.replenishAction();
+                    turnAction.nextTurn();
+                }
             }
             else if (turnAction.turn == Turn.PLAYER_ACTION && pickPixmap != null){
                 Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
@@ -157,7 +168,7 @@ public class GameScreen extends BaseScreen {
                     selectedUnitTile = null;
                 }
                 // if no action left, next
-                if (!playerTeam.isActionLeft()) {
+                if (!playerTeam.isActionLeft()) { //TODO also able to early out with a button and leave movement on the field for the turn
                     turnAction.nextTurn();
                 }
             }
