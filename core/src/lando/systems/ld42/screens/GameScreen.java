@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -20,12 +21,14 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import lando.systems.ld42.Assets;
 import lando.systems.ld42.Config;
+import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.particles.ParticleSystem;
 import lando.systems.ld42.teams.EnemyTeam;
 import lando.systems.ld42.teams.PlayerTeam;
 import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.turns.Turn;
 import lando.systems.ld42.turns.TurnAction;
+import lando.systems.ld42.ui.Button;
 import lando.systems.ld42.ui.RecruitmentUI;
 import lando.systems.ld42.ui.Tooltip;
 import lando.systems.ld42.units.PeasantUnit;
@@ -37,6 +40,7 @@ import lando.systems.ld42.world.World;
 
 public class GameScreen extends BaseScreen {
     public World world;
+    private Button endPhaseButton;
     public Array<Tile> adjacentTiles;
     public Array<Tile> adjacentBuildTiles;
     public PlayerTeam playerTeam;
@@ -85,13 +89,13 @@ public class GameScreen extends BaseScreen {
         this.adjacentTiles = new Array<Tile>();
         this.adjacentBuildTiles = new Array<Tile>();
         this.turnNumber = 1;
-        this.turnAction = new TurnAction();
         this.tooltip = new Tooltip();
         this.shaker = new Screenshake(120, 3);
         this.cameraTouchStart = new Vector3();
         this.touchStart = new Vector3();
         this.playerTeam = new PlayerTeam(world, assets);
         this.enemyTeam = new EnemyTeam(world, assets);
+        this.turnAction = new TurnAction(playerTeam, enemyTeam);
         this.hud = new PlayerHUD(this);
         this.pickBuffer = new FrameBuffer(Pixmap.Format.RGBA8888,
                                           (int) worldCamera.viewportWidth / pickMapScale,
@@ -102,6 +106,8 @@ public class GameScreen extends BaseScreen {
         this.pickPixmap = null;
         this.pickColor = new Color();
         this.selectedUnitTile = playerTeam.castle.tile;
+        this.endPhaseButton = new Button(LudumDare42.game.assets.whiteCircle, new Rectangle(690, 30, 50, 50), hudCamera);
+
 
         initializeUserInterface();
     }
@@ -132,62 +138,6 @@ public class GameScreen extends BaseScreen {
                 world.squishHoles();
                 shaker.shakeDuration = 25f;
                 shaker.shake(2f);
-            }
-        }
-
-        if (Gdx.input.justTouched() && !transitioning) {
-            if (turnAction.turn == Turn.PLAYER_RECRUITMENT) {
-                Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
-                if (t != null && t.occupant == null && adjacentTiles.contains(t, true) && playerTeam.buildsLeft()){
-                    recruitmentUI.rebuild(playerTeam, t, turnAction, hudCamera);
-                    recruitmentUI.show();
-                }
-                if (!playerTeam.buildsLeft()) {
-                    selectedUnitTile = null;
-                    playerTeam.replenishAction();
-                    enemyTeam.replenishAction();
-                    turnAction.nextTurn();
-                }
-            }
-            else if (turnAction.turn == Turn.PLAYER_ACTION && pickPixmap != null){
-//                recruitmentUI.hide();
-
-                Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
-                //attack unit
-                if (t != null && t.occupant != null && t.occupant.team == Team.Type.enemy && selectedUnitTile != null && adjacentTiles.contains(t, true)) {
-                    if (didAttackSucceed(selectedUnitTile.occupant, t)) {
-                        //attack succeeded
-                        t.occupant.dead = true;
-                        t.occupant = null;
-                        selectedUnitTile.occupant.moveTo(t);
-                        selectedUnitTile.occupant.actionAvailable--;
-                        selectedUnitTile = null;
-                    } else {
-                        //killed
-                        selectedUnitTile.occupant.dead = true;
-                        selectedUnitTile.occupant = null;
-                        selectedUnitTile = null;
-                    }
-                }
-                //move unit
-                else if (t != null && t.occupant == null && selectedUnitTile != null && adjacentTiles.contains(t, true)) {
-                    selectedUnitTile.occupant.moveTo(t);
-                    selectedUnitTile.occupant.actionAvailable--;
-                    selectedUnitTile = null;
-                }
-                //select unit
-                else if (t != null && t.occupant != null && t.occupant.team == Team.Type.player && t.occupant.actionAvailable > 0) {
-                    selectedUnitTile = t;
-                }
-                //deselect
-                else {
-                    selectedUnitTile = null;
-                }
-                // if no action left, next
-                if (!playerTeam.isActionLeft()) { //TODO also able to early out with a button and leave movement on the field for the turn
-                    turnAction.nextTurn();
-                    playerTeam.removeLeftoverActions();
-                }
             }
         }
 
@@ -299,6 +249,9 @@ public class GameScreen extends BaseScreen {
             if (Config.debug) {
                 batch.draw(pickRegion, 0, 0, 100, 80);
             }
+
+            endPhaseButton.render(batch);
+
         }
 
         String turnText;
@@ -316,6 +269,72 @@ public class GameScreen extends BaseScreen {
         batch.end();
 
         ui.draw();
+    }
+
+    @Override
+    public boolean touchUp (int screenX, int screenY, int pointer, int button) {
+
+        if (endPhaseButton.checkForTouch(screenX, screenY)){
+            turnAction.nextTurn();
+        }
+
+        if (!transitioning) {
+            if (turnAction.turn == Turn.PLAYER_RECRUITMENT) {
+                Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
+                if (t != null && t.occupant == null && adjacentTiles.contains(t, true) && playerTeam.buildsLeft()){
+                    recruitmentUI.rebuild(playerTeam, t, turnAction, hudCamera);
+                    recruitmentUI.show();
+                }
+                if (!playerTeam.buildsLeft()) {
+                    selectedUnitTile = null;
+                    playerTeam.replenishAction();
+                    enemyTeam.replenishAction();
+                    turnAction.nextTurn();
+                }
+            }
+            else if (turnAction.turn == Turn.PLAYER_ACTION && pickPixmap != null){
+//                recruitmentUI.hide();
+
+                Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
+                //attack unit
+                if (t != null && t.occupant != null && t.occupant.team == Team.Type.enemy && selectedUnitTile != null && adjacentTiles.contains(t, true)) {
+                    if (didAttackSucceed(selectedUnitTile.occupant, t)) {
+                        //attack succeeded
+                        t.occupant.dead = true;
+                        t.occupant = null;
+                        selectedUnitTile.occupant.moveTo(t);
+                        selectedUnitTile.occupant.actionAvailable--;
+                        selectedUnitTile = null;
+                    } else {
+                        //killed
+                        selectedUnitTile.occupant.dead = true;
+                        selectedUnitTile.occupant = null;
+                        selectedUnitTile = null;
+                    }
+                }
+                //move unit
+                else if (t != null && t.occupant == null && selectedUnitTile != null && adjacentTiles.contains(t, true)) {
+                    selectedUnitTile.occupant.moveTo(t);
+                    selectedUnitTile.occupant.actionAvailable--;
+                    selectedUnitTile = null;
+                }
+                //select unit
+                else if (t != null && t.occupant != null && t.occupant.team == Team.Type.player && t.occupant.actionAvailable > 0) {
+                    selectedUnitTile = t;
+                }
+                //deselect
+                else {
+                    selectedUnitTile = null;
+                }
+                // if no action left, next
+                if (!playerTeam.isActionLeft()) { //TODO also able to early out with a button and leave movement on the field for the turn
+                    turnAction.nextTurn();
+                    playerTeam.removeLeftoverActions();
+                }
+            }
+        }
+
+        return false;
     }
 
     private void calculateInformationForPlayerTile(Tile currentTile) {
