@@ -10,6 +10,7 @@
     <extend-configuration-property name="gdx.reflect.include" value="lando.systems.ld39.PACKAGE.TO.REFLECT" />
     -->
     <extend-configuration-property name="gdx.reflect.include" value="com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion" />
+    <extend-configuration-property name="gdx.reflect.include" value="lando.systems.ld42.particles.Particle" />
 
     <collapse-all-properties />
     

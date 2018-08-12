@@ -124,8 +124,8 @@ public class World {
 
     public void randomAssignTileType() {
         assign(Tile.Type.crystal, 5, WORLD_WIDTH/3);
-        assign(Tile.Type.mountain, 15, WORLD_WIDTH/2);
-        assign(Tile.Type.forest, 20, WORLD_WIDTH);
+        assign(Tile.Type.mountain, 10, WORLD_WIDTH/2);
+        assign(Tile.Type.forest, 12, WORLD_WIDTH);
     }
 
     private void assign(Tile.Type type, int count, int columns) {

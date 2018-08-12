@@ -467,30 +467,6 @@ public class GameScreen extends BaseScreen {
         return TileUtils.parsePickColorForTileInWorld(pickColor, world);
     }
 
-    public void dumbAIMovement() {
-        Array<Unit> units = enemyTeam.units;
-        for (Unit unit : units) {
-            if (unit.actionAvailable > 0) {
-                int currCol = unit.tile.col;
-                int currRow = unit.tile.row;
-                int nextCol = currCol;
-                int nextRow = currRow;
-                boolean moveCol = MathUtils.randomBoolean();
-                if (moveCol) {
-                    nextCol = MathUtils.clamp(currCol + MathUtils.randomSign(), 0, World.WORLD_WIDTH - 1);
-                } else {
-                    nextRow = MathUtils.clamp(currRow + MathUtils.randomSign(), 0, World.WORLD_HEIGHT - 1);
-                }
-                Gdx.app.log("MOVE", "(" + currCol + ", " + currRow + ") -> (" + nextCol + ", " + nextRow + ")");
-                Tile moveToTile = new Tile(nextCol, nextRow);
-                // TODO: smarter AI
-                if (moveToTile.occupant == null) {
-                    unit.moveTo(world.getTile(nextCol, nextRow));
-                    unit.actionAvailable--;
-                }
-            }
-        }
-    }
 
     private void initializeUserInterface() {
         ui = new Stage(new ExtendViewport(Config.window_width, Config.window_height));

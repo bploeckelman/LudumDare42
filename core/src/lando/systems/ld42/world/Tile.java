@@ -113,7 +113,10 @@ public class Tile {
             case enemyBase:
                 Team team = this.world.getTeam(type);
                 if (team != null) {
-                    batch.draw(team.getImage(), position.x, position.y, Tile.tileWidth, Tile.tileHeight);
+                    TextureRegion castle = team.getImage();
+                    if (castle != null) {
+                        batch.draw(castle, position.x, position.y, Tile.tileWidth, Tile.tileHeight);
+                    }
                 }
                 break;
             default:

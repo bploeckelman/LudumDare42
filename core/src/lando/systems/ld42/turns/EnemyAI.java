@@ -75,7 +75,7 @@ public class EnemyAI {
         }
 
         while (neighbors.size > 0 && (enemyTeam.canBuildPeasant() || enemyTeam.canBuildSoldier() || enemyTeam.canBuildArcher() || enemyTeam.canBuildWizard())){
-            Tile buildTile = neighbors.get(MathUtils.random(neighbors.size-1));
+            Tile buildTile = neighbors.random();
             if (enemyTeam.canBuildWizard()){
                 enemyTeam.addUnit(new WizardUnit(LudumDare42.game.assets), buildTile);
                 neighbors.removeValue(buildTile, true);
