@@ -17,12 +17,14 @@ public class TitleScreen extends BaseScreen {
     public Color clickTextColor;
     public Color backgroundColor;
     public float accum;
+    public boolean leavingScreen;
 
     public TitleScreen() {
         alpha = new MutableFloat(0);
         accum = 0;
         float scaleMax = 0.52f;
         float scaleMin = 0.48f;
+        leavingScreen = false;
         clickTextScale = new MutableFloat(scaleMin);
         clickTextColor = new Color(0xffa50044);
         backgroundColor = new Color();
@@ -45,7 +47,8 @@ public class TitleScreen extends BaseScreen {
             Gdx.app.exit();
         }
 
-        if (Gdx.input.justTouched()) {
+        if (Gdx.input.justTouched() && !leavingScreen) {
+            leavingScreen = true;
             game.setScreen(new GameScreen());
         }
     }

@@ -59,10 +59,22 @@ public class RecruitmentUI extends UserInterface {
 
     @Override
     public void update(float dt) {
-        if (recruitPeasantButton != null ) disableButton(recruitPeasantButton, team.canBuildPeasant());
-        if (recruitSoldierButton != null ) disableButton(recruitSoldierButton, team.canBuildSoldier());
-        if (recruitArcherButton != null ) disableButton(recruitArcherButton, team.canBuildArcher());
-        if (recruitWizardButton != null ) disableButton(recruitWizardButton, team.canBuildWizard());
+        if (recruitPeasantButton != null ) {
+            recruitPeasantButton.setText("Peasant " + team.getUnitCountPeasant() + "/" + team.getMaxPeasant());
+            disableButton(recruitPeasantButton, team.canBuildPeasant());
+        }
+        if (recruitSoldierButton != null ) {
+            recruitSoldierButton.setText("Soldier " + team.getUnitCountSoldier() + "/" + team.getTileTypeCount(Tile.Type.mountain));
+            disableButton(recruitSoldierButton, team.canBuildSoldier());
+        }
+        if (recruitArcherButton != null ) {
+            recruitArcherButton.setText("Archer " + team.getUnitCountArcher() + "/" + team.getTileTypeCount(Tile.Type.forest));
+            disableButton(recruitArcherButton, team.canBuildArcher());
+        }
+        if (recruitWizardButton != null ) {
+            recruitWizardButton.setText("Wizard " + team.getUnitCountWizard() + "/" + team.getTileTypeCount(Tile.Type.crystal));
+            disableButton(recruitWizardButton, team.canBuildWizard());
+        }
         // ...
     }
 

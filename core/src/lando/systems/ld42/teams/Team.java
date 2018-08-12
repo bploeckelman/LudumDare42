@@ -91,7 +91,9 @@ public abstract class Team {
         unit.shadowColor.set(this.color.cpy());
         unit.shadowColor.a = 0.75f;
         unit.team = owner;
-        unit.pos.set(t.position);
+        float tx = TileUtils.getX(t.col, Tile.tileWidth) + Tile.tileWidth / 2f - unit.size.x / 2f;
+        float ty = TileUtils.getY(t.row, t.col, Tile.tileHeight)+ Tile.tileHeight - unit.size.y;
+        unit.pos.set(tx, ty);
         unit.moveTo(t);
         units.add(unit);
 
