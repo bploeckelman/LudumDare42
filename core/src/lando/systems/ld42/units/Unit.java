@@ -29,7 +29,7 @@ public abstract class Unit {
     public Color color;
     public Color shadowColor;
     public Tile tile;
-    public Team team;
+    public Team.Type team;
     public float moveDuration;
     public float animTime;
     public TextureRegion keyframe;
@@ -55,6 +55,7 @@ public abstract class Unit {
         this.dropShadow = LudumDare42.game.assets.whiteCircle; // brian frowny faces at self
         this.size.set(keyframe.getRegionWidth() * scale, keyframe.getRegionHeight() * scale);
         this.actionAvailable = 0;
+        this.team = null;
         this.attackPower = 0;
         this.defensePower = 0;
         this.dead = false;
