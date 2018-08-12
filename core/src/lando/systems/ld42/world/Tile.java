@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import lando.systems.ld42.Config;
 import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.accessors.Vector2Accessor;
+import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.utils.TileUtils;
 
 public class Tile {
@@ -38,21 +39,17 @@ public class Tile {
     public Color renderColor;
     public TileType type;
     public boolean dead;
-
-    /**
-     * Owner of the tile 0 - unclaimed, 1 - player, 2 - computer
-     */
-    public int owner;
+    public Team.Type owner;
 
     public Tile (int col, int row){
         this.world = World.THE_WORLD;
         this.col = col;
         this.row = row;
-        renderColor = new Color(1,1,1,1);
-        alpha = new MutableFloat(0);
+        this.renderColor = new Color(1,1,1,1);
+        this.alpha = new MutableFloat(0);
         this.position = new Vector2(TileUtils.getX(col, tileWidth), TileUtils.getY(row, col, tileHeight) - 120);
-        pickColor = TileUtils.getColorFromPosition(row, col);
-        texture = LudumDare42.game.assets.blankTile;
+        this.pickColor = TileUtils.getColorFromPosition(row, col);
+        this.texture = LudumDare42.game.assets.blankTile;
         Timeline.createSequence()
                 .pushPause((35 - (row + col))/15f)
                 .beginParallel()
@@ -63,8 +60,8 @@ public class Tile {
                         .target(1))
                 .end()
                 .start(LudumDare42.game.tween);
-
-        type = TileType.None;
+        this.type = TileType.None;
+        this.owner = Team.Type.none;
     }
 
 
@@ -74,11 +71,11 @@ public class Tile {
         batch.draw(texture, position.x, position.y, tileWidth, tileHeight);
 
         if (alpha.floatValue() >= 1f) {
-            if (owner == 1) {
+            if (owner == Team.Type.player) {
                 batch.setColor(new Color(Config.player_color.r, Config.player_color.g, Config.player_color.b, .3f));
                 batch.draw(LudumDare42.game.assets.whiteHex, position.x, position.y, tileWidth, tileHeight);
             }
-            if (owner == 2) {
+            if (owner == Team.Type.enemy) {
                 batch.setColor(new Color(Config.enemy_color.r, Config.enemy_color.g, Config.enemy_color.b, .3f));
                 batch.draw(LudumDare42.game.assets.whiteHex, position.x, position.y, tileWidth, tileHeight);
             }

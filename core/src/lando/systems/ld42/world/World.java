@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.*;
 import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.accessors.Vector2Accessor;
 import lando.systems.ld42.screens.*;
+import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.utils.TileUtils;
 
 public class World {
@@ -33,8 +34,8 @@ public class World {
         bounds = new Rectangle(0, 0,(Tile.tileWidth) * WORLD_WIDTH * .75f, Tile.tileHeight * WORLD_HEIGHT);
 
         adjacentTiles = new Array<Tile>();
-        tiles.get(0).owner = 1;
-        tiles.get(tiles.size-1).owner = 2;
+        tiles.get(0).owner = Team.Type.player;
+        tiles.get(tiles.size-1).owner = Team.Type.enemy;
 
         unclaimedTileCount = tiles.size - 2;
         enemyTileCount = 1;
@@ -143,7 +144,7 @@ public class World {
         Tile removeTile = null;
         unclaimedTiles.clear();
         for (Tile t : tiles){
-            if (t != null && t.owner == 0){
+            if (t != null && t.owner == Team.Type.none){
                 unclaimedTiles.add(t);
             }
         }
