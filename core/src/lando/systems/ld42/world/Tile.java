@@ -24,7 +24,8 @@ public class Tile {
         mountain,
         crystal,
         playerBase,
-        enemyBase
+        enemyBase,
+        empty
     }
 
     public static final float scale = 2f;
@@ -106,6 +107,7 @@ public class Tile {
         switch (type) {
             case forest: typeTexture = LudumDare42.game.assets.tree; break;
             case mountain: typeTexture = LudumDare42.game.assets.mountain; break;
+            case crystal: typeTexture = LudumDare42.game.assets.gem; break;
             case playerBase: {
                     typeTexture = LudumDare42.game.assets.castleAnimationPlayer.getKeyFrame(animState);
             } break;
@@ -164,6 +166,18 @@ public class Tile {
                 }))
                 .start(LudumDare42.game.tween);
 
+    }
+
+    // kind of temp
+    public void resetResource() {
+        switch (type) {
+            case crystal:
+            case forest:
+            case mountain:
+                type = Type.none;
+                break;
+
+        }
     }
 
 }

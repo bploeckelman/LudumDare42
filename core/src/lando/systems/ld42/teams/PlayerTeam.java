@@ -18,6 +18,8 @@ public class PlayerTeam extends Team {
         TileUtils.getNeighbors(castleTile, world, neighbors);
         for (Tile t : neighbors){
             t.owner = Type.player;
+            // prevents these tiles from being assigned a resource
+            t.type = Tile.Type.empty;
         }
     }
 

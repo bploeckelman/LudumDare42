@@ -123,21 +123,23 @@ public class World {
     }
 
     public void randomAssignTileType() {
-        for (Tile tile : tiles) {
-            int randIndex = MathUtils.random(0, 2);
-            tile.type = getTileTypeFromInt(randIndex);
-        }
+        assign(Tile.Type.crystal, 5, WORLD_WIDTH/3);
+        assign(Tile.Type.mountain, 15, WORLD_WIDTH/2);
+        assign(Tile.Type.forest, 20, WORLD_WIDTH);
     }
 
-    public Tile.Type getTileTypeFromInt(int num) {
-        Tile.Type type = Tile.Type.none;
-        switch (num) {
-            case 0: type = Tile.Type.forest; break;
-            case 1: type = Tile.Type.mountain; break;
-            default: break;
-        }
+    private void assign(Tile.Type type, int count, int columns) {
+        int colOffset = (WORLD_WIDTH - columns)/2;
+        while (count > 0) {
+            int x = MathUtils.random(0, columns - 1) + colOffset;
+            int y = MathUtils.random(0, WORLD_HEIGHT - 1);
 
-        return type;
+            Tile tile = tiles.get((y * WORLD_WIDTH) + x);
+            if (tile.type == Tile.Type.none) {
+                tile.type = type;
+                count--;
+            }
+        }
     }
 
     public int getTileIndex(Tile t){

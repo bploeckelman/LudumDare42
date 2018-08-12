@@ -18,6 +18,8 @@ public class EnemyTeam extends Team {
         TileUtils.getNeighbors(castleTile, world, neighbors);
         for (Tile t : neighbors){
             t.owner = Type.enemy;
+            // prevents from getting assigned a resource
+            t.type = Tile.Type.empty;
         }
     }
 

@@ -70,6 +70,9 @@ public class GameScreen extends BaseScreen {
     private float accum;
 
     public EnemyAI enemyAI;
+    // temp - remove
+    private Button genBoardButton;
+
     public ParticleSystem particleSystem;
 
     public GameScreen() {
@@ -110,7 +113,11 @@ public class GameScreen extends BaseScreen {
         this.endPhaseButton = new Button(LudumDare42.game.assets.whiteCircle, new Rectangle(690, 30, 50, 50), hudCamera);
         this.selectedUnitTile = playerTeam.castleTile;
 
+        // temp
+        this.genBoardButton = new Button(LudumDare42.game.assets.whiteCircle, new Rectangle(690, hudCamera.viewportHeight - 80, 50, 50), hudCamera);
+
         enemyAI = new EnemyAI(world, this);
+
         initializeUserInterface();
     }
 
@@ -254,6 +261,7 @@ public class GameScreen extends BaseScreen {
             }
 
             endPhaseButton.render(batch);
+            genBoardButton.render(batch);
 
         }
 
@@ -297,6 +305,13 @@ public class GameScreen extends BaseScreen {
 
         if (endPhaseButton.checkForTouch(screenX, screenY)){
             turnAction.nextTurn();
+        }
+
+        if (genBoardButton.checkForTouch(screenX, screenY)) {
+            for(Tile t: world.tiles) {
+                t.resetResource();
+            }
+            world.randomAssignTileType();
         }
 
         if (!transitioning) {
