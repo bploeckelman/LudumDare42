@@ -2,6 +2,7 @@ package lando.systems.ld42.teams;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import lando.systems.ld42.units.*;
 import lando.systems.ld42.utils.TileUtils;
@@ -24,11 +25,15 @@ public abstract class Team {
     public Array<Tile> buildSpots;
     protected Array<Tile> neighbors;
 
-    public Team(World world) {
+    private CastleState _castleState;
+
+    public Team(World world, Type teamType) {
         this.buildSpots = new Array<Tile>();
         this.world = world;
         this.units = new Array<Unit>();
         this.neighbors = new Array<Tile>();
+        owner = teamType;
+        _castleState = new CastleState(owner);
     }
 
     public void update(float dt) {
@@ -39,6 +44,19 @@ public abstract class Team {
                 units.removeIndex(i);
             }
         }
+        _castleState.update(dt);
+    }
+
+    public TextureRegion getImage() {
+        return _castleState.getImage();
+    }
+
+    public void takeOver() {
+        _castleState.switchTeam();
+    }
+
+    public void setTeam(Type teamType) {
+        _castleState.raiseFlag(teamType);
     }
 
     public void render(SpriteBatch batch) {

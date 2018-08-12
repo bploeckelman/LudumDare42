@@ -8,9 +8,8 @@ import lando.systems.ld42.world.World;
 
 public class PlayerTeam extends Team {
 
-    public PlayerTeam(World world, Assets assets) {
-        super(world);
-        this.owner = Type.player;
+    public PlayerTeam(World world) {
+        super(world, Type.player);
         this.color = Config.player_color;
         this.castleTile = world.getTile(0, World.WORLD_HEIGHT / 2);
         this.castleTile.owner = Type.player;
@@ -22,6 +21,4 @@ public class PlayerTeam extends Team {
             t.type = Tile.Type.empty;
         }
     }
-
-
 }

@@ -87,15 +87,11 @@ public class Tile {
         batch.setColor(renderColor);
         batch.draw(texture, position.x, position.y, tileWidth, tileHeight);
 
-        if (alpha.floatValue() >= 1f) {
-            if (owner == Team.Type.player) {
-                batch.setColor(new Color(Config.player_color.r, Config.player_color.g, Config.player_color.b, .5f));
-                batch.draw(LudumDare42.game.assets.whiteHex, position.x, position.y, tileWidth, tileHeight);
-            }
-            if (owner == Team.Type.enemy) {
-                batch.setColor(new Color(Config.enemy_color.r, Config.enemy_color.g, Config.enemy_color.b, .5f));
-                batch.draw(LudumDare42.game.assets.whiteHex, position.x, position.y, tileWidth, tileHeight);
-            }
+        // draw owner color
+        if (owner != Team.Type.none) {
+            Color teamColor = (owner == Team.Type.player) ? Config.player_color : Config.enemy_color;
+            batch.setColor(new Color(teamColor.r, teamColor.g, teamColor.b, .5f));
+            batch.draw(LudumDare42.game.assets.whiteHex, position.x, position.y, tileWidth, tileHeight);
         }
 
         batch.setColor(renderColor);
@@ -103,39 +99,52 @@ public class Tile {
     }
 
     public void renderType(SpriteBatch batch) {
-        TextureRegion typeTexture = null;
         switch (type) {
-            case forest: typeTexture = LudumDare42.game.assets.tree; break;
-            case mountain: typeTexture = LudumDare42.game.assets.mountain; break;
-            case crystal: typeTexture = LudumDare42.game.assets.gem; break;
-            case playerBase: {
-                typeTexture = LudumDare42.game.assets.castleRaiseAnimationPlayer.getKeyFrame(animState);
-            } break;
-            case enemyBase: {
-                typeTexture = LudumDare42.game.assets.castleRaiseAnimationEnemy.getKeyFrame(animState);
-            } break;
-            default: break;
-        }
-
-        if (typeTexture != null) {
-            if (type == Type.playerBase || type == Type.enemyBase) {
-                Color color = (type == Type.playerBase) ? Config.player_color : Config.enemy_color;
-                color.a = alpha.floatValue();
-
-                batch.setColor(color);
-                batch.draw(hexBase, position.x, position.y, Tile.tileWidth, Tile.tileHeight);
-
-                batch.setColor(1f, 1f, 1f, alpha.floatValue());
-                batch.draw(hexOverlay, position.x, position.y, Tile.tileWidth, Tile.tileHeight);
-
-                batch.draw(typeTexture, position.x, position.y, Tile.tileWidth, Tile.tileHeight);
-            } else {
-                int typeXTexOffset = texture.getRegionWidth() / 2;
-                int typeYTextOffset = texture.getRegionHeight() / 2;
-                batch.draw(typeTexture, position.x + typeXTexOffset, position.y + typeYTextOffset);
-            }
+            case forest:
+                renderResource(batch, LudumDare42.game.assets.tree);
+                break;
+            case mountain:
+                renderResource(batch, LudumDare42.game.assets.mountain);
+                break;
+            case crystal:
+                renderResource(batch, LudumDare42.game.assets.gem);
+                break;
+            case playerBase:
+            case enemyBase:
+                Team team = this.world.getTeam(type);
+                if (team != null) {
+                    batch.draw(team.getImage(), position.x, position.y, Tile.tileWidth, Tile.tileHeight);
+                }
+                break;
+            default:
+                break;
         }
     }
+
+    private void renderResource(SpriteBatch batch, TextureRegion image) {
+        int typeXTexOffset = texture.getRegionWidth() / 2;
+        int typeYTextOffset = texture.getRegionHeight() / 2;
+        batch.draw(image, position.x + typeXTexOffset, position.y + typeYTextOffset);
+    }
+
+//    private void stuff() {
+//        if (typeTexture != null) {
+//            if (type == Type.playerBase || type == Type.enemyBase) {
+//                Color color = (type == Type.playerBase) ? Config.player_color : Config.enemy_color;
+//                color.a = alpha.floatValue();
+//
+//                batch.setColor(color);
+//                batch.draw(hexBase, position.x, position.y, Tile.tileWidth, Tile.tileHeight);
+//
+//                batch.setColor(1f, 1f, 1f, alpha.floatValue());
+//                batch.draw(hexOverlay, position.x, position.y, Tile.tileWidth, Tile.tileHeight);
+//
+//                batch.draw(typeTexture, position.x, position.y, Tile.tileWidth, Tile.tileHeight);
+//            } else {
+//
+//            }
+//        }
+//    }
 
     public void renderPickBuffer(SpriteBatch batch){
         batch.setColor(pickColor);

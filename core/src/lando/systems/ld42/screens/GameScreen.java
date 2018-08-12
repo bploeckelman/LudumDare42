@@ -98,8 +98,8 @@ public class GameScreen extends BaseScreen {
         this.shaker = new Screenshake(120, 3);
         this.cameraTouchStart = new Vector3();
         this.touchStart = new Vector3();
-        this.playerTeam = new PlayerTeam(world, assets);
-        this.enemyTeam = new EnemyTeam(world, assets);
+        this.playerTeam = new PlayerTeam(world);
+        this.enemyTeam = new EnemyTeam(world);
         this.turnAction = new TurnAction(playerTeam, enemyTeam);
         this.hud = new PlayerHUD(this);
         this.pickBuffer = new FrameBuffer(Pixmap.Format.RGBA8888,
@@ -325,6 +325,8 @@ public class GameScreen extends BaseScreen {
                 t.resetResource();
             }
             world.randomAssignTileType();
+            playerTeam.takeOver();
+            enemyTeam.takeOver();
         }
 
         if (!transitioning) {

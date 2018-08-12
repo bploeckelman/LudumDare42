@@ -290,7 +290,16 @@ public class World {
                 }
             }
         }
+    }
 
+    public Team getTeam(Tile.Type type) {
+        switch (type) {
+            case playerBase:
+                return screen.playerTeam;
+            case enemyBase:
+                return screen.enemyTeam;
+        }
 
+        return null;
     }
 }

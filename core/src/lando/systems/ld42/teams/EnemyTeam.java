@@ -8,9 +8,8 @@ import lando.systems.ld42.world.World;
 
 public class EnemyTeam extends Team {
 
-    public EnemyTeam(World world, Assets assets) {
-        super(world);
-        this.owner = Type.enemy;
+    public EnemyTeam(World world) {
+        super(world, Type.enemy);
         this.color = Config.enemy_color;
         this.castleTile = world.getTile(World.WORLD_WIDTH - 1, World.WORLD_HEIGHT / 2);
         this.castleTile.owner = Type.enemy;
