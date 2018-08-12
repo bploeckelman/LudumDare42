@@ -195,9 +195,9 @@ public class GameScreen extends BaseScreen {
                     for (Tile a : adjacentTiles){
                         a.renderHightlight(batch, Color.BLUE);
                     }
-                    if (t.owner == 1) {
+                    if (t.owner == Team.Type.player) {
                         calculateInformationForPlayerTile(adjacentTiles, t);
-                    } else if (t.owner == 2) {
+                    } else if (t.owner == Team.Type.enemy) {
                         calculateInformationForEnemyTile(adjacentTiles, t);
                     } else {
                         tooltip.text = null;
