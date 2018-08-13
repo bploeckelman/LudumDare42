@@ -65,7 +65,7 @@ public class Tile {
         this.animState = 0f;
         this.position = new Vector2(TileUtils.getX(col, tileWidth), TileUtils.getY(row, col, tileHeight) - 120);
         this.pickColor = TileUtils.getColorFromPosition(row, col);
-        int rand = MathUtils.random(5);
+        int rand = MathUtils.random(4);
         switch (rand){
             case 0:
                 this.texture = LudumDare42.game.assets.blankTile;
@@ -81,9 +81,6 @@ public class Tile {
                 break;
             case 4:
                 this.texture = LudumDare42.game.assets.blankTile4;
-                break;
-            case 5:
-                this.texture = LudumDare42.game.assets.blankTile5;
                 break;
             default:
                 this.texture = LudumDare42.game.assets.blankTile;
