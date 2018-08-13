@@ -11,6 +11,7 @@
     -->
     <extend-configuration-property name="gdx.reflect.include" value="com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion" />
     <extend-configuration-property name="gdx.reflect.include" value="lando.systems.ld42.particles.Particle" />
+    <extend-configuration-property name="gdx.reflect.include" value="lando.systems.ld42.particles.Sparkle" />
 
 
     <entry-point class='lando.systems.ld42.client.HtmlLauncher' />

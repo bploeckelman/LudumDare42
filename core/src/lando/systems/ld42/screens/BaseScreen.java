@@ -46,12 +46,14 @@ public abstract class BaseScreen extends InputAdapter {
         this.alpha = new MutableFloat(0f);
 
         float aspect = (float) Gdx.graphics.getWidth() / (float) Gdx.graphics.getHeight();
-        this.worldCamera = new OrthographicCamera(Config.window_width, Config.window_height / aspect);
+        this.worldCamera = new OrthographicCamera();
+        this.worldCamera.setToOrtho(false, Config.window_width, Config.window_height / aspect);
         this.worldCamera.translate(this.worldCamera.viewportWidth / 2f, this.worldCamera.viewportHeight / 2f, 0f);
         this.worldCamera.update();
 
-        this.hudCamera = new OrthographicCamera(Config.window_width, Config.window_height / aspect);
-        this.hudCamera.translate(this.hudCamera.viewportWidth / 2f, this.hudCamera.viewportHeight / 2f, 0f);
+        this.hudCamera = new OrthographicCamera();
+        this.hudCamera.setToOrtho(false, Config.window_width, Config.window_height / aspect);
+//        this.hudCamera.translate(this.hudCamera.viewportWidth / 2f, this.hudCamera.viewportHeight / 2f, 0f);
         this.hudCamera.update();
     }
 

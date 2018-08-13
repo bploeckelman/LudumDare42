@@ -1,7 +1,9 @@
 package lando.systems.ld42.ui;
 
+import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.equations.Bounce;
 import aurelienribon.tweenengine.equations.Quint;
 import com.badlogic.gdx.graphics.Camera;
@@ -10,13 +12,21 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
+import com.badlogic.gdx.utils.Pools;
 import lando.systems.ld42.Assets;
 import lando.systems.ld42.Config;
 import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.accessors.ColorAccessor;
 import lando.systems.ld42.accessors.RectangleAccessor;
+import lando.systems.ld42.particles.Sparkle;
 import lando.systems.ld42.screens.GameScreen;
+import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.world.Tile;
+import lando.systems.ld42.world.World;
 
 public class StatusUI extends UserInterface {
 
@@ -24,6 +34,11 @@ public class StatusUI extends UserInterface {
     private Assets assets;
     private GlyphLayout layout;
     private Color color;
+    private Camera camera;
+    private Vector3 proj;
+
+    private final Array<Sparkle> activeSparkles = new Array<Sparkle>(false, 128);
+    private final Pool<Sparkle> sparklePool = Pools.get(Sparkle.class, 256);
 
     private float margin = 10f;
     private float pad = 5f;
@@ -40,23 +55,66 @@ public class StatusUI extends UserInterface {
     private TextureRegion archer;
     private TextureRegion wizard;
 
+    public Vector2 territoryPlayerTarget;
+    public Vector2 territoryEnemyTarget;
+
     public StatusUI(Assets assets) {
         this.assets = assets;
         this.layout = assets.layout;
         this.color = new Color(1f, 1f, 1f, 0f);
+        this.proj = new Vector3();
         this.bounds = new Rectangle();
         this.boundsPlayerUnits = new Rectangle();
         this.boundsEnemyTerritory = new Rectangle();
         this.boundsPlayerTerritory = new Rectangle();
+        this.territoryPlayerTarget = new Vector2();
+        this.territoryEnemyTarget = new Vector2();
         this.peasant = assets.unitAnimationPeasant.getKeyFrame(0);
         this.soldier = assets.unitAnimationSoldier.getKeyFrame(0);
         this.archer  = assets.unitAnimationArcher.getKeyFrame(0);
         this.wizard  = assets.unitAnimationWizard.getKeyFrame(0);
+        for (int i = 0; i < 256; ++i) {
+            sparklePool.free(new Sparkle());
+        }
     }
 
     @Override
     public void update(float dt) {
-        // ...
+        for (int i = activeSparkles.size - 1; i >= 0; --i) {
+            Sparkle sparkle = activeSparkles.get(i);
+            sparkle.update(dt);
+            if (sparkle.dead) {
+                // TODO: increment claimed counter for this sparkle here?
+                activeSparkles.removeIndex(i);
+                sparklePool.free(sparkle);
+            }
+        }
+    }
+
+    public void addClaimedTerritorySparkle(Tile tile, Team.Type teamType) {
+        float sparkleWidth = LudumDare42.game.assets.sparkle.getRegionWidth();
+        float sparkleHeight = LudumDare42.game.assets.sparkle.getRegionHeight();
+
+        // NOTE: this converts world -> hud coords properly
+
+        // Calculate the middle of the tile
+        proj.set(tile.position.x + Tile.tileWidth / 2f,
+                 tile.position.y + Tile.tileHeight / 2f, 0f);
+        // Convert world -> screen coords
+        World.THE_WORLD.screen.worldCamera.project(proj);
+        // Screen coords has an inverted Y axis, so re-invert to get Y-up
+        proj.y = Config.window_height - proj.y;
+        // Convert screen -> hud coords
+        World.THE_WORLD.screen.hudCamera.unproject(proj);
+
+        Sparkle sparkle = sparklePool.obtain();
+        sparkle.init(
+                proj.x - sparkleWidth / 2f,
+                proj.y - sparkleHeight / 2f,
+                (teamType == Team.Type.player) ? territoryPlayerTarget.x : territoryEnemyTarget.x,
+                (teamType == Team.Type.player) ? territoryPlayerTarget.y : territoryEnemyTarget.y,
+                (teamType == Team.Type.player) ? Config.player_color   : Config.enemy_color);
+        activeSparkles.add(sparkle);
     }
 
     public void render(SpriteBatch batch) {
@@ -154,10 +212,15 @@ public class StatusUI extends UserInterface {
         }
         Assets.font.getData().setScale(originalScaleX, originalScaleY);
         batch.setColor(1f, 1f, 1f, 1f);
+
+        for (Sparkle sparkle : activeSparkles) {
+            sparkle.render(batch);
+        }
     }
 
-    public void rebuild(GameScreen gameScreen, Camera camera) {
+    public void rebuild(final GameScreen gameScreen, final Camera camera) {
         this.gameScreen = gameScreen;
+        this.camera = camera;
         this.width = camera.viewportWidth;
         this.height = 40f;
 
@@ -173,12 +236,18 @@ public class StatusUI extends UserInterface {
         float unitsPlayerEndingY = lowerLeftY - unitsOffsetY;
 
         float territoryEnemyInitialX = camera.viewportWidth;
-        float territoryEnemyEndingX = camera.viewportWidth - segmentTerritoryWidth;//territoryPlayerEndingX + territoryEnemyInitialX + segmentUnitsWidth;
+        float territoryEnemyEndingX = camera.viewportWidth - segmentTerritoryWidth;
 
         bounds.set(0f, lowerLeftY, width, height);
         boundsPlayerTerritory.set(territoryPlayerInitialX, lowerLeftY, segmentTerritoryWidth, height);
         boundsPlayerUnits.set(territoryPlayerEndingX + boundsPlayerTerritory.width, unitsPlayerInitialY, segmentUnitsWidth, height + unitsOffsetY);
         boundsEnemyTerritory.set(territoryEnemyInitialX, lowerLeftY, segmentTerritoryWidth, height);
+
+        float textOffsetX = (1 / 4f) * segmentTerritoryWidth;
+        territoryPlayerTarget.set(territoryPlayerEndingX + boundsPlayerTerritory.width / 2f + textOffsetX,
+                                  boundsPlayerTerritory.y + boundsPlayerTerritory.height / 2f - assets.sparkle.getRegionHeight() / 2f);
+        territoryEnemyTarget.set(territoryEnemyEndingX + boundsEnemyTerritory.width / 2f + textOffsetX,
+                                 boundsEnemyTerritory.y + boundsEnemyTerritory.height / 2f - assets.sparkle.getRegionHeight() / 2f);
 
         float duration = 1.25f;
         float initialDelay = 3.5f; // don't know why pushPause() isn't working
@@ -206,6 +275,17 @@ public class StatusUI extends UserInterface {
                                         )
                                 )
                 )
+                .setCallback(new TweenCallback() {
+                    @Override
+                    public void onEvent(int type, BaseTween<?> source) {
+                        // Do some sparkles
+                        for (Tile tile : gameScreen.world.tiles) {
+                            if (tile == null) continue;
+                            if (tile.owner == Team.Type.none) continue;
+                            addClaimedTerritorySparkle(tile, tile.owner);
+                        }
+                    }
+                })
                 .start(LudumDare42.game.tween);
     }
 

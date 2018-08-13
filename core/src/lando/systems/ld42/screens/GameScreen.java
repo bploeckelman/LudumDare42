@@ -175,10 +175,6 @@ public class GameScreen extends BaseScreen {
             world.pickRemoveTileCleverly();
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P)){
-            particleSystem.addBattleCloud(world.tiles.get(3), world.tiles.get(4));
-        }
-
         time += dt;
 
         world.update(dt);

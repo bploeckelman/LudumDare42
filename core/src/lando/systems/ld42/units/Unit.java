@@ -19,6 +19,7 @@ import lando.systems.ld42.accessors.Vector2Accessor;
 import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.utils.TileUtils;
 import lando.systems.ld42.world.Tile;
+import lando.systems.ld42.world.World;
 
 public abstract class Unit {
 
@@ -96,8 +97,9 @@ public abstract class Unit {
     private float jumpDuration = 1f;
     private float jumpDelay = 3f;
     public void render(SpriteBatch batch) {
-//        batch.setColor(shadowColor);
-//        batch.draw(dropShadow, pos.x, pos.y, size.x, size.y);
+        batch.setColor(shadowColor);
+        batch.draw(dropShadow, pos.x, pos.y, size.x - 4, size.y - 5);
+
         float yOffset = 0;
         if (actionAvailable > 0){
             yOffset = animTime % jumpDelay;
@@ -117,10 +119,14 @@ public abstract class Unit {
     }
 
     public void takeOverTile(Tile tile, Team.Type team) {
+        if (tile.owner != team) {
+            World.THE_WORLD.screen.statusUI.addClaimedTerritorySparkle(tile, team);
+        }
         tile.owner = team;
     }
 
     public void tileGotSquanched() {
+        // TODO: kick off a blood particle effect
         float peak = pos.y + 160f;
         float trough = pos.y - 50f;
         Timeline.createSequence()

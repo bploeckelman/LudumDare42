@@ -61,6 +61,7 @@ public class Assets implements Disposable {
     public TextureRegion highlightHex;
     public TextureRegion emptyHex;
     public TextureRegion blankTile;
+    public TextureRegion sparkle;
     public NinePatch ninePatchScrews;
     public NinePatch ninePatchStats;
 
@@ -104,7 +105,7 @@ public class Assets implements Disposable {
     public ShaderProgram waterShader;
 
     public ShaderProgram cloudShader;
-    public static NinePatch tooltipNinePatch;
+    public static NinePatch ninePatchTooltip;
 
     public boolean initialized;
 
@@ -153,23 +154,23 @@ public class Assets implements Disposable {
 
         // Cache TextureRegions from TextureAtlas in fields for quicker access
         atlas = mgr.get(atlasAsset);
-        tooltipNinePatch = new NinePatch(atlas.findRegion("tooltip-ninepatch"), 10, 10, 10, 10);
         testTexture = atlas.findRegion("badlogic");
         whitePixel = atlas.findRegion("white-pixel");
         whiteCircle = atlas.findRegion("white-circle");
-
         defaultHex = atlas.findRegion("default-hex");
         whiteHex = atlas.findRegion("white-hex");
         highlightHex = atlas.findRegion("tile-outline");
         emptyHex = atlas.findRegion("tile-empty");
         blankTile = atlas.findRegion("tile-blank");
+        sparkle = atlas.findRegion("sparkle");
 
         tree = atlas.findRegion("tree");
         mountain = atlas.findRegion("mountain");
         gem = atlas.findRegion("gem");
 
+        ninePatchTooltip = new NinePatch(atlas.findRegion("ninepatch-tooltip"), 10, 10, 10, 10);
         ninePatchScrews = new NinePatch(atlas.findRegion("ninepatch-screws"), 6, 6, 6, 6);
-        ninePatchStats = new NinePatch(atlas.findRegion("stats-ninepatch"), 10, 10, 10, 10);
+        ninePatchStats = new NinePatch(atlas.findRegion("ninepatch-stats"), 10, 10, 10, 10);
 
         unitHeadPeasant = atlas.findRegion("unit-peasant-head");
         unitHeadSoldier = atlas.findRegion("unit-soldier-head");
