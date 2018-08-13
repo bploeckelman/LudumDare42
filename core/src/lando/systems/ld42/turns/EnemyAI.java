@@ -211,7 +211,16 @@ public class EnemyAI {
     private void doRemoveTile(){
         screen.turnNumber++;
         delay = 4f;
-        world.pickRemoveTileCleverly();
+        if (screen.turnNumber < 5 || screen.turnNumber > 20){
+            world.pickRemoveTileCleverly();
+        } else if (screen.turnNumber < 10 || screen.turnNumber > 15){
+            world.pickRemoveTileCleverly();
+            world.pickRemoveTileCleverly();
+        } else {
+            world.pickRemoveTileCleverly();
+            world.pickRemoveTileCleverly();
+            world.pickRemoveTileCleverly();
+        }
         if (screen.turnNumber % turnsPerSquanch == 0){
             phase = Phase.Squish;
         } else {
@@ -232,15 +241,4 @@ public class EnemyAI {
         phase = Phase.Recruit;
     }
 
-    public void endTurn(){
-        screen.turnAction.nextTurn();
-        screen.selectedUnitTile = screen.playerTeam.castleTile;
-        screen.turnNumber++;
-        world.pickRemoveTileCleverly();
-        if (screen.turnNumber % 8 == 0) {
-            world.squishHoles();
-            screen.shaker.shakeDuration = 25f;
-            screen.shaker.shake(2f);
-        }
-    }
 }

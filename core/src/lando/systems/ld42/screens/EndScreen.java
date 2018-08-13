@@ -28,7 +28,8 @@ public class EndScreen extends BaseScreen{
     @Override
     public void update(float dt) {
         if (Gdx.input.justTouched()) {
-            game.setScreen(new TitleScreen());
+            //enable this for testing only
+//            game.setScreen(new TitleScreen());
         }
     }
 
