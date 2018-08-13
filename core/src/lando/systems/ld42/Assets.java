@@ -93,6 +93,7 @@ public class Assets implements Disposable {
 
     public static BitmapFont font;
     public ShaderProgram fontShader;
+    public BitmapFont titleFont;
 
     public Array<ShaderProgram> randomTransitions;
     public ShaderProgram blindsShader;
@@ -217,6 +218,10 @@ public class Assets implements Disposable {
         font.getData().setScale(.3f);
         font.setUseIntegerPositions(false);
         fontShader = mgr.get(distanceFieldShaderAsset);
+
+        titleFont = mgr.get(distanceFieldFontAsset);
+        titleFont.getData().setScale(1f);
+        titleFont.setUseIntegerPositions(false);
 
         blindsShader     = mgr.get(shaderBlindsAsset);
         fadeShader       = mgr.get(shaderFadeAsset);
