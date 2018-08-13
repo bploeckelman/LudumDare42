@@ -266,10 +266,21 @@ public class GameScreen extends BaseScreen {
                 for (Tile adjacentTile : adjacentTiles) {
                     adjacentTile.renderHighlight(batch, Color.BLUE);
                 }
+
             }
+
+
 
             playerTeam.render(batch);
             enemyTeam.render(batch);
+
+
+            if (selectedUnitTile != null && turnAction.turn  == Turn.PLAYER_ACTION){
+                Tile touchedTile = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
+                if (touchedTile != null && adjacentTiles.contains(touchedTile, true)){
+                    touchedTile.renderAttackStats(batch);
+                }
+            }
 
             particleSystem.render(batch);
         }
@@ -402,7 +413,7 @@ public class GameScreen extends BaseScreen {
 
     private int calculateDefense(Tile currentTile, Team.Type team) {
         int defense = 0;
-
+        TileUtils.getNeighbors(currentTile, world, adjacentTiles);
         if (currentTile.occupant != null && currentTile.occupant.team == team) {
             defense += currentTile.occupant.defensePower;
 

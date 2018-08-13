@@ -7,9 +7,12 @@ import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.equations.Back;
 import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+import lando.systems.ld42.Assets;
 import lando.systems.ld42.Config;
 import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.accessors.Vector2Accessor;
@@ -48,6 +51,7 @@ public class Tile {
     public boolean animating;
     public Team.Type owner;
     public Unit occupant;
+    public Array<Tile> tempNeighbors;
 
     public Tile (int col, int row){
         this.world = World.THE_WORLD;
@@ -126,6 +130,27 @@ public class Tile {
 
     private void renderResource(SpriteBatch batch, TextureRegion image) {
         batch.draw(image, position.x, position.y, Tile.tileWidth, Tile.tileHeight);
+    }
+
+    public void renderAttackStats(SpriteBatch batch){
+        batch.setColor(Color.WHITE);
+        float center = position.x + tileWidth/2;
+        float y = position.y + tileHeight + 42;
+        LudumDare42.game.assets.ninePatchTooltip.draw(batch, position.x, position.y + tileHeight, Tile.tileWidth, 52);
+        GlyphLayout layout = LudumDare42.game.assets.layout;
+
+        int defensePower = TileUtils.calculateDefense(this, owner, world);
+        int attackPower = TileUtils.calculateAttack(this, Team.Type.player, world);
+
+        Assets.font.getData().setScale(.3f);
+        layout.setText(Assets.font, ""+attackPower);
+        batch.draw(LudumDare42.game.assets.sword, center - layout.width - 47, y - 30, 32, 32);
+        Assets.drawString(batch, ""+attackPower, center - 5 - layout.width, y - 16 + layout.height/2f, Color.WHITE, .3f, Assets.font);
+
+        layout.setText(Assets.font, ""+defensePower);
+        batch.draw(LudumDare42.game.assets.sheild, center + 5, y - 30, 32, 32);
+        Assets.drawString(batch, ""+defensePower, center + 47, y - 16 + layout.height/2f, Color.WHITE, .3f, Assets.font);
+
     }
 
 //    private void stuff() {

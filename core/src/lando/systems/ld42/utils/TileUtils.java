@@ -3,12 +3,15 @@ package lando.systems.ld42.utils;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import lando.systems.ld42.teams.Team;
+import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
 
 public class TileUtils {
 
     public static float pickColorScale = 5f;
+    public static Array<Tile> neighbors = new Array<Tile>();
 
     public static float getX(int col, float tileWidth) {
         float x = tileWidth * col * .75f;
@@ -65,5 +68,33 @@ public class TileUtils {
     public static Tile getTopRightNeighbor(int col, int row, World world){
         int colOffset = col %2;
         return  world.getTile(col + 1, row + -1 + colOffset);
+    }
+
+    public static int calculateDefense(Tile currentTile, Team.Type team, World world) {
+        int defense = 0;
+        neighbors.clear();
+        TileUtils.getNeighbors(currentTile, world, neighbors);
+        if (currentTile.occupant != null && currentTile.occupant.team == team) {
+            defense += currentTile.occupant.defensePower;
+
+            for (Tile tile : neighbors) {
+                if (tile.occupant != null && tile.occupant.team == team) {
+                    defense += tile.occupant.defensePower;
+                }
+            }
+        }
+        return defense;
+    }
+
+    public static int calculateAttack(Tile currentTile, Team.Type team, World world) {
+        int attack = 0;
+        neighbors.clear();
+        TileUtils.getNeighbors(currentTile, world, neighbors);
+        for (Tile tile : neighbors) {
+            if (tile.occupant != null && tile.occupant.team == team) {
+                attack += tile.occupant.attackPower;
+            }
+        }
+        return attack;
     }
 }
