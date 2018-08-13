@@ -385,7 +385,7 @@ public class GameScreen extends BaseScreen {
         int enemyAttack = calculateAttack(null, Team.Type.enemy);
 
         String str = "Player Defense: " + playerDefense + "\nEnemy Attack: " + enemyAttack;
-        tooltip.setText(str);
+        tooltip.setText(str, currentTile);
     }
 
     private void calculateInformationForEnemyTile(Tile currentTile) {
@@ -397,7 +397,7 @@ public class GameScreen extends BaseScreen {
         int playerAttack = calculateAttack(null, Team.Type.player);
 
         String str = "Enemy Defense: " + enemyDefense + "\nPlayer Attack: " + playerAttack;
-        tooltip.setText(str);
+        tooltip.setText(str, currentTile);
     }
 
     private int calculateDefense(Tile currentTile, Team.Type team) {

@@ -8,8 +8,8 @@ import com.badlogic.gdx.utils.Align;
 import lando.systems.ld42.Assets;
 import lando.systems.ld42.Config;
 import lando.systems.ld42.LudumDare42;
-
-import static com.badlogic.gdx.Gdx.input;
+import lando.systems.ld42.world.Tile;
+import lando.systems.ld42.world.World;
 
 public class Tooltip {
     private static final float TOOLTIP_TEXT_OFFSET_Y = 3f; // Catches characters with ligatures below the baseline
@@ -25,12 +25,14 @@ public class Tooltip {
     private float tooltipTextOffsetY;
     private Vector3 tempVec3 = new Vector3();
 
+    private float x,y;
+
     public void render(SpriteBatch batch, OrthographicCamera hudCamera){
         // Tooltip
         if (text == null || text.equals("")) return;
 
-        tempVec3.set(input.getX(), input.getY(), 0);
-        hudCamera.unproject(tempVec3);
+        tempVec3.set(x, y, 0);
+
         float tX = tempVec3.x;
         float tY = tempVec3.y;
         float backgroundX;
@@ -72,9 +74,14 @@ public class Tooltip {
                 Assets.font, TOOLTIP_MAX_WIDTH, Align.center);
     }
 
-    public void setText(String text) {
+    public void setText(String text, Tile tile) {
         this.text = text;
         if (text != null) {
+            tempVec3.set(tile.position.x, tile.position.y, 0f);
+            World.THE_WORLD.screen.worldCamera.project(tempVec3);
+            x = tempVec3.x;
+            y = tempVec3.y;
+
             Assets.font.getData().setScale(TOOLTIP_TEXT_SCALE);
             LudumDare42.game.assets.layout.setText(Assets.font, text, Color.WHITE, TOOLTIP_MAX_WIDTH, Align.center, true);
             tooltipBackgroundHeight = LudumDare42.game.assets.layout.height + (TOOLTIP_TEXT_PADDING_Y * 2);
