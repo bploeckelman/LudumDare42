@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.accessors.ColorAccessor;
@@ -40,8 +41,10 @@ public abstract class Unit {
     public int actionPoint;
     public int actionAvailable;
     public boolean dead;
+    public Interpolation bounceInterpoation;
 
     public Unit(Animation<TextureRegion> animation) {
+        bounceInterpoation = Interpolation.bounceOut;
         this.tile = null;
         this.pos = new Vector2();
         this.size = new Vector2();
@@ -89,16 +92,27 @@ public abstract class Unit {
              .start(LudumDare42.game.tween);
     }
 
+
+    private float jumpDuration = 1f;
+    private float jumpDelay = 3f;
     public void render(SpriteBatch batch) {
 //        batch.setColor(shadowColor);
 //        batch.draw(dropShadow, pos.x, pos.y, size.x, size.y);
-
+        float yOffset = 0;
+        if (actionAvailable > 0){
+            yOffset = animTime % jumpDelay;
+            yOffset = Math.max(0, yOffset - (jumpDelay-jumpDuration)) / jumpDuration;
+            if (yOffset > 0) {
+                yOffset = 1f - bounceInterpoation.apply(yOffset);
+                yOffset *= 30;
+            }
+        }
         batch.setColor(color);
-        batch.draw(keyframe, pos.x, pos.y, size.x / 2f, size.y / 2f, size.x, size.y, 1f, 1f, rotation.floatValue());
+        batch.draw(keyframe, pos.x, pos.y + yOffset, size.x / 2f, size.y / 2f, size.x, size.y, 1f, 1f, rotation.floatValue());
 
         batch.setColor(1f, 1f, 1f, 1f);
         if (actionAvailable > 0) {
-            batch.draw(LudumDare42.game.assets.bootTexture, pos.x, pos.y + size.y - 20, 20, 20);
+            batch.draw(LudumDare42.game.assets.bootTexture, pos.x, pos.y + size.y - 20 + yOffset, 20, 20);
         }
     }
 
