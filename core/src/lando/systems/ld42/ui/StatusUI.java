@@ -4,7 +4,6 @@ import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
-import aurelienribon.tweenengine.equations.Back;
 import aurelienribon.tweenengine.equations.Bounce;
 import aurelienribon.tweenengine.equations.Quint;
 import com.badlogic.gdx.Gdx;
@@ -131,7 +130,7 @@ public class StatusUI extends UserInterface {
             previousRoundNumber = gameScreen.turnNumber;
             Timeline.createSequence()
                     .push(
-                            Tween.to(boundsRoundCounter, Vector2Accessor.Y, 0.33f)
+                            Tween.to(boundsRoundCounter, Vector2Accessor.Y, 0.2f)
                                  .target(boundsRoundCounter.height / 2f)
                     )
                     .push(
@@ -152,14 +151,16 @@ public class StatusUI extends UserInterface {
             previousTurn = gameScreen.turnAction.turn;
             previousEnemyPhase = gameScreen.enemyAI.phase;
 
-            if (currentTurn == Turn.PLAYER_RECRUITMENT) turnText = "Player Recruit";
-            else if (currentTurn == Turn.PLAYER_ACTION) turnText = "Player Attack";
+            if (currentTurn == Turn.PLAYER_RECRUITMENT) turnText = "Recruit";
+            else if (currentTurn == Turn.PLAYER_ACTION) turnText = "Attack";
             else if (currentTurn == Turn.ENEMY) {
-                if      (currentEnemyPhase == EnemyAI.Phase.Recruit)    turnText = "Enemy Recruit";
-                else if (currentEnemyPhase == EnemyAI.Phase.Move)       turnText = "Enemy Attack";
+                if      (currentEnemyPhase == EnemyAI.Phase.Recruit)    turnText = "Enemy Turn";
+                else if (currentEnemyPhase == EnemyAI.Phase.Move) {
+                    kickoffPhaseTransition = false;
+                }
                 else if (currentEnemyPhase == EnemyAI.Phase.RemoveTile) turnText = "Kingdoms Fall";
                 else if (currentEnemyPhase == EnemyAI.Phase.Squish)     turnText = "Heal The World";
-                else if (currentEnemyPhase == EnemyAI.Phase.Finish)     {
+                else if (currentEnemyPhase == EnemyAI.Phase.Finish) {
                     kickoffPhaseTransition = false;
                 }
             }
@@ -353,17 +354,17 @@ public class StatusUI extends UserInterface {
         // Draw tooltip
         renderToolTip(batch);
 
-        // Draw phase transition card
+        // Draw turn phase text
         batch.setColor(0f, 0f, 0f, color.a);
         batch.draw(assets.whitePixel, boundsTurnText.x, boundsTurnText.y, boundsTurnText.width, boundsTurnText.height);
         batch.setColor(1, 1f, 1f, color.a);
         assets.ninePatchScrews.draw(batch, boundsTurnText.x, boundsTurnText.y, boundsTurnText.width, boundsTurnText.height);
 
-        float turnTextScale = 0.4f;
-        Assets.font.getData().setScale(scale);
+        float turnTextScale = 0.3f;
+        Assets.font.getData().setScale(turnTextScale);
         {
             turnTextColor.a = color.a;
-            layout.setText(Assets.font, turnText, Color.WHITE, boundsTurnText.width - 2f * margin, Align.center, true);
+            layout.setText(Assets.font, turnText);
             Assets.drawString(batch, turnText,
                               boundsTurnText.x + boundsTurnText.width / 2f - layout.width / 2f,
                               boundsTurnText.y + boundsTurnText.height / 2f + layout.height / 2f,
@@ -447,30 +448,32 @@ public class StatusUI extends UserInterface {
         float segmentUnitsWidth = (4 / 6f) * width;
         float roundCounterWidth = segmentUnitsWidth / 4f;
         float roundCounterHeight = 30f;
-        float turnTextMargin = 100f;
-        float turnTextWidth = camera.viewportWidth / 3f;
-        float turnTextHeight = 100f;//camera.viewportHeight / 4f;
-
-        float turnTextInitialX = -turnTextWidth - turnTextMargin;
-        float turnTextInitialY = camera.viewportHeight / 2f - turnTextHeight / 2f;
+        float turnTextWidth = roundCounterWidth + 20f;
+        float turnTextHeight = roundCounterHeight;
 
         float territoryPlayerInitialX = -segmentTerritoryWidth;
         float territoryPlayerEndingX = 0f;
 
+        float unitsPlayerX = territoryPlayerEndingX + segmentTerritoryWidth;
         float unitsPlayerInitialY = camera.viewportHeight;
         float unitsPlayerEndingY = lowerLeftY - unitsOffsetY;
 
         float territoryEnemyInitialX = camera.viewportWidth;
         float territoryEnemyEndingX = camera.viewportWidth - segmentTerritoryWidth;
 
+        float roundCounterX = unitsPlayerX + (segmentUnitsWidth / 2f) - (roundCounterWidth + turnTextWidth) / 2f;
         float roundCounterInitialY = -roundCounterHeight;
         float roundCounterEndingY = 0f;
 
+        float turnTextInitialX = roundCounterX + roundCounterWidth;
+        float turnTextInitialY = -turnTextHeight;
+        float turnTextEndingY = 0f;
+
         bounds.set(0f, lowerLeftY, width, height);
         boundsPlayerTerritory.set(territoryPlayerInitialX, lowerLeftY, segmentTerritoryWidth, height);
-        boundsPlayerUnits.set(territoryPlayerEndingX + boundsPlayerTerritory.width, unitsPlayerInitialY, segmentUnitsWidth, height + unitsOffsetY);
+        boundsPlayerUnits.set(unitsPlayerX, unitsPlayerInitialY, segmentUnitsWidth, height + unitsOffsetY);
         boundsEnemyTerritory.set(territoryEnemyInitialX, lowerLeftY, segmentTerritoryWidth, height);
-        boundsRoundCounter.set(boundsPlayerUnits.x + boundsPlayerUnits.width / 2f - roundCounterWidth / 2f, roundCounterInitialY, roundCounterWidth, roundCounterHeight);
+        boundsRoundCounter.set(roundCounterX, roundCounterInitialY, roundCounterWidth, roundCounterHeight);
         boundsTurnText.set(turnTextInitialX, turnTextInitialY, turnTextWidth, turnTextHeight);
 
         float textOffsetX = (1 / 4f) * segmentTerritoryWidth;
@@ -498,6 +501,10 @@ public class StatusUI extends UserInterface {
                                         .push(
                                                 Tween.to(boundsRoundCounter, RectangleAccessor.Y, duration).delay(initialDelay)
                                                      .target(roundCounterEndingY).ease(Bounce.OUT)
+                                        )
+                                        .push(
+                                                Tween.to(boundsTurnText, RectangleAccessor.Y, duration).delay(initialDelay)
+                                                     .target(turnTextEndingY).ease(Bounce.OUT)
                                         )
                                 )
                                 .push(
@@ -528,38 +535,14 @@ public class StatusUI extends UserInterface {
     }
 
     private void startTurnPhaseTransitionTween() {
-        float expand = 10f;
-        float margin = 100f;
-        float initialW = camera.viewportWidth / 3f;
-        float initialH = camera.viewportHeight / 6f;
-        float initialX = -boundsTurnText.width - margin;
-        float initialY = camera.viewportHeight / 2f - initialH / 2f;
-        float middleX = camera.viewportWidth / 2f - boundsTurnText.width / 2f;
-        float middleY = camera.viewportHeight / 2f - boundsTurnText.height / 2f;
-        float endingX = camera.viewportWidth + margin;
-
         Timeline.createSequence()
                 .push(
-                        Tween.set(boundsTurnText, RectangleAccessor.XYWH)
-                             .target(initialX, initialY, initialW, initialH)
+                        Tween.to(boundsTurnText, Vector2Accessor.Y, 0.2f)
+                             .target(boundsTurnText.height / 2f)
                 )
                 .push(
-                        Tween.to(boundsTurnText, RectangleAccessor.X, 0.1f)
-                             .target(middleX).ease(Back.OUT)
-                )
-                .push(
-                        Tween.to(boundsTurnText, RectangleAccessor.XYWH, 0.3f)
-                             .target(middleX - expand, middleY - expand,
-                                     initialW + 2f * expand,
-                                     initialH + 2f * expand)
-                             .repeatYoyo(2, 0f)
-                )
-                .push(
-                        Tween.to(boundsTurnText, RectangleAccessor.X, 0.1f)
-                             .target(endingX).ease(Back.IN)
-                )
-                .push(
-                        Tween.set(boundsTurnText, RectangleAccessor.X).target(initialX)
+                        Tween.to(boundsTurnText, Vector2Accessor.Y, 0.8f)
+                             .target(0f).ease(Bounce.OUT)
                 )
                 .start(LudumDare42.game.tween);
     }
