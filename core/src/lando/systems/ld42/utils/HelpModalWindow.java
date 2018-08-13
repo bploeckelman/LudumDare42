@@ -16,7 +16,7 @@ public class HelpModalWindow extends ModalWindow {
             "There are two phases for you and your enemy.",
             " Recruitment Phase",
             " -  Recruit a unit by clicking on the tile next to your castle.",
-            " -  Pheasants are best for scouting",
+            " -  Peasants are best for scouting",
             " -  Archers are best for defense",
             " -  Wizards are best for offence",
             " -  Soldiers are all-rounder unit",
