@@ -23,6 +23,10 @@ public class TurnStats {
         enemyOwnedTilesByTurn = new HashMap<Integer, Integer>();
         unownedTilesByTurn = new HashMap<Integer, Integer>();
 
+//        for (int i = 1; i < 20; i++){
+//            addTileStats(i, i*2, i, 75 - i -i -i -i);
+//        }
+
     }
 
     public void addTileStats(int turnNumber, int playerTiles, int enemyTiles, int unownedTiles){

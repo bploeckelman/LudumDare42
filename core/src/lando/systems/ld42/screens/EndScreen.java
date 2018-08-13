@@ -17,6 +17,7 @@ public class EndScreen extends BaseScreen{
 
     private static int TURN_HASH = 5;
     private static float ANIMATION_TIME = 2f;
+    private static float shadeAlpha = .3f;
 
     private String heading = "LD42";
     private String theme = "Made for Ludum Dare 42:\nTheme: Running out of Space";
@@ -86,7 +87,10 @@ public class EndScreen extends BaseScreen{
 
         ShapeRenderer sr = LudumDare42.game.assets.shapes;
         sr.setProjectionMatrix(hudCamera.combined);
+        sr.setAutoShapeType(true);
         sr.begin(ShapeRenderer.ShapeType.Line);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         float dx = graphBounds.width / (numberOfTurns - 1);
 
@@ -104,9 +108,9 @@ public class EndScreen extends BaseScreen{
         float graphPercent = animTimer / ANIMATION_TIME;
         int lastIndex = (int)(numberOfTurns * graphPercent) + 1;
         for (int i = 1; i <= lastIndex; i++) {
-            if (i == numberOfTurns) break;
+            if (i >= (numberOfTurns)) break;
             float lerpPercent = 1f;
-            if (i == lastIndex){
+            if (i == (lastIndex)){
                 float dt = 1f / numberOfTurns;
                 lerpPercent = (graphPercent % dt) / dt;
             }
@@ -132,8 +136,16 @@ public class EndScreen extends BaseScreen{
                 x2 = MathUtils.lerp(x1, x2, lerpPercent);
                 y2 = MathUtils.lerp(y1, y2, lerpPercent);
 
+                sr.set(ShapeRenderer.ShapeType.Line);
+
                 sr.setColor(Config.player_color);
                 sr.line(x1, y1, x2, y2);
+
+                sr.setColor(Config.player_color.r, Config.player_color.g, Config.player_color.b, shadeAlpha);
+                sr.set(ShapeRenderer.ShapeType.Filled);
+                sr.triangle(x1, graphBounds.y, x1, y1, x2, y2);
+                sr.triangle(x1, graphBounds.y, x2, y2, x2, graphBounds.y);
+
             }
 
             { // Enemy
@@ -143,13 +155,23 @@ public class EndScreen extends BaseScreen{
                 x2 = MathUtils.lerp(x1, x2, lerpPercent);
                 y2 = MathUtils.lerp(y1, y2, lerpPercent);
 
+                sr.set(ShapeRenderer.ShapeType.Line);
+
                 sr.setColor(Config.enemy_color);
                 sr.line(x1, y1, x2, y2);
+
+                sr.setColor(Config.enemy_color.r, Config.enemy_color.g, Config.enemy_color.b, shadeAlpha);
+                sr.set(ShapeRenderer.ShapeType.Filled);
+                float top = graphBounds.y + graphBounds.height;
+                sr.triangle(x1, y1, x1, top, x2, top);
+                sr.triangle(x1, y1, x2, y2, x2, top);
+
             }
         }
 
-
         sr.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+
     }
 
     public void drawDashedLine(ShapeRenderer shapes, float x1, float y1, float x2, float y2, int numDashes, float dashSize) {
