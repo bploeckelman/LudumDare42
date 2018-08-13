@@ -24,6 +24,7 @@ import lando.systems.ld42.units.PeasantUnit;
 import lando.systems.ld42.units.SoldierUnit;
 import lando.systems.ld42.units.WizardUnit;
 import lando.systems.ld42.world.Tile;
+import lando.systems.ld42.world.World;
 
 public class RecruitmentUI extends UserInterface {
 
@@ -90,7 +91,7 @@ public class RecruitmentUI extends UserInterface {
         }
     }
 
-    public void rebuild(final Team team, final Tile tile, final TurnAction turnAction, Camera camera) {
+    public void rebuild(final Team team, final Tile tile, Camera camera) {
         this.team = team;
         this.camera = camera;
 
@@ -116,7 +117,6 @@ public class RecruitmentUI extends UserInterface {
             public void clicked(InputEvent event, float x, float y) {
                 team.addUnit(new PeasantUnit(LudumDare42.game.assets), tile);
                 RecruitmentUI.this.hide();
-//                turnAction.nextTurn();
             }
         });
         recruitSoldierButton.addListener(new ClickListener() {
@@ -124,7 +124,6 @@ public class RecruitmentUI extends UserInterface {
             public void clicked(InputEvent event, float x, float y) {
                 team.addUnit(new SoldierUnit(LudumDare42.game.assets), tile);
                 RecruitmentUI.this.hide();
-//                turnAction.nextTurn();
             }
         });
         recruitArcherButton.addListener(new ClickListener() {
@@ -132,7 +131,6 @@ public class RecruitmentUI extends UserInterface {
             public void clicked(InputEvent event, float x, float y) {
                 team.addUnit(new ArcherUnit(LudumDare42.game.assets), tile);
                 RecruitmentUI.this.hide();
-//                turnAction.nextTurn();
             }
         });
         recruitWizardButton.addListener(new ClickListener() {
@@ -140,7 +138,6 @@ public class RecruitmentUI extends UserInterface {
             public void clicked(InputEvent event, float x, float y) {
                 team.addUnit(new WizardUnit(LudumDare42.game.assets), tile);
                 RecruitmentUI.this.hide();
-//                turnAction.nextTurn();
             }
         });
 
@@ -179,6 +176,8 @@ public class RecruitmentUI extends UserInterface {
 
     @Override
     public void hide() {
+        World.THE_WORLD.screen.endRecruitment(false);
+
         window.setPosition(camera.viewportWidth - width - 2f * margin, margin);
         Tween.to(window, Scene2dWindowAccessor.POS_X, 1f)
              .target(camera.viewportWidth).ease(Quint.OUT)

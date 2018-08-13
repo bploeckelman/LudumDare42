@@ -310,7 +310,7 @@ public class GameScreen extends BaseScreen {
             if (turnAction.turn == Turn.PLAYER_RECRUITMENT) {
                 Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
                 if (t != null && t.occupant == null && adjacentTiles.contains(t, true) && playerTeam.buildsLeft()){
-                    recruitmentUI.rebuild(playerTeam, t, turnAction, hudCamera);
+                    recruitmentUI.rebuild(playerTeam, t, hudCamera);
                     recruitmentUI.show();
                 }
                 if (!playerTeam.buildsLeft()) {
@@ -495,6 +495,14 @@ public class GameScreen extends BaseScreen {
         }
         else {
             return false;
+        }
+    }
+
+    public void endRecruitment(boolean force) {
+        if (turnAction.turn != Turn.PLAYER_RECRUITMENT) return;
+
+        if (!playerTeam.buildsLeft() || force) {
+            turnAction.nextTurn();
         }
     }
 

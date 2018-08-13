@@ -237,7 +237,6 @@ public class EnemyAI {
 
     private void doFinish() {
         screen.turnAction.nextTurn();
-        screen.selectedUnitTile = screen.playerTeam.castleTile;
         phase = Phase.Recruit;
     }
 

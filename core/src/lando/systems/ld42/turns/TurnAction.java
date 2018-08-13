@@ -7,6 +7,7 @@ import lando.systems.ld42.teams.EnemyTeam;
 import lando.systems.ld42.teams.PlayerTeam;
 import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.units.Unit;
+import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
 
 public class TurnAction {
@@ -23,19 +24,27 @@ public class TurnAction {
     }
 
     public void nextTurn() {
+        Tile selectedTile = null;
         switch (turn) {
             case PLAYER_RECRUITMENT:
                 this.turn = Turn.PLAYER_ACTION;
                 playerTeam.replenishAction();
                 break;
             case PLAYER_ACTION:
+                playerTeam.removeLeftoverActions();
                 this.turn = Turn.ENEMY;
-//                enemyTeam.replenishAction();
                 break;
             case ENEMY:
-                this.turn = Turn.PLAYER_RECRUITMENT;
+                if (playerTeam.buildsLeft()) {
+                    selectedTile = playerTeam.castleTile;
+                    this.turn = Turn.PLAYER_RECRUITMENT;
+                } else {
+                    playerTeam.replenishAction();
+                    this.turn = Turn.PLAYER_ACTION;
+                }
                 break;
         }
+        World.THE_WORLD.screen.selectedUnitTile = selectedTile;
     }
 
 }
