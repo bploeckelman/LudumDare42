@@ -169,7 +169,7 @@ public class RecruitmentUI extends UserInterface {
     public void show() {
         window.setVisible(true);
         window.setPosition(camera.viewportWidth, margin);
-        Tween.to(window, Scene2dWindowAccessor.POS_X, 1f)
+        Tween.to(window, Scene2dWindowAccessor.POS_X, 0.66f)
              .target(camera.viewportWidth - width - 2f * margin).ease(Bounce.OUT)
              .start(LudumDare42.game.tween);
     }
