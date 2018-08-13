@@ -62,10 +62,10 @@ public class Assets implements Disposable {
     public TextureRegion emptyHex;
     public TextureRegion blankTile;
     public TextureRegion sparkle;
+    public TextureRegion sparklePlayer;
+    public TextureRegion sparkleEnemy;
     public TextureRegion sword;
-    public TextureRegion sheild;
-    public NinePatch ninePatchScrews;
-    public NinePatch ninePatchStats;
+    public TextureRegion shield;
 
     public TextureRegion tree;
     public TextureRegion mountain;
@@ -76,7 +76,7 @@ public class Assets implements Disposable {
     public TextureRegion unitHeadArcher;
     public TextureRegion unitHeadWizard;
 
-    public TextureRegion bootTexture;
+    public TextureRegion boot;
     public TextureRegion smokeTexture;
 
     public Animation<TextureRegion> unitAnimationPeasant;
@@ -108,6 +108,8 @@ public class Assets implements Disposable {
 
     public ShaderProgram cloudShader;
     public NinePatch ninePatchTooltip;
+    public NinePatch ninePatchScrews;
+    public NinePatch ninePatchStats;
 
     public boolean initialized;
 
@@ -165,8 +167,11 @@ public class Assets implements Disposable {
         emptyHex = atlas.findRegion("tile-empty");
         blankTile = atlas.findRegion("tile-blank");
         sparkle = atlas.findRegion("sparkle");
-        sword = atlas.findRegion("sword");
-        sheild = atlas.findRegion("shield");
+        sparklePlayer = atlas.findRegion("sparkle-player");
+        sparkleEnemy = atlas.findRegion("sparkle-enemy");
+        boot = atlas.findRegion("icon-boot");
+        sword = atlas.findRegion("icon-sword");
+        shield = atlas.findRegion("icon-shield");
 
         tree = atlas.findRegion("tree");
         mountain = atlas.findRegion("mountain");
@@ -180,7 +185,6 @@ public class Assets implements Disposable {
         unitHeadSoldier = atlas.findRegion("unit-soldier-head");
         unitHeadArcher = atlas.findRegion("unit-archer-head");
         unitHeadWizard = atlas.findRegion("unit-wizard-head");
-        bootTexture = atlas.findRegion("boot");
         smokeTexture = atlas.findRegion("smoke");
 
         Array<TextureAtlas.AtlasRegion> peasant = atlas.findRegions("unit-peasant");

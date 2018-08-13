@@ -114,7 +114,7 @@ public abstract class Unit {
 
         batch.setColor(1f, 1f, 1f, 1f);
         if (actionAvailable > 0) {
-            batch.draw(LudumDare42.game.assets.bootTexture, pos.x, pos.y + size.y - 20 + yOffset, 20, 20);
+            batch.draw(LudumDare42.game.assets.boot, pos.x, pos.y + size.y - 20 + yOffset, 20, 20);
         }
     }
 

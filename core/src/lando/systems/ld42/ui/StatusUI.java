@@ -29,7 +29,6 @@ import lando.systems.ld42.accessors.Vector2Accessor;
 import lando.systems.ld42.particles.Sparkle;
 import lando.systems.ld42.screens.GameScreen;
 import lando.systems.ld42.teams.Team;
-import lando.systems.ld42.units.PeasantUnit;
 import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
 
@@ -151,7 +150,6 @@ public class StatusUI extends UserInterface {
                 proj.y - sparkleHeight / 2f,
                 (teamType == Team.Type.player) ? territoryPlayerTarget.x : territoryEnemyTarget.x,
                 (teamType == Team.Type.player) ? territoryPlayerTarget.y : territoryEnemyTarget.y,
-                (teamType == Team.Type.player) ? Config.player_color   : Config.enemy_color,
                 teamType);
         activeSparkles.add(sparkle);
     }
@@ -335,7 +333,7 @@ public class StatusUI extends UserInterface {
         Assets.drawString(batch, ""+attackPower, center - 10 - layout.width, y - 16 + layout.height/2f, Color.WHITE, .3f, Assets.font);
 
         layout.setText(Assets.font, ""+defensePower);
-        batch.draw(LudumDare42.game.assets.sheild, center + 10, y - 30, 32, 32);
+        batch.draw(LudumDare42.game.assets.shield, center + 10, y - 30, 32, 32);
         Assets.drawString(batch, ""+defensePower, center + 52, y - 16 + layout.height/2f, Color.WHITE, .3f, Assets.font);
 
 
