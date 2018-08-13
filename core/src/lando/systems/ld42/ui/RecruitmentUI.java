@@ -179,7 +179,7 @@ public class RecruitmentUI extends UserInterface {
         World.THE_WORLD.screen.endRecruitment(false);
 
         window.setPosition(camera.viewportWidth - width - 2f * margin, margin);
-        Tween.to(window, Scene2dWindowAccessor.POS_X, 1f)
+        Tween.to(window, Scene2dWindowAccessor.POS_X, 0.2f)
              .target(camera.viewportWidth).ease(Quint.OUT)
              .setCallback(new TweenCallback() {
                  @Override
