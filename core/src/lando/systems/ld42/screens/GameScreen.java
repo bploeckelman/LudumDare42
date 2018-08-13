@@ -36,6 +36,7 @@ import lando.systems.ld42.ui.Tooltip;
 import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.utils.Screenshake;
 import lando.systems.ld42.utils.TileUtils;
+import lando.systems.ld42.utils.screenshake.ScreenShakeCameraController;
 import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
 
@@ -60,7 +61,7 @@ public class GameScreen extends BaseScreen {
     public Pixmap pickPixmap;
     public Color pickColor;
     public Tooltip tooltip;
-    public Screenshake shaker;
+    public ScreenShakeCameraController screenShakeCamera;
     public Stage ui;
     public StatusUI statusUI;
     public RecruitmentUI recruitmentUI;
@@ -94,7 +95,7 @@ public class GameScreen extends BaseScreen {
         this.adjacentBuildTiles = new Array<Tile>();
         this.turnNumber = 1;
         this.tooltip = new Tooltip();
-        this.shaker = new Screenshake(120, 3);
+        this.screenShakeCamera = new ScreenShakeCameraController(worldCamera);
         this.cameraTouchStart = new Vector3();
         this.touchStart = new Vector3();
         this.playerTeam = new PlayerTeam(world);
@@ -178,7 +179,7 @@ public class GameScreen extends BaseScreen {
         updateCamera();
         targetZoom.setValue(Math.max(world.bounds.width / worldCamera.viewportWidth, world.bounds.height / worldCamera.viewportHeight));
         cameraTargetPos.set(world.bounds.width/2, world.bounds.height/2, 0);
-        shaker.update(dt, worldCamera, worldCamera.position.x, worldCamera.position.y);
+        screenShakeCamera.update(dt);
     }
 
     @Override
@@ -187,7 +188,7 @@ public class GameScreen extends BaseScreen {
 
         // Draw picking frame buffer
         if (!inTransition) {
-            batch.setProjectionMatrix(worldCamera.combined);
+            batch.setProjectionMatrix(screenShakeCamera.getCombinedMatrix());
             pickBuffer.begin();
             {
                 Gdx.gl.glClearColor(0f, 0f, 1f, 1f);
@@ -215,7 +216,7 @@ public class GameScreen extends BaseScreen {
         batch.setShader(null);
 
         // Draw world
-        batch.setProjectionMatrix(worldCamera.combined);
+        batch.setProjectionMatrix(screenShakeCamera.getCombinedMatrix());
         batch.begin();
         {
             world.render(batch);

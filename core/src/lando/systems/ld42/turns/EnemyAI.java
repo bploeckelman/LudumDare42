@@ -210,7 +210,7 @@ public class EnemyAI {
 
     private void doRemoveTile(){
         screen.turnNumber++;
-        delay = 4f;
+        delay = 2f;
         if (screen.turnNumber < 5 || screen.turnNumber > 20){
             world.pickRemoveTileCleverly();
         } else if (screen.turnNumber < 10 || screen.turnNumber > 15){
@@ -230,8 +230,7 @@ public class EnemyAI {
 
     private void doSquish() {
         world.squishHoles();
-        screen.shaker.shakeDuration = 25f;
-        screen.shaker.shake(2f);
+        screen.screenShakeCamera.addDamage(1f);
         phase = Phase.Finish;
     }
 

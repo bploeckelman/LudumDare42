@@ -121,7 +121,6 @@ public abstract class Unit {
     }
 
     public void tileGotSquanched() {
-        // TODO: kick off a particle effect
         float peak = pos.y + 160f;
         float trough = pos.y - 50f;
         Timeline.createSequence()

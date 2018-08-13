@@ -187,6 +187,7 @@ public class World {
     }
 
     public void pickRemoveTileCleverly() {
+        screen.screenShakeCamera.addDamage(.4f);
         removalCandidateTiles.clear();
 
         int maxColAccum = 0;
