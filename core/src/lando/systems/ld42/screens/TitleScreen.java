@@ -19,23 +19,23 @@ import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.accessors.ColorAccessor;
 import lando.systems.ld42.utils.HelpModalWindow;
 import lando.systems.ld42.utils.Utils;
-
-class Letter {
-    String letter;
-    MutableFloat x;
-    float y;
-    float w;
-    float h;
-    float fy;
-    public Letter(String letter, float x, float y, float w, float h, float fy) {
-        this.letter = letter;
-        this.x = new MutableFloat(x);
-        this.y = y;
-        this.w = w;
-        this.h = h;
-        this.fy = fy;
-    }
-}
+//
+//class Letter {
+//    String letter;
+//    MutableFloat x;
+//    float y;
+//    float w;
+//    float h;
+//    float fy;
+//    public Letter(String letter, float x, float y, float w, float h, float fy) {
+//        this.letter = letter;
+//        this.x = new MutableFloat(x);
+//        this.y = y;
+//        this.w = w;
+//        this.h = h;
+//        this.fy = fy;
+//    }
+//}
 
 public class TitleScreen extends BaseScreen {
 
@@ -48,14 +48,14 @@ public class TitleScreen extends BaseScreen {
     private float speed = 200;
     private float time;
 
-    private Letter[] letters;
+//    private Letter[] letters;
 
     private boolean falling = true;
 
     enum State {intro, outro, tutorial, end, done}
 
     private State state = State.intro;
-    private float fallTiming = 0.2f;
+//    private float fallTiming = 0.2f;
 
     public boolean showTutorial;
     private HelpModalWindow helpModalWindow;
@@ -68,23 +68,23 @@ public class TitleScreen extends BaseScreen {
 
         Gdx.input.setInputProcessor(this);
 
-        glyphLayout.setText(titleFont, title, Color.WHITE, hudCamera.viewportWidth / 2, 1, true);
+//        glyphLayout.setText(titleFont, title, Color.WHITE, hudCamera.viewportWidth / 2, 1, true);
 
-        float finalY = hudCamera.viewportHeight - (titleBounds.height - glyphLayout.height) / 2;
-
-        letters = new Letter[title.length()];
-        int index = 0;
-        float y = hudCamera.viewportHeight + glyphLayout.height + 20;
-        for (int i = 0; i < glyphLayout.runs.size; i++) {
-            GlyphLayout.GlyphRun run = glyphLayout.runs.get(i);
-            float x = titleBounds.x + (titleBounds.width - run.width) / 2;
-            for (BitmapFont.Glyph g : run.glyphs) {
-                letters[index++] = new Letter(g.toString(), x, y, g.width, g.height, finalY);
-                x += g.width;
-            }
-            y -= 60;
-            finalY -= 60;
-        }
+//        float finalY = hudCamera.viewportHeight - (titleBounds.height - glyphLayout.height) / 2;
+//
+//        letters = new Letter[title.length()];
+//        int index = 0;
+//        float y = hudCamera.viewportHeight + glyphLayout.height + 20;
+//        for (int i = 0; i < glyphLayout.runs.size; i++) {
+//            GlyphLayout.GlyphRun run = glyphLayout.runs.get(i);
+//            float x = titleBounds.x + (titleBounds.width - run.width) / 2;
+//            for (BitmapFont.Glyph g : run.glyphs) {
+//                letters[index++] = new Letter(g.toString(), x, y, g.width, g.height, finalY);
+//                x += g.width;
+//            }
+//            y -= 60;
+//            finalY -= 60;
+//        }
 
 
         this.helpModalWindow = new HelpModalWindow(hudCamera);
@@ -101,83 +101,87 @@ public class TitleScreen extends BaseScreen {
             transition();
         }
 
-        if (falling) {
-            time += dt;
-            int glyphCountUpdate = (int) (time / fallTiming);
-            for (int i = 0; i < letters.length; i++) {
-                if (glyphCountUpdate-- < 0) break;
-                float dy = speed * dt;
-                if ((letters[i].y - dy) > letters[i].fy) {
-                    letters[i].y -= dy;
-                } else {
-                    letters[i].y = letters[i].fy;
-                }
-            }
-            if (letters.length > 0) {
-                Letter last = letters[letters.length - 1];
-                falling = (last.y != last.fy);
-                if (!falling) {
-                    transition();
-                }
-            }
-        } else if (state == State.outro) {
-            time += dt;
+        if (state == State.tutorial) {
+            transition();
+        }
+
+//        if (falling) {
+//            time += dt;
+//            int glyphCountUpdate = (int) (time / fallTiming);
+//            for (int i = 0; i < letters.length; i++) {
+//                if (glyphCountUpdate-- < 0) break;
+//                float dy = speed * dt;
+//                if ((letters[i].y - dy) > letters[i].fy) {
+//                    letters[i].y -= dy;
+//                } else {
+//                    letters[i].y = letters[i].fy;
+//                }
+//            }
+//            if (letters.length > 0) {
+//                Letter last = letters[letters.length - 1];
+//                falling = (last.y != last.fy);
+//                if (!falling) {
+//                    transition();
+//                }
+//            }
+//        } else if (state == State.outro) {
+//            time += dt;
 //            if (time >= 5) {
 //                transition();
 //            }
 //            triggerRandomJiggle();
-        } else if (state == State.tutorial) {
-            transition();
-        }
+//        } else if (state == State.tutorial) {
+//            transition();
+//        }
     }
-
-    private void triggerRandomJiggle() {
-        try {
-            if (MathUtils.random(100) < 100) {
-                int index = MathUtils.random(letters.length - 1);
-                Letter l = letters[index];
-                Tween.to(l.x, -1, 0.33f)
-                        .target(l.x.floatValue() + 5)
-                        .repeatYoyo(-1, 0f)
-                        .start(game.tween);
-
-            }
-        } catch (Exception e) {
-            // eat it
-        }
-    }
+//
+//    private void triggerRandomJiggle() {
+//        try {
+//            if (MathUtils.random(100) < 100) {
+//                int index = MathUtils.random(letters.length - 1);
+//                Letter l = letters[index];
+//                Tween.to(l.x, -1, 0.33f)
+//                        .target(l.x.floatValue() + 5)
+//                        .repeatYoyo(-1, 0f)
+//                        .start(game.tween);
+//
+//            }
+//        } catch (Exception e) {
+//            // eat it
+//        }
+//    }
 
     private void transition() {
         switch (state) {
             case intro:
-                time = 0;
-                if (falling) {
-                    for (Letter l: letters) {
-                        l.y = l.fy;
-                    }
-
-                    // no .reverse.. sigh
-                    for (int k = 0; k < letters.length/2; k++) {
-                        Letter temp = letters[k];
-                        letters[k] = letters[letters.length-(1+k)];
-                        letters[letters.length-(1+k)] = temp;
-                    }
-                }
-                falling = false;
-                state = State.outro;
-                break;
-            case outro:
-                time = 0;
-                for (Letter l: letters) {
-                    l.fy = -100;
-                    fallTiming = 0.05f;
-                    speed = 1200;
-                }
-                falling = true;
+//                time = 0;
+//                if (falling) {
+//                    for (Letter l: letters) {
+//                        l.y = l.fy;
+//                    }
+//
+//                    // no .reverse.. sigh
+//                    for (int k = 0; k < letters.length/2; k++) {
+//                        Letter temp = letters[k];
+//                        letters[k] = letters[letters.length-(1+k)];
+//                        letters[letters.length-(1+k)] = temp;
+//                    }
+//                }
+//                falling = false;
                 state = State.tutorial;
                 break;
+            case outro:
+//                time = 0;
+//                for (Letter l: letters) {
+//                    l.fy = -100;
+//                    fallTiming = 0.05f;
+//                    speed = 1200;
+//                }
+//                falling = true;
+//                state = State.tutorial;
+                break;
             case tutorial:
-                letters = new Letter[]{};
+//                letters = new Letter[]{};
                 helpModalWindow.show();
                 state = State.end;
                 break;
@@ -198,9 +202,9 @@ public class TitleScreen extends BaseScreen {
         {
             batch.draw(game.assets.titleTexture, 0f, 0f, hudCamera.viewportWidth, hudCamera.viewportHeight);
 
-            for (Letter l : letters) {
-                Assets.drawString(batch, l.letter, l.x.floatValue(), l.y, Color.WHITE, 1, titleFont);
-            }
+//            for (Letter l : letters) {
+//                Assets.drawString(batch, l.letter, l.x.floatValue(), l.y, Color.WHITE, 1, titleFont);
+//            }
 
             if (helpModalWindow.isActive) {
                 helpModalWindow.render(batch);
