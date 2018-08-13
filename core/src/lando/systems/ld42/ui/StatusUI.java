@@ -4,6 +4,7 @@ import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
+import aurelienribon.tweenengine.equations.Back;
 import aurelienribon.tweenengine.equations.Bounce;
 import aurelienribon.tweenengine.equations.Quint;
 import com.badlogic.gdx.Gdx;
@@ -29,6 +30,8 @@ import lando.systems.ld42.accessors.Vector2Accessor;
 import lando.systems.ld42.particles.Sparkle;
 import lando.systems.ld42.screens.GameScreen;
 import lando.systems.ld42.teams.Team;
+import lando.systems.ld42.turns.EnemyAI;
+import lando.systems.ld42.turns.Turn;
 import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
 
@@ -38,6 +41,7 @@ public class StatusUI extends UserInterface {
     private Assets assets;
     private GlyphLayout layout;
     private Color color;
+    private Color turnTextColor;
     private Camera camera;
     private Vector3 proj;
 
@@ -55,6 +59,7 @@ public class StatusUI extends UserInterface {
     private Rectangle boundsEnemyTerritory;
     private Rectangle boundsPlayerTerritory;
     private Rectangle boundsRoundCounter;
+    private Rectangle boundsTurnText;
     private TextureRegion peasant;
     private TextureRegion soldier;
     private TextureRegion archer;
@@ -62,22 +67,28 @@ public class StatusUI extends UserInterface {
     private int claimedCountPlayer;
     private int claimedCountEnemy;
     private int previousRoundNumber;
+    private String turnText;
+    private Turn previousTurn;
+    private EnemyAI.Phase previousEnemyPhase;
 
     public Vector2 territoryPlayerTarget;
     public Vector2 territoryEnemyTarget;
 
-    private Rectangle tooltipBounds;
+    private Rectangle boundsTooltip;
 
     public StatusUI(Assets assets) {
         this.assets = assets;
         this.layout = assets.layout;
         this.color = new Color(1f, 1f, 1f, 0f);
+        this.turnTextColor = new Color(255f / 255f, 126f / 255f, 0f / 255f, 0f);
         this.proj = new Vector3();
         this.bounds = new Rectangle();
         this.boundsPlayerUnits = new Rectangle();
         this.boundsEnemyTerritory = new Rectangle();
         this.boundsPlayerTerritory = new Rectangle();
         this.boundsRoundCounter = new Rectangle();
+        this.boundsTurnText = new Rectangle();
+        this.boundsTooltip = new Rectangle(0, 0, 300, 130);
         this.territoryPlayerTarget = new Vector2();
         this.territoryEnemyTarget = new Vector2();
         this.peasant = assets.unitAnimationPeasant.getKeyFrame(0);
@@ -87,10 +98,11 @@ public class StatusUI extends UserInterface {
         this.claimedCountPlayer = 0;
         this.claimedCountEnemy = 0;
         this.previousRoundNumber = 1;
+        this.previousTurn = Turn.PLAYER_ACTION;
+        this.previousEnemyPhase = EnemyAI.Phase.Recruit;
         for (int i = 0; i < 256; ++i) {
             sparklePool.free(new Sparkle());
         }
-        tooltipBounds = new Rectangle(0, 0, 300, 130);
     }
 
     @Override
@@ -112,6 +124,8 @@ public class StatusUI extends UserInterface {
             }
         }
 
+        // TODO: handle claimed territory loss through either tile removal or opponent capture
+
         // Bounce round counter if new round
         if (previousRoundNumber != gameScreen.turnNumber) {
             previousRoundNumber = gameScreen.turnNumber;
@@ -125,6 +139,34 @@ public class StatusUI extends UserInterface {
                                  .target(0f).ease(Bounce.OUT)
                     )
                     .start(LudumDare42.game.tween);
+        }
+
+        // Handle turn phase transitions
+        boolean kickoffPhaseTransition = false;
+        Turn currentTurn = gameScreen.turnAction.turn;
+        EnemyAI.Phase currentEnemyPhase = gameScreen.enemyAI.phase;
+        if ((previousTurn != currentTurn)
+         || (currentTurn == Turn.ENEMY && previousEnemyPhase != currentEnemyPhase)) {
+            kickoffPhaseTransition = true;
+
+            previousTurn = gameScreen.turnAction.turn;
+            previousEnemyPhase = gameScreen.enemyAI.phase;
+
+            if (currentTurn == Turn.PLAYER_RECRUITMENT) turnText = "Player Recruit";
+            else if (currentTurn == Turn.PLAYER_ACTION) turnText = "Player Attack";
+            else if (currentTurn == Turn.ENEMY) {
+                if      (currentEnemyPhase == EnemyAI.Phase.Recruit)    turnText = "Enemy Recruit";
+                else if (currentEnemyPhase == EnemyAI.Phase.Move)       turnText = "Enemy Attack";
+                else if (currentEnemyPhase == EnemyAI.Phase.RemoveTile) turnText = "Kingdoms Fall";
+                else if (currentEnemyPhase == EnemyAI.Phase.Squish)     turnText = "Heal The World";
+                else if (currentEnemyPhase == EnemyAI.Phase.Finish)     {
+                    kickoffPhaseTransition = false;
+                }
+            }
+        }
+
+        if (kickoffPhaseTransition) {
+            startTurnPhaseTransitionTween();
         }
     }
 
@@ -271,15 +313,36 @@ public class StatusUI extends UserInterface {
         Assets.font.getData().setScale(originalScaleX, originalScaleY);
         batch.setColor(1f, 1f, 1f, 1f);
 
+        // Draw sparkles
         for (Sparkle sparkle : activeSparkles) {
             sparkle.render(batch);
         }
 
+        // Draw tooltip
         renderToolTip(batch);
+
+        // Draw phase transition card
+        batch.setColor(0f, 0f, 0f, color.a);
+        batch.draw(assets.whitePixel, boundsTurnText.x, boundsTurnText.y, boundsTurnText.width, boundsTurnText.height);
+        batch.setColor(1, 1f, 1f, color.a);
+        assets.ninePatchScrews.draw(batch, boundsTurnText.x, boundsTurnText.y, boundsTurnText.width, boundsTurnText.height);
+
+        float turnTextScale = 0.4f;
+        Assets.font.getData().setScale(scale);
+        {
+            turnTextColor.a = color.a;
+            layout.setText(Assets.font, turnText, Color.WHITE, boundsTurnText.width - 2f * margin, Align.center, true);
+            Assets.drawString(batch, turnText,
+                              boundsTurnText.x + boundsTurnText.width / 2f - layout.width / 2f,
+                              boundsTurnText.y + boundsTurnText.height / 2f + layout.height / 2f,
+                              turnTextColor, turnTextScale, Assets.font);
+        }
+        Assets.font.getData().setScale(originalScaleX, originalScaleY);
+        batch.setColor(1f, 1f, 1f, 1f);
     }
 
-    Vector3 toolTipVector = new Vector3();
-    public void renderToolTip(SpriteBatch batch){
+    private Vector3 toolTipVector = new Vector3();
+    private void renderToolTip(SpriteBatch batch){
         OrthographicCamera hudCamera = World.THE_WORLD.screen.hudCamera;
         toolTipVector.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         hudCamera.unproject(toolTipVector);
@@ -301,32 +364,29 @@ public class StatusUI extends UserInterface {
                 renderToolTipInfo(batch, toolTipVector.x, "Soldier", 2, 2, assets.mountain, "Claim mountain tiles to build more soldiers.");
             }
             if (toolTipVector.x > bx3 && toolTipVector.x < bx3 + boxWidth){
-                renderToolTipInfo(batch, toolTipVector.x - tooltipBounds.width, "Archer", 1, 3, assets.tree, "Claim forest tiles to build more archers.");
+                renderToolTipInfo(batch, toolTipVector.x - boundsTooltip.width, "Archer", 1, 3, assets.tree, "Claim forest tiles to build more archers.");
             }
             if (toolTipVector.x > bx4 && toolTipVector.x < bx4 + boxWidth){
-                renderToolTipInfo(batch, toolTipVector.x - tooltipBounds.width, "Wizard", 3, 1, assets.gem, "Claim crystal tiles to build more wizards.");
+                renderToolTipInfo(batch, toolTipVector.x - boundsTooltip.width, "Wizard", 3, 1, assets.gem, "Claim crystal tiles to build more wizards.");
             }
         }
-
-
     }
 
     public void renderToolTipInfo(SpriteBatch batch, float x, String name, int attackPower, int defensePower, TextureRegion type, String text){
-        tooltipBounds.set(x, boundsPlayerUnits.y - tooltipBounds.height, tooltipBounds.width, tooltipBounds.height);
-        assets.ninePatchTooltip.draw(batch, tooltipBounds.x, tooltipBounds.y, tooltipBounds.width, tooltipBounds.height);
+        boundsTooltip.set(x, boundsPlayerUnits.y - boundsTooltip.height, boundsTooltip.width, boundsTooltip.height);
+        assets.ninePatchTooltip.draw(batch, boundsTooltip.x, boundsTooltip.y, boundsTooltip.width, boundsTooltip.height);
 
-        batch.draw(type, tooltipBounds.x + 10, tooltipBounds.y + tooltipBounds.height - 42, 64, 32);
-        batch.draw(type, tooltipBounds.x  + tooltipBounds.width - 72, tooltipBounds.y + tooltipBounds.height - 42, 64, 32);
-
+        batch.draw(type, boundsTooltip.x + 10, boundsTooltip.y + boundsTooltip.height - 42, 64, 32);
+        batch.draw(type, boundsTooltip.x  + boundsTooltip.width - 72, boundsTooltip.y + boundsTooltip.height - 42, 64, 32);
 
         float originalScaleX = Assets.font.getData().scaleX;
         float originalScaleY = Assets.font.getData().scaleY;
         Assets.font.getData().setScale(.4f);
         layout.setText(Assets.font, name);
-        Assets.drawString(batch, name, x, boundsPlayerUnits.y - 10, Color.WHITE, .4f, Assets.font, tooltipBounds.width, Align.center);
+        Assets.drawString(batch, name, x, boundsPlayerUnits.y - 10, Color.WHITE, .4f, Assets.font, boundsTooltip.width, Align.center);
 
         float y = boundsPlayerUnits.y - 10 - layout.height - 5;
-        float center = tooltipBounds.x + tooltipBounds.width/2f;
+        float center = boundsTooltip.x + boundsTooltip.width/2f;
         Assets.font.getData().setScale(.3f);
         layout.setText(Assets.font, ""+attackPower);
         batch.draw(LudumDare42.game.assets.sword, center - layout.width - 52, y - 30, 32, 32);
@@ -336,11 +396,9 @@ public class StatusUI extends UserInterface {
         batch.draw(LudumDare42.game.assets.shield, center + 10, y - 30, 32, 32);
         Assets.drawString(batch, ""+defensePower, center + 52, y - 16 + layout.height/2f, Color.WHITE, .3f, Assets.font);
 
-
         y -= 50;
         Assets.font.getData().setScale(.3f);
-        Assets.drawString(batch, text, tooltipBounds.x + 10, y, Color.WHITE, .3f, Assets.font, tooltipBounds.width - 20, Align.center);
-
+        Assets.drawString(batch, text, boundsTooltip.x + 10, y, Color.WHITE, .3f, Assets.font, boundsTooltip.width - 20, Align.center);
 
         Assets.font.getData().setScale(originalScaleX, originalScaleY);
     }
@@ -357,24 +415,31 @@ public class StatusUI extends UserInterface {
         float segmentUnitsWidth = (4 / 6f) * width;
         float roundCounterWidth = segmentUnitsWidth / 4f;
         float roundCounterHeight = 30f;
+        float turnTextMargin = 100f;
+        float turnTextWidth = camera.viewportWidth / 3f;
+        float turnTextHeight = 100f;//camera.viewportHeight / 4f;
+
+        float turnTextInitialX = -turnTextWidth - turnTextMargin;
+        float turnTextInitialY = camera.viewportHeight / 2f - turnTextHeight / 2f;
 
         float territoryPlayerInitialX = -segmentTerritoryWidth;
         float territoryPlayerEndingX = 0f;
 
-        float unitsPlayerInitialY = camera.viewportHeight;// + roundCounterHeight;
+        float unitsPlayerInitialY = camera.viewportHeight;
         float unitsPlayerEndingY = lowerLeftY - unitsOffsetY;
 
         float territoryEnemyInitialX = camera.viewportWidth;
         float territoryEnemyEndingX = camera.viewportWidth - segmentTerritoryWidth;
 
-        float roundCounterInitialY = -roundCounterHeight;//camera.viewportHeight;
-        float roundCounterEndingY = 0f;//unitsPlayerEndingY - roundCounterHeight;
+        float roundCounterInitialY = -roundCounterHeight;
+        float roundCounterEndingY = 0f;
 
         bounds.set(0f, lowerLeftY, width, height);
         boundsPlayerTerritory.set(territoryPlayerInitialX, lowerLeftY, segmentTerritoryWidth, height);
         boundsPlayerUnits.set(territoryPlayerEndingX + boundsPlayerTerritory.width, unitsPlayerInitialY, segmentUnitsWidth, height + unitsOffsetY);
         boundsEnemyTerritory.set(territoryEnemyInitialX, lowerLeftY, segmentTerritoryWidth, height);
         boundsRoundCounter.set(boundsPlayerUnits.x + boundsPlayerUnits.width / 2f - roundCounterWidth / 2f, roundCounterInitialY, roundCounterWidth, roundCounterHeight);
+        boundsTurnText.set(turnTextInitialX, turnTextInitialY, turnTextWidth, turnTextHeight);
 
         float textOffsetX = (1 / 4f) * segmentTerritoryWidth;
         territoryPlayerTarget.set(territoryPlayerEndingX + boundsPlayerTerritory.width / 2f + textOffsetX,
@@ -424,8 +489,46 @@ public class StatusUI extends UserInterface {
                             if (tile.owner == Team.Type.none) continue;
                             addClaimedTerritorySparkle(tile, tile.owner);
                         }
+                        startTurnPhaseTransitionTween();
                     }
                 })
+                .start(LudumDare42.game.tween);
+    }
+
+    private void startTurnPhaseTransitionTween() {
+        float expand = 10f;
+        float margin = 100f;
+        float initialW = camera.viewportWidth / 3f;
+        float initialH = camera.viewportHeight / 6f;
+        float initialX = -boundsTurnText.width - margin;
+        float initialY = camera.viewportHeight / 2f - initialH / 2f;
+        float middleX = camera.viewportWidth / 2f - boundsTurnText.width / 2f;
+        float middleY = camera.viewportHeight / 2f - boundsTurnText.height / 2f;
+        float endingX = camera.viewportWidth + margin;
+
+        Timeline.createSequence()
+                .push(
+                        Tween.set(boundsTurnText, RectangleAccessor.XYWH)
+                             .target(initialX, initialY, initialW, initialH)
+                )
+                .push(
+                        Tween.to(boundsTurnText, RectangleAccessor.X, 0.1f)
+                             .target(middleX).ease(Back.OUT)
+                )
+                .push(
+                        Tween.to(boundsTurnText, RectangleAccessor.XYWH, 0.3f)
+                             .target(middleX - expand, middleY - expand,
+                                     initialW + 2f * expand,
+                                     initialH + 2f * expand)
+                             .repeatYoyo(2, 0f)
+                )
+                .push(
+                        Tween.to(boundsTurnText, RectangleAccessor.X, 0.1f)
+                             .target(endingX).ease(Back.IN)
+                )
+                .push(
+                        Tween.set(boundsTurnText, RectangleAccessor.X).target(initialX)
+                )
                 .start(LudumDare42.game.tween);
     }
 

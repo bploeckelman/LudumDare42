@@ -293,8 +293,7 @@ public class GameScreen extends BaseScreen {
         {
             batch.setColor(Color.WHITE);
 
-
-            // TODO: fix these?
+            // TODO: fix this... move to status ui?
             endPhaseButton.render(batch);
 
             if (!inTransition) {
@@ -310,37 +309,9 @@ public class GameScreen extends BaseScreen {
             }
 
             // TODO: move to status ui
-            String turnText = "";
-            if (turnAction.turn == Turn.PLAYER_RECRUITMENT) {
-                turnText = "Player's Recruitment Turn " + turnNumber;
-            } else if (turnAction.turn == Turn.PLAYER_ACTION) {
-                turnText = "Player's Action Turn " + turnNumber;
-            } else {
-                switch (enemyAI.phase) {
-                    case Recruit:
-                        turnText = "Enemy's Recruitment Turn " + turnNumber;
-                        break;
-                    case Move:
-                        turnText = "Enemy's Move Turn " + turnNumber;
-                        break;
-                    case RemoveTile:
-                        turnText = "The world is crumbling";
-                        break;
-                    case Squish:
-                        turnText = "Heal the world";
-                        break;
-                    case Finish:
-                        turnText = "Reticulating Spines";
-                        break;
-                }
-            }
-
-//            Assets.drawString(batch, turnText, 0, 30, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
-
             if (gameOver) {
                 Assets.drawString(batch, endGameText, 0, Config.window_height / 2f, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
             }
-
         }
         batch.end();
 
