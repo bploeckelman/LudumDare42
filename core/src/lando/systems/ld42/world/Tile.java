@@ -90,7 +90,7 @@ public class Tile {
         // draw owner color
         if (owner != Team.Type.none) {
             Color teamColor = (owner == Team.Type.player) ? Config.player_color : Config.enemy_color;
-            batch.setColor(new Color(teamColor.r, teamColor.g, teamColor.b, .5f));
+            batch.setColor(new Color(teamColor.r, teamColor.g, teamColor.b, 0.5f * alpha.floatValue()));
             batch.draw(LudumDare42.game.assets.whiteHex, position.x, position.y, tileWidth, tileHeight);
         }
 
