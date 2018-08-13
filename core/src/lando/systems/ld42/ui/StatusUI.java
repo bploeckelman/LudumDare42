@@ -22,6 +22,7 @@ import lando.systems.ld42.Config;
 import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.accessors.ColorAccessor;
 import lando.systems.ld42.accessors.RectangleAccessor;
+import lando.systems.ld42.accessors.Vector2Accessor;
 import lando.systems.ld42.particles.Sparkle;
 import lando.systems.ld42.screens.GameScreen;
 import lando.systems.ld42.teams.Team;
@@ -50,12 +51,14 @@ public class StatusUI extends UserInterface {
     public Rectangle boundsPlayerUnits;
     private Rectangle boundsEnemyTerritory;
     private Rectangle boundsPlayerTerritory;
+    private Rectangle boundsRoundCounter;
     private TextureRegion peasant;
     private TextureRegion soldier;
     private TextureRegion archer;
     private TextureRegion wizard;
     private int claimedCountPlayer;
     private int claimedCountEnemy;
+    private int previousRoundNumber;
 
     public Vector2 territoryPlayerTarget;
     public Vector2 territoryEnemyTarget;
@@ -69,6 +72,7 @@ public class StatusUI extends UserInterface {
         this.boundsPlayerUnits = new Rectangle();
         this.boundsEnemyTerritory = new Rectangle();
         this.boundsPlayerTerritory = new Rectangle();
+        this.boundsRoundCounter = new Rectangle();
         this.territoryPlayerTarget = new Vector2();
         this.territoryEnemyTarget = new Vector2();
         this.peasant = assets.unitAnimationPeasant.getKeyFrame(0);
@@ -77,6 +81,7 @@ public class StatusUI extends UserInterface {
         this.wizard  = assets.unitAnimationWizard.getKeyFrame(0);
         this.claimedCountPlayer = 0;
         this.claimedCountEnemy = 0;
+        this.previousRoundNumber = 1;
         for (int i = 0; i < 256; ++i) {
             sparklePool.free(new Sparkle());
         }
@@ -84,6 +89,7 @@ public class StatusUI extends UserInterface {
 
     @Override
     public void update(float dt) {
+        // Handle sparkles
         for (int i = activeSparkles.size - 1; i >= 0; --i) {
             Sparkle sparkle = activeSparkles.get(i);
             sparkle.update(dt);
@@ -98,6 +104,21 @@ public class StatusUI extends UserInterface {
                 activeSparkles.removeIndex(i);
                 sparklePool.free(sparkle);
             }
+        }
+
+        // Bounce round counter if new round
+        if (previousRoundNumber != gameScreen.turnNumber) {
+            previousRoundNumber = gameScreen.turnNumber;
+            Timeline.createSequence()
+                    .push(
+                            Tween.to(boundsRoundCounter, Vector2Accessor.Y, 0.33f)
+                                 .target(boundsRoundCounter.height / 2f)
+                    )
+                    .push(
+                            Tween.to(boundsRoundCounter, Vector2Accessor.Y, 0.8f)
+                                 .target(0f).ease(Bounce.OUT)
+                    )
+                    .start(LudumDare42.game.tween);
         }
     }
 
@@ -140,6 +161,11 @@ public class StatusUI extends UserInterface {
         batch.setColor(1, 1f, 1f, color.a);
         assets.ninePatchScrews.draw(batch, boundsPlayerUnits.x, boundsPlayerUnits.y, boundsPlayerUnits.width, boundsPlayerUnits.height);
 
+        batch.setColor(0.2f, 0.2f, 0.2f, color.a);
+        batch.draw(assets.whitePixel, boundsRoundCounter.x, boundsRoundCounter.y, boundsRoundCounter.width, boundsRoundCounter.height);
+        batch.setColor(1, 1f, 1f, color.a);
+        assets.ninePatchScrews.draw(batch, boundsRoundCounter.x, boundsRoundCounter.y, boundsRoundCounter.width, boundsRoundCounter.height);
+
         batch.setColor(Config.enemy_color.r, Config.enemy_color.g, Config.enemy_color.b, color.a);
         batch.draw(assets.whitePixel, boundsEnemyTerritory.x, boundsEnemyTerritory.y, boundsEnemyTerritory.width, boundsEnemyTerritory.height);
         batch.setColor(1, 1f, 1f, color.a);
@@ -167,6 +193,22 @@ public class StatusUI extends UserInterface {
                               boundsEnemyTerritory.x + boundsEnemyTerritory.width / 2f - layout.width / 2f,
                               boundsEnemyTerritory.y + boundsEnemyTerritory.height / 2f + layout.height / 2f,
                               color, scale, Assets.font);
+        }
+        Assets.font.getData().setScale(originalScaleX, originalScaleY);
+        batch.setColor(1f, 1f, 1f, 1f);
+
+        // Draw rounds
+        String roundsCount = Integer.toString(gameScreen.turnNumber, 10);
+        String roundsCountLabel = "Round: " + roundsCount;
+
+        float roundScale = 0.35f;
+        Assets.font.getData().setScale(scale);
+        {
+            layout.setText(Assets.font, roundsCountLabel);
+            Assets.drawString(batch, roundsCountLabel,
+                              boundsRoundCounter.x + boundsRoundCounter.width / 2f  - layout.width / 2f,
+                              boundsRoundCounter.y + boundsRoundCounter.height / 2f + layout.height / 2f,
+                              color, roundScale, Assets.font);
         }
         Assets.font.getData().setScale(originalScaleX, originalScaleY);
         batch.setColor(1f, 1f, 1f, 1f);
@@ -239,20 +281,26 @@ public class StatusUI extends UserInterface {
         float unitsOffsetY = 10f;
         float segmentTerritoryWidth = (1 / 6f) * width;
         float segmentUnitsWidth = (4 / 6f) * width;
+        float roundCounterWidth = segmentUnitsWidth / 4f;
+        float roundCounterHeight = 30f;
 
         float territoryPlayerInitialX = -segmentTerritoryWidth;
         float territoryPlayerEndingX = 0f;
 
-        float unitsPlayerInitialY = camera.viewportHeight;
+        float unitsPlayerInitialY = camera.viewportHeight;// + roundCounterHeight;
         float unitsPlayerEndingY = lowerLeftY - unitsOffsetY;
 
         float territoryEnemyInitialX = camera.viewportWidth;
         float territoryEnemyEndingX = camera.viewportWidth - segmentTerritoryWidth;
 
+        float roundCounterInitialY = -roundCounterHeight;//camera.viewportHeight;
+        float roundCounterEndingY = 0f;//unitsPlayerEndingY - roundCounterHeight;
+
         bounds.set(0f, lowerLeftY, width, height);
         boundsPlayerTerritory.set(territoryPlayerInitialX, lowerLeftY, segmentTerritoryWidth, height);
         boundsPlayerUnits.set(territoryPlayerEndingX + boundsPlayerTerritory.width, unitsPlayerInitialY, segmentUnitsWidth, height + unitsOffsetY);
         boundsEnemyTerritory.set(territoryEnemyInitialX, lowerLeftY, segmentTerritoryWidth, height);
+        boundsRoundCounter.set(boundsPlayerUnits.x + boundsPlayerUnits.width / 2f - roundCounterWidth / 2f, roundCounterInitialY, roundCounterWidth, roundCounterHeight);
 
         float textOffsetX = (1 / 4f) * segmentTerritoryWidth;
         territoryPlayerTarget.set(territoryPlayerEndingX + boundsPlayerTerritory.width / 2f + textOffsetX,
@@ -271,8 +319,15 @@ public class StatusUI extends UserInterface {
                         // units panel drops, then territories panels come in from sides
                         Timeline.createSequence()
                                 .push(
-                                        Tween.to(boundsPlayerUnits, RectangleAccessor.Y, duration).delay(initialDelay)
-                                             .target(unitsPlayerEndingY).ease(Bounce.OUT)
+                                        Timeline.createParallel()
+                                        .push(
+                                                Tween.to(boundsPlayerUnits, RectangleAccessor.Y, duration).delay(initialDelay)
+                                                     .target(unitsPlayerEndingY).ease(Bounce.OUT)
+                                        )
+                                        .push(
+                                                Tween.to(boundsRoundCounter, RectangleAccessor.Y, duration).delay(initialDelay)
+                                                     .target(roundCounterEndingY).ease(Bounce.OUT)
+                                        )
                                 )
                                 .push(
                                         Timeline.createParallel()

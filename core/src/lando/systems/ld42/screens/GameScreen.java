@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -34,9 +33,7 @@ import lando.systems.ld42.ui.Button;
 import lando.systems.ld42.ui.RecruitmentUI;
 import lando.systems.ld42.ui.StatusUI;
 import lando.systems.ld42.ui.Tooltip;
-import lando.systems.ld42.ui.*;
 import lando.systems.ld42.units.Unit;
-import lando.systems.ld42.utils.Screenshake;
 import lando.systems.ld42.utils.TileUtils;
 import lando.systems.ld42.utils.screenshake.ScreenShakeCameraController;
 import lando.systems.ld42.world.Tile;
@@ -324,7 +321,7 @@ public class GameScreen extends BaseScreen {
                 }
             }
 
-            Assets.drawString(batch, turnText, 0, 30, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
+//            Assets.drawString(batch, turnText, 0, 30, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
 
             if (gameOver) {
                 Assets.drawString(batch, endGameText, 0, Config.window_height / 2f, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
