@@ -29,6 +29,11 @@ import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.turns.EnemyAI;
 import lando.systems.ld42.turns.Turn;
 import lando.systems.ld42.turns.TurnAction;
+import lando.systems.ld42.turns.TurnStats;
+import lando.systems.ld42.ui.Button;
+import lando.systems.ld42.ui.RecruitmentUI;
+import lando.systems.ld42.ui.StatusUI;
+import lando.systems.ld42.ui.Tooltip;
 import lando.systems.ld42.ui.*;
 import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.utils.Screenshake;
@@ -115,6 +120,13 @@ public class GameScreen extends BaseScreen {
         tooltip = new Tooltip();
 
         initializeUserInterface();
+
+        int unownedTile = 0;
+        for (Tile t : world.tiles){
+            if (t != null && t.owner == Team.Type.none) unownedTile++;
+        }
+        TurnStats.getTurnStats().addTileStats(turnNumber, playerTeam.getTileTotalCount(), enemyTeam.getTileTotalCount(), unownedTile);
+
     }
 
     @Override

@@ -235,6 +235,11 @@ public class EnemyAI {
     }
 
     private void doFinish() {
+        int unownedTile = 0;
+        for (Tile t : world.tiles){
+            if (t != null && t.owner == Team.Type.none) unownedTile++;
+        }
+        TurnStats.getTurnStats().addTileStats(screen.turnNumber, screen.playerTeam.getTileTotalCount(), screen.enemyTeam.getTileTotalCount(), unownedTile);
         screen.turnAction.nextTurn();
         phase = Phase.Recruit;
     }
