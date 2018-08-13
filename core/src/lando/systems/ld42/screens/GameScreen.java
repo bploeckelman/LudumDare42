@@ -352,9 +352,18 @@ public class GameScreen extends BaseScreen {
                     resolveAttack(selectedUnitTile.occupant, t);
                 }
                 //move unit
-                else if (t != null && t.occupant == null && selectedUnitTile != null && adjacentTiles.contains(t, true)) {
-                    selectedUnitTile.occupant.moveTo(t);
-                    selectedUnitTile.occupant.actionAvailable--;
+                else if (t != null && selectedUnitTile != null && adjacentTiles.contains(t, true)) {
+                    Unit moveUnit = selectedUnitTile.occupant;
+
+                    if (t.occupant == null) {
+                        moveUnit.moveTo(t);
+                    } else if (t.occupant.team == Team.Type.player && t.occupant.actionAvailable > 0) {
+                        // allow swap
+                        Unit swap = t.occupant;
+                        moveUnit.moveTo(t);
+                        swap.moveTo(selectedUnitTile);
+
+                    }
                     selectedUnitTile = null;
                 }
                 //select unit

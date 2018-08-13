@@ -67,6 +67,11 @@ public abstract class Unit {
 
     public void moveTo(final Tile tile) {
         if (tile == null) return;
+
+        actionAvailable--;
+        if (this.tile != null) {
+            this.tile.occupant = null;
+        }
         float tx = TileUtils.getX(tile.col, Tile.tileWidth) + Tile.tileWidth / 2f - size.x / 2f;
         float ty = TileUtils.getY(tile.row, tile.col, Tile.tileHeight)+ Tile.tileHeight - size.y;
         Tween.to(pos, Vector2Accessor.XY, moveDuration)
@@ -74,9 +79,6 @@ public abstract class Unit {
              .setCallback(new TweenCallback() {
                  @Override
                  public void onEvent(int i, BaseTween<?> baseTween) {
-                     if (Unit.this.tile != null) {
-                         Unit.this.tile.occupant = null;
-                     }
                      Unit.this.tile = tile;
                      Unit.this.tile.occupant = Unit.this;
                      if (Unit.this.team != null) {
