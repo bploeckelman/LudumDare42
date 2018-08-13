@@ -90,8 +90,8 @@ public abstract class Unit {
     }
 
     public void render(SpriteBatch batch) {
-        batch.setColor(shadowColor);
-        batch.draw(dropShadow, pos.x, pos.y, size.x, size.y);
+//        batch.setColor(shadowColor);
+//        batch.draw(dropShadow, pos.x, pos.y, size.x, size.y);
 
         batch.setColor(color);
         batch.draw(keyframe, pos.x, pos.y, size.x / 2f, size.y / 2f, size.x, size.y, 1f, 1f, rotation.floatValue());
