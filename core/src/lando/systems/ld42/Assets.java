@@ -62,6 +62,8 @@ public class Assets implements Disposable {
     public TextureRegion emptyHex;
     public TextureRegion blankTile;
     public TextureRegion sparkle;
+    public TextureRegion sword;
+    public TextureRegion sheild;
     public NinePatch ninePatchScrews;
     public NinePatch ninePatchStats;
 
@@ -105,7 +107,7 @@ public class Assets implements Disposable {
     public ShaderProgram waterShader;
 
     public ShaderProgram cloudShader;
-    public static NinePatch ninePatchTooltip;
+    public NinePatch ninePatchTooltip;
 
     public boolean initialized;
 
@@ -163,6 +165,8 @@ public class Assets implements Disposable {
         emptyHex = atlas.findRegion("tile-empty");
         blankTile = atlas.findRegion("tile-blank");
         sparkle = atlas.findRegion("sparkle");
+        sword = atlas.findRegion("sword");
+        sheild = atlas.findRegion("shield");
 
         tree = atlas.findRegion("tree");
         mountain = atlas.findRegion("mountain");

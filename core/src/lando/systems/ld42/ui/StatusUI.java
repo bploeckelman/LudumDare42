@@ -6,14 +6,17 @@ import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.equations.Bounce;
 import aurelienribon.tweenengine.equations.Quint;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
@@ -26,6 +29,7 @@ import lando.systems.ld42.accessors.Vector2Accessor;
 import lando.systems.ld42.particles.Sparkle;
 import lando.systems.ld42.screens.GameScreen;
 import lando.systems.ld42.teams.Team;
+import lando.systems.ld42.units.PeasantUnit;
 import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
 
@@ -63,6 +67,8 @@ public class StatusUI extends UserInterface {
     public Vector2 territoryPlayerTarget;
     public Vector2 territoryEnemyTarget;
 
+    private Rectangle tooltipBounds;
+
     public StatusUI(Assets assets) {
         this.assets = assets;
         this.layout = assets.layout;
@@ -85,6 +91,7 @@ public class StatusUI extends UserInterface {
         for (int i = 0; i < 256; ++i) {
             sparklePool.free(new Sparkle());
         }
+        tooltipBounds = new Rectangle(0, 0, 300, 130);
     }
 
     @Override
@@ -269,6 +276,75 @@ public class StatusUI extends UserInterface {
         for (Sparkle sparkle : activeSparkles) {
             sparkle.render(batch);
         }
+
+        renderToolTip(batch);
+    }
+
+    Vector3 toolTipVector = new Vector3();
+    public void renderToolTip(SpriteBatch batch){
+        OrthographicCamera hudCamera = World.THE_WORLD.screen.hudCamera;
+        toolTipVector.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+        hudCamera.unproject(toolTipVector);
+
+        if (boundsPlayerUnits.contains(toolTipVector.x, toolTipVector.y)) {
+
+            float boxWidth = ((boundsPlayerUnits.width - (2f * margin)) - (3f * pad)) * (1 / 4f);
+            float boxHeight = height - 2f * pad;
+            float bx1 = boundsPlayerUnits.x + margin;
+            float bx2 = bx1 + boxWidth + pad;
+            float bx3 = bx2 + boxWidth + pad;
+            float bx4 = bx3 + boxWidth + pad;
+            float by = boundsPlayerUnits.y + boundsPlayerUnits.height / 2f - boxHeight / 2f;
+
+            if (toolTipVector.x > bx1 && toolTipVector.x < bx1 + boxWidth){
+                renderToolTipInfo(batch, toolTipVector.x, "Peasant", 1, 1, assets.blankTile, "Claim tiles to build more peasants.");
+            }
+            if (toolTipVector.x > bx2 && toolTipVector.x < bx2 + boxWidth){
+                renderToolTipInfo(batch, toolTipVector.x, "Soldier", 2, 2, assets.mountain, "Claim mountain tiles to build more soldiers.");
+            }
+            if (toolTipVector.x > bx3 && toolTipVector.x < bx3 + boxWidth){
+                renderToolTipInfo(batch, toolTipVector.x - tooltipBounds.width, "Archer", 1, 3, assets.tree, "Claim forest tiles to build more archers.");
+            }
+            if (toolTipVector.x > bx4 && toolTipVector.x < bx4 + boxWidth){
+                renderToolTipInfo(batch, toolTipVector.x - tooltipBounds.width, "Wizard", 3, 1, assets.gem, "Claim crystal tiles to build more wizards.");
+            }
+        }
+
+
+    }
+
+    public void renderToolTipInfo(SpriteBatch batch, float x, String name, int attackPower, int defensePower, TextureRegion type, String text){
+        tooltipBounds.set(x, boundsPlayerUnits.y - tooltipBounds.height, tooltipBounds.width, tooltipBounds.height);
+        assets.ninePatchTooltip.draw(batch, tooltipBounds.x, tooltipBounds.y, tooltipBounds.width, tooltipBounds.height);
+
+        batch.draw(type, tooltipBounds.x + 10, tooltipBounds.y + tooltipBounds.height - 42, 64, 32);
+        batch.draw(type, tooltipBounds.x  + tooltipBounds.width - 72, tooltipBounds.y + tooltipBounds.height - 42, 64, 32);
+
+
+        float originalScaleX = Assets.font.getData().scaleX;
+        float originalScaleY = Assets.font.getData().scaleY;
+        Assets.font.getData().setScale(.4f);
+        layout.setText(Assets.font, name);
+        Assets.drawString(batch, name, x, boundsPlayerUnits.y - 10, Color.WHITE, .4f, Assets.font, tooltipBounds.width, Align.center);
+
+        float y = boundsPlayerUnits.y - 10 - layout.height - 5;
+        float center = tooltipBounds.x + tooltipBounds.width/2f;
+        Assets.font.getData().setScale(.3f);
+        layout.setText(Assets.font, ""+attackPower);
+        batch.draw(LudumDare42.game.assets.sword, center - layout.width - 52, y - 30, 32, 32);
+        Assets.drawString(batch, ""+attackPower, center - 10 - layout.width, y - 16 + layout.height/2f, Color.WHITE, .3f, Assets.font);
+
+        layout.setText(Assets.font, ""+defensePower);
+        batch.draw(LudumDare42.game.assets.sheild, center + 10, y - 30, 32, 32);
+        Assets.drawString(batch, ""+defensePower, center + 52, y - 16 + layout.height/2f, Color.WHITE, .3f, Assets.font);
+
+
+        y -= 50;
+        Assets.font.getData().setScale(.3f);
+        Assets.drawString(batch, text, tooltipBounds.x + 10, y, Color.WHITE, .3f, Assets.font, tooltipBounds.width - 20, Align.center);
+
+
+        Assets.font.getData().setScale(originalScaleX, originalScaleY);
     }
 
     public void rebuild(final GameScreen gameScreen, final Camera camera) {

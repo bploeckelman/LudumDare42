@@ -52,7 +52,7 @@ public class Tooltip {
 
         // DRAW
         batch.setColor(Color.WHITE);
-        Assets.ninePatchTooltip.draw(batch, backgroundX, backgroundY, tooltipBackgroundWidth, tooltipBackgroundHeight);
+        LudumDare42.game.assets.ninePatchTooltip.draw(batch, backgroundX, backgroundY, tooltipBackgroundWidth, tooltipBackgroundHeight);
         Assets.drawString(batch,
                 text,
                 stringTX,

@@ -326,6 +326,7 @@ public class GameScreen extends BaseScreen {
             if (gameOver) {
                 Assets.drawString(batch, endGameText, 0, Config.window_height / 2f, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
             }
+
         }
         batch.end();
 
