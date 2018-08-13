@@ -66,6 +66,7 @@ public class Assets implements Disposable {
     public TextureRegion sparkleEnemy;
     public TextureRegion sword;
     public TextureRegion shield;
+    public TextureRegion pointer;
 
     public TextureRegion tree;
     public TextureRegion mountain;
@@ -174,6 +175,7 @@ public class Assets implements Disposable {
         boot = atlas.findRegion("icon-boot");
         sword = atlas.findRegion("icon-sword");
         shield = atlas.findRegion("icon-shield");
+        pointer = atlas.findRegion("pointer");
 
         tree = atlas.findRegion("tree");
         mountain = atlas.findRegion("mountain");

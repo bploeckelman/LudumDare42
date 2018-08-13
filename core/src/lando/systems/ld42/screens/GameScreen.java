@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -73,6 +75,8 @@ public class GameScreen extends BaseScreen {
 
     public ParticleSystem particleSystem;
 
+    public Vector2 helpHandPos;
+
     public GameScreen() {
         super();
  //       SoundManager.oceanWaves.play();
@@ -120,7 +124,7 @@ public class GameScreen extends BaseScreen {
             if (t != null && t.owner == Team.Type.none) unownedTile++;
         }
         TurnStats.getTurnStats().addTileStats(turnNumber, playerTeam.getTileTotalCount(), enemyTeam.getTileTotalCount(), unownedTile);
-
+        helpHandPos = new Vector2(148, 320);
     }
 
     @Override
@@ -130,9 +134,25 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void update(float dt) {
-//        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-//            Gdx.app.exit();
-//        }
+        // Don't judge me there is only 30 min left in the Jam
+        if (turnNumber == 1 && turnAction.turn == Turn.PLAYER_ACTION){
+            if (selectedUnitTile == null) {
+                Unit u = playerTeam.units.get(0);
+                if (u != null) {
+                    helpHandPos.set(u.pos.x + u.size.x/2f, u.pos.y + (u.size.y *2));
+                }
+            } else {
+                Tile t = world.getTile(selectedUnitTile.col, selectedUnitTile.row + 1);
+                helpHandPos.set(t.position.x + Tile.tileWidth/2f, t.position.y + Tile.tileHeight * 1.5f);
+            }
+        }
+
+        if (turnNumber != 1 || turnAction.turn == Turn.ENEMY){
+            helpHandPos.set(-1000, -1000);
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            Gdx.app.exit();
+        }
 
         if (checkVictory()) {
             endGameText = "You Win!";
@@ -267,6 +287,10 @@ public class GameScreen extends BaseScreen {
             }
 
             particleSystem.render(batch);
+            if (accum > 5f && turnNumber == 1){
+                batch.setColor(Color.WHITE);
+                batch.draw(assets.pointer, helpHandPos.x, helpHandPos.y + Math.abs(MathUtils.sin(accum*4)) * 30, -64, -64);
+            }
         }
         batch.end();
 
@@ -314,6 +338,7 @@ public class GameScreen extends BaseScreen {
             if (turnAction.turn == Turn.PLAYER_RECRUITMENT) {
                 Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
                 if (t != null && t.occupant == null && adjacentTiles.contains(t, true) && playerTeam.buildsLeft()){
+                    if (turnNumber == 1) helpHandPos.set(900, 150);
                     recruitmentUI.rebuild(playerTeam, t, hudCamera);
                     recruitmentUI.show();
                     LudumDare42.game.audio.playSound(Audio.Sounds.click);
