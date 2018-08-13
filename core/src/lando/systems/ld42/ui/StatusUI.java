@@ -59,6 +59,7 @@ public class StatusUI extends UserInterface {
     private Rectangle boundsPlayerTerritory;
     private Rectangle boundsRoundCounter;
     private Rectangle boundsTurnText;
+    private Rectangle boundsEndTurnButton;
     private TextureRegion peasant;
     private TextureRegion soldier;
     private TextureRegion archer;
@@ -69,11 +70,13 @@ public class StatusUI extends UserInterface {
     private String turnText;
     private Turn previousTurn;
     private EnemyAI.Phase previousEnemyPhase;
-
     public Vector2 territoryPlayerTarget;
     public Vector2 territoryEnemyTarget;
 
     private Rectangle boundsTooltip;
+    private String endTurnButtonText = "End Turn";
+    private boolean endTurnButtonVisible = false;
+//    private boolean endTurnButtonBouncing = false;
 
     public StatusUI(Assets assets) {
         this.assets = assets;
@@ -87,6 +90,7 @@ public class StatusUI extends UserInterface {
         this.boundsPlayerTerritory = new Rectangle();
         this.boundsRoundCounter = new Rectangle();
         this.boundsTurnText = new Rectangle();
+        this.boundsEndTurnButton = new Rectangle();
         this.boundsTooltip = new Rectangle(0, 0, 300, 130);
         this.territoryPlayerTarget = new Vector2();
         this.territoryEnemyTarget = new Vector2();
@@ -123,8 +127,6 @@ public class StatusUI extends UserInterface {
             }
         }
 
-        // TODO: handle claimed territory loss through either tile removal or opponent capture
-
         // Bounce round counter if new round
         if (previousRoundNumber != gameScreen.turnNumber) {
             previousRoundNumber = gameScreen.turnNumber;
@@ -140,10 +142,37 @@ public class StatusUI extends UserInterface {
                     .start(LudumDare42.game.tween);
         }
 
+        final Turn currentTurn = gameScreen.turnAction.turn;
+        final EnemyAI.Phase currentEnemyPhase = gameScreen.enemyAI.phase;
+
+        // Handle end turn button click
+        if (endTurnButtonVisible && Gdx.input.justTouched()) {
+            OrthographicCamera hudCamera = World.THE_WORLD.screen.hudCamera;
+            proj.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+            hudCamera.unproject(proj);
+            if (boundsEndTurnButton.contains(proj.x, proj.y)) {
+//                endTurnButtonBouncing = true;
+//                Timeline.createSequence()
+//                        .push(
+//                                Tween.to(boundsEndTurnButton, RectangleAccessor.Y, 0.2f).target(2f)
+//                        )
+//                        .push(
+//                                Tween.to(boundsEndTurnButton, RectangleAccessor.Y, 0.1f).target(5f)
+//                        )
+//                        .setCallback(new TweenCallback() {
+//                            @Override
+//                            public void onEvent(int type, BaseTween<?> source) {
+//                                endTurnButtonBouncing = false;
+//                            }
+//                        })
+//                        .start(LudumDare42.game.tween);
+                gameScreen.selectedUnitTile = null;
+                gameScreen.turnAction.nextTurn();
+            }
+        }
+
         // Handle turn phase transitions
         boolean kickoffPhaseTransition = false;
-        Turn currentTurn = gameScreen.turnAction.turn;
-        EnemyAI.Phase currentEnemyPhase = gameScreen.enemyAI.phase;
         if ((previousTurn != currentTurn)
          || (currentTurn == Turn.ENEMY && previousEnemyPhase != currentEnemyPhase)) {
             kickoffPhaseTransition = true;
@@ -151,8 +180,8 @@ public class StatusUI extends UserInterface {
             previousTurn = gameScreen.turnAction.turn;
             previousEnemyPhase = gameScreen.enemyAI.phase;
 
-            if (currentTurn == Turn.PLAYER_RECRUITMENT) turnText = "Recruit";
-            else if (currentTurn == Turn.PLAYER_ACTION) turnText = "Attack";
+            if (currentTurn == Turn.PLAYER_RECRUITMENT) turnText = "Recruit Phase";
+            else if (currentTurn == Turn.PLAYER_ACTION) turnText = "Attack Phase";
             else if (currentTurn == Turn.ENEMY) {
                 if      (currentEnemyPhase == EnemyAI.Phase.Recruit)    turnText = "Enemy Turn";
                 else if (currentEnemyPhase == EnemyAI.Phase.Move) {
@@ -165,10 +194,10 @@ public class StatusUI extends UserInterface {
                 }
             }
         }
-
         if (kickoffPhaseTransition) {
             startTurnPhaseTransitionTween();
         }
+        endTurnButtonVisible = (currentTurn == Turn.PLAYER_ACTION || currentTurn == Turn.PLAYER_RECRUITMENT);
     }
 
     public void addRemoveTerritorySparkle(Tile tile, Team.Type teamType){
@@ -293,6 +322,25 @@ public class StatusUI extends UserInterface {
         Assets.font.getData().setScale(originalScaleX, originalScaleY);
         batch.setColor(1f, 1f, 1f, 1f);
 
+        // Draw turn phase text
+        batch.setColor(0f, 0f, 0f, color.a);
+        batch.draw(assets.whitePixel, boundsTurnText.x, boundsTurnText.y, boundsTurnText.width, boundsTurnText.height);
+        batch.setColor(1, 1f, 1f, color.a);
+        assets.ninePatchScrews.draw(batch, boundsTurnText.x, boundsTurnText.y, boundsTurnText.width, boundsTurnText.height);
+
+        float turnTextScale = 0.3f;
+        Assets.font.getData().setScale(turnTextScale);
+        {
+            turnTextColor.a = color.a;
+            layout.setText(Assets.font, turnText);
+            Assets.drawString(batch, turnText,
+                              boundsTurnText.x + boundsTurnText.width / 2f - layout.width / 2f,
+                              boundsTurnText.y + boundsTurnText.height / 2f + layout.height / 2f,
+                              turnTextColor, turnTextScale, Assets.font);
+        }
+        Assets.font.getData().setScale(originalScaleX, originalScaleY);
+        batch.setColor(1f, 1f, 1f, 1f);
+
         // Draw player unit counts
         float boxWidth = ((boundsPlayerUnits.width - (2f * margin)) - (3f * pad)) * (1 / 4f);
         float boxHeight = height - 2f * pad;
@@ -354,24 +402,27 @@ public class StatusUI extends UserInterface {
         // Draw tooltip
         renderToolTip(batch);
 
-        // Draw turn phase text
-        batch.setColor(0f, 0f, 0f, color.a);
-        batch.draw(assets.whitePixel, boundsTurnText.x, boundsTurnText.y, boundsTurnText.width, boundsTurnText.height);
-        batch.setColor(1, 1f, 1f, color.a);
-        assets.ninePatchScrews.draw(batch, boundsTurnText.x, boundsTurnText.y, boundsTurnText.width, boundsTurnText.height);
-
-        float turnTextScale = 0.3f;
-        Assets.font.getData().setScale(turnTextScale);
-        {
-            turnTextColor.a = color.a;
-            layout.setText(Assets.font, turnText);
-            Assets.drawString(batch, turnText,
-                              boundsTurnText.x + boundsTurnText.width / 2f - layout.width / 2f,
-                              boundsTurnText.y + boundsTurnText.height / 2f + layout.height / 2f,
-                              turnTextColor, turnTextScale, Assets.font);
+        // Draw end turn button
+        if (endTurnButtonVisible) {
+            batch.setColor(1, 1f, 1f, color.a);
+            assets.ninePatchTooltip.draw(batch, boundsEndTurnButton.x, boundsEndTurnButton.y, boundsEndTurnButton.width, boundsEndTurnButton.height);
+            Assets.font.getData().setScale(scale);
+            {
+                float endTurnScale = 0.35f;
+                if (gameScreen.turnAction.turn == Turn.PLAYER_RECRUITMENT) {
+                    endTurnButtonText = "End Recruit";
+                } else if (gameScreen.turnAction.turn == Turn.PLAYER_ACTION) {
+                    endTurnButtonText = "End Attack";
+                }
+                layout.setText(Assets.font, endTurnButtonText);
+                Assets.drawString(batch, endTurnButtonText,
+                                  boundsEndTurnButton.x + boundsEndTurnButton.width / 2f - layout.width / 2f,
+                                  boundsEndTurnButton.y + boundsEndTurnButton.height / 2f + layout.height / 2f,
+                                  color, endTurnScale, Assets.font);
+            }
+            Assets.font.getData().setScale(originalScaleX, originalScaleY);
+            batch.setColor(1f, 1f, 1f, 1f);
         }
-        Assets.font.getData().setScale(originalScaleX, originalScaleY);
-        batch.setColor(1f, 1f, 1f, 1f);
     }
 
     private Vector3 toolTipVector = new Vector3();
@@ -475,6 +526,7 @@ public class StatusUI extends UserInterface {
         boundsEnemyTerritory.set(territoryEnemyInitialX, lowerLeftY, segmentTerritoryWidth, height);
         boundsRoundCounter.set(roundCounterX, roundCounterInitialY, roundCounterWidth, roundCounterHeight);
         boundsTurnText.set(turnTextInitialX, turnTextInitialY, turnTextWidth, turnTextHeight);
+        boundsEndTurnButton.set(5f, 5f, 150f, 30f);
 
         float textOffsetX = (1 / 4f) * segmentTerritoryWidth;
         territoryPlayerTarget.set(territoryPlayerEndingX + boundsPlayerTerritory.width / 2f + textOffsetX,
@@ -529,6 +581,8 @@ public class StatusUI extends UserInterface {
                             addClaimedTerritorySparkle(tile, tile.owner);
                         }
                         startTurnPhaseTransitionTween();
+                        endTurnButtonVisible = (gameScreen.turnAction.turn == Turn.PLAYER_ACTION
+                                             || gameScreen.turnAction.turn == Turn.PLAYER_RECRUITMENT);
                     }
                 })
                 .start(LudumDare42.game.tween);

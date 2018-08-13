@@ -262,19 +262,16 @@ public class GameScreen extends BaseScreen {
             }
 
             if (selectedUnitTile != null) {
-                selectedUnitTile.renderHighlight(batch, Color.YELLOW);
+                selectedUnitTile.renderHighlight(batch, Config.selected_color);
                 TileUtils.getNeighbors(selectedUnitTile, world, adjacentTiles);
                 for (Tile adjacentTile : adjacentTiles) {
-                    adjacentTile.renderHighlight(batch, Color.BLUE);
+                    adjacentTile.renderHighlight(batch, Config.highlight_color);
                 }
 
             }
 
-
-
             playerTeam.render(batch);
             enemyTeam.render(batch);
-
 
             if (selectedUnitTile != null && turnAction.turn  == Turn.PLAYER_ACTION){
                 Tile touchedTile = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
@@ -293,9 +290,6 @@ public class GameScreen extends BaseScreen {
         {
             batch.setColor(Color.WHITE);
 
-            // TODO: fix this... move to status ui?
-            endPhaseButton.render(batch);
-
             if (!inTransition) {
                 statusUI.render(batch);
             }
@@ -310,6 +304,7 @@ public class GameScreen extends BaseScreen {
 
             // TODO: move to status ui
             if (gameOver) {
+                // TODO: draw a ninepatch panel underneath
                 Assets.drawString(batch, endGameText, 0, Config.window_height / 2f, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
             }
         }

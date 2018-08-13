@@ -40,7 +40,7 @@ public class Tooltip {
         float stringTY;
 
         backgroundX = 5;
-        backgroundY = 5;
+        backgroundY = 40;
 
         if (tY < Config.window_height/2f){
             // Whatever, this gets us there
