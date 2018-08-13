@@ -18,7 +18,7 @@ public class HelpModalWindow extends ModalWindow {
             " -  Peasants - weak, but easy to recruit",
             " -  Soldiers - medium attack and defense",
             " -  Archers - strong defense",
-            " -  Wizards - strong offense",
+            " -  Wizards - strong offense, can move twice",
             " Attack Phase:",
             " - Move a unit to an empty tile or move onto an enemy unit to attack",
             " - You can swap units by moving onto a tile with a friendly unit",
@@ -29,7 +29,6 @@ public class HelpModalWindow extends ModalWindow {
     public HelpModalWindow(OrthographicCamera camera) {
         super(camera);
         this.helpRect = new Rectangle();
-
     }
 
     @Override
