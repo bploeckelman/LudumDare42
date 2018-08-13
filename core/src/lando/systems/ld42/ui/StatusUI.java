@@ -74,7 +74,7 @@ public class StatusUI extends UserInterface {
 
         // Draw claimed territory
         String playerTerritoryCount = Integer.toString(gameScreen.playerTeam.getTileTotalCount(), 10);
-        String enemyTerritoryCount = Integer.toString(gameScreen.playerTeam.getTileTotalCount(), 10);
+        String enemyTerritoryCount = Integer.toString(gameScreen.enemyTeam.getTileTotalCount(), 10);
         String territoryLabelPlayer = "Claimed: " + playerTerritoryCount;
         String territoryLabelEnemy = "Claimed: " + enemyTerritoryCount;
 
