@@ -10,17 +10,18 @@ import lando.systems.ld42.LudumDare42;
 public class HelpModalWindow extends ModalWindow {
     private Rectangle helpRect;
     private String[] introTutorial = {
-            "Welcome to Kingdoms Fall! Explosive Strategy Action Medieval Battle Simulator."
+            "Welcome to Kingdoms Fall!\nExplosive Strategy Action Medieval Battle Simulator."
     };
     private String[] tutorial = {
-            "There are two phases for you and your enemy.",
-            " Recruitment Phase",
-            " -  Recruit a unit by clicking on the tile next to your castle.",
+//            "There are two phases for you and your enemy.",
+            " ",
+            " Recruit Phase",
+            " -  Recruit a unit by clicking on a tile next to your castle.",
             " -  Peasants are best for scouting",
             " -  Archers are best for defense",
             " -  Wizards are best for offence",
             " -  Soldiers are all-rounder unit",
-            " Action Phase",
+            " Attack Phase",
             " - Move a unit to an empty tile or move onto an enemy unit to attack",
             " - You can swap units by moving onto a tile with a friendly unit",
             " Victory Condition",
@@ -61,7 +62,7 @@ public class HelpModalWindow extends ModalWindow {
                 LudumDare42.game.assets.font.getData().setScale(title_text_scale);
                 LudumDare42.game.assets.fontShader.setUniformf("u_scale", title_text_scale);
                 LudumDare42.game.assets.layout.setText(LudumDare42.game.assets.font, introTutorial[i],
-                        Color.WHITE, target_width, Align.left, true);
+                        Color.WHITE, target_width, Align.center, true);
                 LudumDare42.game.assets.font.draw(batch, LudumDare42.game.assets.layout,
                         modalRect.x + margin_left,
                         modalRect.y + modalRect.height - margin_top * MARGIN_MULTIPLIER * (i + 2));

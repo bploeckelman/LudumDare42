@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -29,7 +28,6 @@ import lando.systems.ld42.turns.EnemyAI;
 import lando.systems.ld42.turns.Turn;
 import lando.systems.ld42.turns.TurnAction;
 import lando.systems.ld42.turns.TurnStats;
-import lando.systems.ld42.ui.Button;
 import lando.systems.ld42.ui.RecruitmentUI;
 import lando.systems.ld42.ui.StatusUI;
 import lando.systems.ld42.ui.Tooltip;
@@ -42,7 +40,6 @@ import lando.systems.ld42.world.World;
 
 public class GameScreen extends BaseScreen {
     public World world;
-    private Button endPhaseButton;
     public Array<Tile> adjacentTiles;
     public Array<Tile> adjacentBuildTiles;
     public PlayerTeam playerTeam;
@@ -111,7 +108,6 @@ public class GameScreen extends BaseScreen {
         this.pickRegion.flip(false, true);
         this.pickPixmap = null;
         this.pickColor = new Color();
-        this.endPhaseButton = new Button(LudumDare42.game.assets.whiteCircle, new Rectangle(690, 30, 50, 50), hudCamera);
         this.selectedUnitTile = playerTeam.castleTile;
 
         enemyAI = new EnemyAI(world, this);
@@ -134,9 +130,9 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void update(float dt) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            Gdx.app.exit();
-        }
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+//            Gdx.app.exit();
+//        }
 
         if (checkVictory()) {
             endGameText = "You Win!";
@@ -157,16 +153,6 @@ public class GameScreen extends BaseScreen {
 
         if (turnAction.turn == Turn.ENEMY && !gameOver) {
             enemyAI.update(dt);
-//            dumbAIMovement();
-//            turnAction.nextTurn();
-//            selectedUnitTile = playerTeam.castleTile;
-//            turnNumber++;
-//            world.pickRemoveTileCleverly();
-//            if (turnNumber % 8 == 0) {
-//                world.squishHoles();
-//                shaker.shakeDuration = 25f;
-//                shaker.shake(2f);
-//            }
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.Y)){
@@ -302,10 +288,18 @@ public class GameScreen extends BaseScreen {
                 batch.draw(pickRegion, 0, 0, 100, 80);
             }
 
-            // TODO: move to status ui
             if (gameOver) {
-                // TODO: draw a ninepatch panel underneath
-                Assets.drawString(batch, endGameText, 0, Config.window_height / 2f, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
+                batch.setColor(0f, 0f, 0f, 0.4f);
+                batch.draw(assets.whitePixel, 0f, 0f, hudCamera.viewportWidth, hudCamera.viewportHeight);
+
+                float w = hudCamera.viewportWidth / 2f;
+                float h = hudCamera.viewportHeight / 5f;
+                batch.setColor(0.2f, 0.2f, 0.2f, 0.9f);
+                batch.draw(assets.whitePixel, hudCamera.viewportWidth / 2f - w / 2f, hudCamera.viewportHeight / 2f - h / 2f, w, h);
+                batch.setColor(1, 1f, 1f, 1f);
+                assets.ninePatchScrews.draw(batch, hudCamera.viewportWidth / 2f - w / 2f, hudCamera.viewportHeight / 2f - h / 2f, w, h);
+                Color col = checkVictory() ? Color.GREEN : Color.RED;
+                Assets.drawString(batch, endGameText, hudCamera.viewportWidth / 2f - w / 2f, hudCamera.viewportHeight / 2f + 10f, col, .5f, Assets.font, w, Align.center);
             }
         }
         batch.end();
@@ -316,11 +310,6 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public boolean touchUp (int screenX, int screenY, int pointer, int button) {
-        if (endPhaseButton.checkForTouch(screenX, screenY) && turnAction.turn != Turn.ENEMY){
-            selectedUnitTile = null;
-            turnAction.nextTurn();
-        }
-
         if (!transitioning) {
             if (turnAction.turn == Turn.PLAYER_RECRUITMENT) {
                 Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
@@ -461,7 +450,6 @@ public class GameScreen extends BaseScreen {
         statusUI.rebuild(this, hudCamera);
 
         ui.addActor(recruitmentUI.root);
-//        ui.addActor(statusUI.root);
     }
 
     private boolean checkVictory() {
