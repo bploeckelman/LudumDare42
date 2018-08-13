@@ -361,6 +361,7 @@ public class GameScreen extends BaseScreen {
                 if (t != null && t.occupant == null && adjacentTiles.contains(t, true) && playerTeam.buildsLeft()){
                     recruitmentUI.rebuild(playerTeam, t, hudCamera);
                     recruitmentUI.show();
+                    LudumDare42.game.audio.playSound(Audio.Sounds.click);
                 }
                 if (!playerTeam.buildsLeft()) {
                     selectedUnitTile = null;
@@ -373,6 +374,7 @@ public class GameScreen extends BaseScreen {
                     if (selectedUnitTile != null) {
                         if (t == selectedUnitTile) {
                             // reset
+                            LudumDare42.game.audio.playSound(Audio.Sounds.click);
                             selectedUnitTile = null;
                         } else if (adjacentTiles.contains(t, true)) {
                             Unit playerUnit = selectedUnitTile.occupant;
@@ -395,6 +397,8 @@ public class GameScreen extends BaseScreen {
                     } else if (t.occupant != null && t.occupant.team == Team.Type.player && t.occupant.actionAvailable > 0) {
                         // select unit
                         selectedUnitTile = t;
+                        LudumDare42.game.audio.playSound(Audio.Sounds.click);
+
                     }
                 }
                 else {
