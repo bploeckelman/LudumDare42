@@ -1,49 +1,42 @@
-:::::TODO:::::
-Update for LD42
-:::::TODO:::::
-
-
 # Links
 ---
 
-- ** [HTML5/WebGL  !!TODO!! ](https://lando.systems/games/ld41-putt-putt-boom) **
-- ** [Desktop/Java !!TODO!! ](https://lando.systems/games/ld40-litterburg/ld41-putt-putt-boom.jar) **
-- ** [Source](https://github.com/bploeckelman/LudumDare41) **
+- ** [HTML5/WebGL](https://lando.systems/games/ld42-kingdoms-fall) **
+- ** [Desktop/Java](https://lando.systems/games/ld42-kingdoms-fall/ld42-kingdoms-fall.jar) **
+- ** [Source](https://github.com/bploeckelman/LudumDare42) **
 
-The year is 2048 and *international relations* are in *tatters* ??
+The one constant in the world is that *Kingdoms Fall* :crown: :european_castle: :boom:
 
-The only remaining form of diplomacy is **tank-based mini-golf**
+Spread your army over the land to conquer the enemy kingdom, before the land drops out from beneath you!
 
-*Diplomats, to your vehicles!*
-
-![putt-putt-boom-title.gif](///raw/103/z/1285d.gif)
+** GIF OR TITLE IMAGE HERE **
 
 
 # Controls:
 ---
+- ** Left click ** select, move, attack, recruit
 
-- ** Left click ** Control the power of the putt
-- ** Mouse cursor ** Aims the tank's turret
-- ** Mouse scroll ** Zoom on the map
-- ** WASD ** Basic control of the tank
-- ** TRFG ** Advanced control of the tank using individual treads
-- ** Escape ** Go back to level select screen
-
-![screenshot1.jpg](///raw/103/z/12993.jpg)
+** ADD IMAGE HERE **
 
 
 # Game:
 ---
 
-Here's the general flow of the game:
+Recruit an army, spread across the land to claim territory, battle your rival kingdom, and claim their castle before you **run of space**
 
-- A classic game of Mini Golf, but with tanks... and turrets... and catapults... and maybe one really big tank.
-- Get the ball in the hole to complete the level.
-- Aim with the mouse cursor and left click to charge fire the ball.
-- Each death, including resets, is a two stroke penalty.
-- Enemy turrets will only fire in a set direction.  Catapults, on the other hand, will aim and attack when you are in sight.
-- Like normal golf ** You can't move when you have the ball**, so timing is crucial.
-- Pick up powerful power-ups to assist you in your relaxing time on the greens.
+:small_blue_diamond: Turn-based strategy
+:small_blue_diamond: Hyper-realistic AI using blockchain
+:small_blue_diamond: Four different unit types to recruit
+- Peasant (weak, but can always be recruited, claim more territory to recruit more of them)
+- Soldier (good attack and defense, required terrain: mountains :mount_fuji:)
+- Archer (great defense but poor attack, required terrain: forests :deciduous_tree:)
+- Wizard (great offense but poor defense, required terrain: crystals :gem:)
+
+The game flow proceeds in rounds...
+- Recruit
+- Move / Attack
+- Shrinking territory
+
 
 ![screenshot4.jpg](///raw/103/z/1299f.jpg)
 
@@ -51,7 +44,7 @@ Here's the general flow of the game:
 # About the Team:
 ---
 
-[LandoSystems](https://lando.systems) is a group of jammers from Madison, Wisconsin that varies in size from 2 to 12 people. This is the team�s 16th Ludum Dare game!! :grinning:
+[LandoSystems](https://lando.systems) is a group of jammers from Madison, Wisconsin that varies in size from 2 to 12 people. This is the team's 17th Ludum Dare game!! :grinning:
 
 
 # Team Members:
@@ -63,17 +56,14 @@ Code:
 - Brian Rossman
 - Jeffrey Hwang
 - Brandon Humboldt
-- Colin Kennedy
 
 Art:
 - Matt Neumann
-- Troy Sullivan
+- Luke Bain
 
-Music:
-- Tyler Pecora
-
-Baklava provided by
-- Ian McNamara
+Audio:
+- Doug Graham
+- Luke Bain
 
 Support Shiba:
 - Asuka!
@@ -81,4 +71,3 @@ Support Shiba:
 
 
 We hope you enjoy playing the game as much as we did making it! :fingers_crossed:
-
