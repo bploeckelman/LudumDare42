@@ -427,7 +427,6 @@ public class GameScreen extends BaseScreen {
             attackingTile.occupant.dead = true;
             attackingTile.occupant = null;
             attackingUnit.moveTo(attackingTile);
-            attackingUnit.actionAvailable--;
             selectedUnitTile = null;
         } else if (result == 0) { // Both die
             attackingTile.occupant.dead = true;
