@@ -168,6 +168,8 @@ public class TitleScreen extends BaseScreen {
         batch.setProjectionMatrix(hudCamera.combined);
         batch.begin();
         {
+            batch.draw(game.assets.titleTexture, 0f, 0f, hudCamera.viewportWidth, hudCamera.viewportHeight);
+
             for (Letter l : letters) {
                 Assets.drawString(batch, l.letter, l.x, l.y, Color.WHITE, 1, titleFont);
             }
