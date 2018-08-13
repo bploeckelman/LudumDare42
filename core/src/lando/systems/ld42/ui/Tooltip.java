@@ -1,5 +1,6 @@
 package lando.systems.ld42.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -27,7 +28,7 @@ public class Tooltip {
 
     private float x,y;
 
-    public void render(SpriteBatch batch, OrthographicCamera hudCamera){
+    public void render(SpriteBatch batch){
         // Tooltip
         if (text == null || text.equals("")) return;
 
@@ -40,26 +41,15 @@ public class Tooltip {
         float stringTX ;
         float stringTY;
 
-        // Screen space
-        if (tX < Config.window_width / 2) {
-            // left half of the screen: align left edge of tooltip at cursor
-            backgroundX = tX;
-            if (tY > Config.window_height / 2) {
-                // Tooltip will appear under the cursor (bottom-right).  Offset it.
-                backgroundX += TOOLTIP_CURSOR_OFFSET_X;
-            }
-        } else {
-            // Right side of screen: align right edge of tooltip at cursor
-            backgroundX = tX - tooltipBackgroundWidth;
+        backgroundX = 5;
+        backgroundY = 5;
+
+        if (tY < Config.window_height/2f){
+            // Whatever, this gets us there
+            backgroundY = World.THE_WORLD.screen.statusUI.boundsPlayerUnits.y - tooltipBackgroundHeight;
         }
+
         stringTX = backgroundX + TOOLTIP_TEXT_PADDING_X;
-        if (tY <= Config.window_height / 2) {
-            // bottom half of screen: align bottom edge of tooltip with cursor
-            backgroundY = tY;
-        } else {
-            // top half of screen: align top edge of tooltip with cursor
-            backgroundY = tY - tooltipBackgroundHeight;
-        }
         stringTY = backgroundY + tooltipTextOffsetY;
 
         // DRAW

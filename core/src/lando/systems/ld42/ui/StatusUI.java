@@ -32,7 +32,7 @@ public class StatusUI extends UserInterface {
 
     // Fuck Scene2D on this, we'll do it live
     private Rectangle bounds;
-    private Rectangle boundsPlayerUnits;
+    public Rectangle boundsPlayerUnits;
     private Rectangle boundsEnemyTerritory;
     private Rectangle boundsPlayerTerritory;
     private TextureRegion peasant;

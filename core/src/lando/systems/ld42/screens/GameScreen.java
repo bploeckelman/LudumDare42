@@ -265,7 +265,7 @@ public class GameScreen extends BaseScreen {
             }
 
             if (tooltip != null) {
-                tooltip.render(batch, hudCamera);
+                tooltip.render(batch);
             }
 
             if (Config.debug) {
