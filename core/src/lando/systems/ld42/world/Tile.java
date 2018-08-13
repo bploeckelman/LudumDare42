@@ -125,9 +125,7 @@ public class Tile {
     }
 
     private void renderResource(SpriteBatch batch, TextureRegion image) {
-        int typeXTexOffset = texture.getRegionWidth() / 2;
-        int typeYTextOffset = texture.getRegionHeight() / 2;
-        batch.draw(image, position.x + typeXTexOffset, position.y + typeYTextOffset);
+        batch.draw(image, position.x, position.y, Tile.tileWidth, Tile.tileHeight);
     }
 
 //    private void stuff() {
