@@ -170,6 +170,38 @@ public class StatusUI extends UserInterface {
         }
     }
 
+    public void addRemoveTerritorySparkle(Tile tile, Team.Type teamType){
+        if (teamType == Team.Type.none) return;
+        float sparkleWidth = LudumDare42.game.assets.sparkle.getRegionWidth();
+        float sparkleHeight = LudumDare42.game.assets.sparkle.getRegionHeight();
+
+        if (teamType == Team.Type.player) {
+            claimedCountPlayer--;
+        } else {
+            claimedCountEnemy--;
+        }
+        // NOTE: this converts world -> hud coords properly
+
+        // Calculate the middle of the tile
+        proj.set(tile.position.x + Tile.tileWidth / 2f,
+                tile.position.y + Tile.tileHeight / 2f, 0f);
+        // Convert world -> screen coords
+        World.THE_WORLD.screen.worldCamera.project(proj);
+        // Screen coords has an inverted Y axis, so re-invert to get Y-up
+        proj.y = Config.window_height - proj.y;
+        // Convert screen -> hud coords
+        World.THE_WORLD.screen.hudCamera.unproject(proj);
+
+        Sparkle sparkle = sparklePool.obtain();
+        sparkle.init(
+                (teamType == Team.Type.player) ? territoryPlayerTarget.x : territoryEnemyTarget.x,
+                (teamType == Team.Type.player) ? territoryPlayerTarget.y : territoryEnemyTarget.y,
+                proj.x - sparkleWidth / 2f,
+                proj.y - sparkleHeight / 2f,
+                Team.Type.none, 1.1f);
+        activeSparkles.add(sparkle);
+    }
+
     public void addClaimedTerritorySparkle(Tile tile, Team.Type teamType) {
         float sparkleWidth = LudumDare42.game.assets.sparkle.getRegionWidth();
         float sparkleHeight = LudumDare42.game.assets.sparkle.getRegionHeight();
@@ -192,7 +224,7 @@ public class StatusUI extends UserInterface {
                 proj.y - sparkleHeight / 2f,
                 (teamType == Team.Type.player) ? territoryPlayerTarget.x : territoryEnemyTarget.x,
                 (teamType == Team.Type.player) ? territoryPlayerTarget.y : territoryEnemyTarget.y,
-                teamType);
+                teamType, 4f);
         activeSparkles.add(sparkle);
     }
 

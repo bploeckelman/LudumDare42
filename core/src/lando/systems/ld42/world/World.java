@@ -162,6 +162,7 @@ public class World {
         if (t.occupant != null) {
             t.occupant.tileGotSquanched();
         }
+        screen.statusUI.addRemoveTerritorySparkle(t, t.owner);
         t.killTile();
     }
 

@@ -121,6 +121,7 @@ public abstract class Unit {
     public void takeOverTile(Tile tile, Team.Type team) {
         if (tile.owner != team) {
             World.THE_WORLD.screen.statusUI.addClaimedTerritorySparkle(tile, team);
+            World.THE_WORLD.screen.statusUI.addRemoveTerritorySparkle(tile, tile.owner);
         }
         tile.owner = team;
     }

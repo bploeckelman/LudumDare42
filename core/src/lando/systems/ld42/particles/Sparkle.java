@@ -39,7 +39,7 @@ public class Sparkle implements Pool.Poolable {
         dead = true;
     }
 
-    public void init(float px, float py, float tx, float ty, Team.Type teamType) {
+    public void init(float px, float py, float tx, float ty, Team.Type teamType, float max_transit_duration) {
         this.pos.set(px, py);
         this.target.set(tx, ty);
         this.alpha.setValue(0f);
@@ -49,7 +49,6 @@ public class Sparkle implements Pool.Poolable {
         this.dead = false;
 
         float min_transit_duration = 1f;
-        float max_transit_duration = 4f;
         float duration = MathUtils.random(min_transit_duration, max_transit_duration);
 
         int sign = MathUtils.randomSign();
@@ -93,9 +92,20 @@ public class Sparkle implements Pool.Poolable {
 
     public void render(SpriteBatch batch) {
         batch.setColor(1f, 1f, 1f, alpha.floatValue());
-        TextureRegion texture = (teamType == Team.Type.player)
-                              ? LudumDare42.game.assets.sparklePlayer
-                              : LudumDare42.game.assets.sparkleEnemy;
+        TextureRegion texture = LudumDare42.game.assets.sparkle;
+        switch (teamType){
+
+            case none:
+                texture = LudumDare42.game.assets.sparkle;
+                break;
+            case enemy:
+                texture = LudumDare42.game.assets.sparkleEnemy;
+                break;
+            case player:
+                texture = LudumDare42.game.assets.sparklePlayer;
+                break;
+        }
+
         batch.draw(texture,
                    pos.x, pos.y, 16f, 16f,
                    32f, 32f, 1f, 1f,
