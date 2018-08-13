@@ -10,6 +10,7 @@ import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.accessors.Vector2Accessor;
 import lando.systems.ld42.screens.GameScreen;
 import lando.systems.ld42.teams.Team;
+import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.utils.TileUtils;
 
 import java.util.Comparator;
@@ -252,7 +253,7 @@ public class World {
         float x = TileUtils.getX(col, Tile.tileWidth);
         float y = TileUtils.getY(row, col, Tile.tileHeight);
         int oldIndex = getTileIndex(t);
-        Tween.to(t.position, Vector2Accessor.XY, 1f)
+        Tween.to(t.position, Vector2Accessor.XY, Unit.moveDuration)
                 .target(x, y)
                 .start(LudumDare42.game.tween);
         t.row = row;
@@ -260,13 +261,13 @@ public class World {
         t.pickColor = TileUtils.getColorFromPosition(row, col);
         tiles.set(col + row * WORLD_WIDTH, t);
         tiles.set(oldIndex, null);
-        if (t.occupant != null) {
-            t.occupant.moveTo(t);
-        }
+//        if (t.occupant != null) {
+//            t.occupant.moveTo(t);
+//        }
     }
 
     public void squishHoles(){
-        for (int fixthis = 0; fixthis < 5; fixthis++){
+        for (int fixthis = 0; fixthis < 7; fixthis++){
             for (int row = 0; row < WORLD_HEIGHT; row ++) {
                 for (int col = 0; col < WORLD_WIDTH; col++) {
                     Tile t = getTile(col, row);
@@ -290,6 +291,11 @@ public class World {
                         }
                     }
                 }
+            }
+        }
+        for (Tile t : tiles){
+            if (t != null && t.occupant != null){
+                t.occupant.moveTo(t);
             }
         }
     }

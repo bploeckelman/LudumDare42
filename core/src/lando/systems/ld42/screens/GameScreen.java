@@ -171,6 +171,9 @@ public class GameScreen extends BaseScreen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.Y)){
             world.pickRemoveTileCleverly();
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.U)){
+            world.squishHoles();
+        }
 
         time += dt;
 
