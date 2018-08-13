@@ -17,6 +17,7 @@ public class Assets implements Disposable {
     // Initialize descriptors for all assets
     private final AssetDescriptor<TextureAtlas> atlasAsset = new AssetDescriptor<TextureAtlas>("images/sprites.atlas", TextureAtlas.class);
     private final AssetDescriptor<Texture> titleTextureAsset = new AssetDescriptor<Texture>("images/title.png", Texture.class);
+    private final AssetDescriptor<Texture> statsTextureAsset = new AssetDescriptor<Texture>("images/stats.png", Texture.class);
 
     private final AssetDescriptor<BitmapFont> distanceFieldFontAsset = new AssetDescriptor<BitmapFont>("fonts/ubuntu.fnt", BitmapFont.class,
             new BitmapFontLoader.BitmapFontParameter() {{
@@ -53,6 +54,7 @@ public class Assets implements Disposable {
     public TextureAtlas atlas;
     public TextureRegion testTexture;
     public Texture titleTexture;
+    public Texture statsTexture;
 
     public TextureRegion whitePixel;
     public TextureRegion whiteCircle;
@@ -133,6 +135,7 @@ public class Assets implements Disposable {
         mgr = new AssetManager();
         mgr.load(atlasAsset);
         mgr.load(titleTextureAsset);
+        mgr.load(statsTextureAsset);
         mgr.load(distanceFieldFontAsset);
         mgr.load(distanceFieldShaderAsset);
         mgr.load(shaderBlindsAsset);
@@ -211,6 +214,7 @@ public class Assets implements Disposable {
         castleWaveAnimationEnemy = new Animation<TextureRegion>(0.16f, castleWaveEnemy, Animation.PlayMode.LOOP);
 
         titleTexture = mgr.get(titleTextureAsset);
+        statsTexture = mgr.get(statsTextureAsset);
         Array<TextureAtlas.AtlasRegion> textureHighlight = atlas.findRegions("tile-outline");
         tileHighlightAnimation = new Animation<TextureRegion>(0.1f, textureHighlight, Animation.PlayMode.LOOP_PINGPONG);
 

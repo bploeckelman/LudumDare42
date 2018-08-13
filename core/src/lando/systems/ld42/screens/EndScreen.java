@@ -42,8 +42,7 @@ public class EndScreen extends BaseScreen{
         animTimer += dt;
 
         if (Gdx.input.justTouched()) {
-            //enable this for testing only
-//            game.setScreen(new TitleScreen());
+            game.setScreen(new TitleScreen());
         }
     }
 
@@ -55,7 +54,7 @@ public class EndScreen extends BaseScreen{
         batch.setProjectionMatrix(hudCamera.combined);
         batch.begin();
         batch.setColor(Color.WHITE);
-        batch.draw(LudumDare42.game.assets.titleTexture, 0, 0,hudCamera.viewportWidth, hudCamera.viewportHeight);
+        batch.draw(LudumDare42.game.assets.statsTexture, 0, 0,hudCamera.viewportWidth, hudCamera.viewportHeight);
         batch.setColor(new Color(0f, 0f, 0f, .9f));
         batch.draw(LudumDare42.game.assets.whitePixel, 0, 0, hudCamera.viewportWidth, hudCamera.viewportHeight);
 
