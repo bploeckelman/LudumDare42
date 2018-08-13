@@ -71,8 +71,6 @@ public class GameScreen extends BaseScreen {
     private String endGameText;
 
     public EnemyAI enemyAI;
-    // temp - remove
-    private Button genBoardButton;
 
     public ParticleSystem particleSystem;
 
@@ -112,9 +110,6 @@ public class GameScreen extends BaseScreen {
         this.pickColor = new Color();
         this.endPhaseButton = new Button(LudumDare42.game.assets.whiteCircle, new Rectangle(690, 30, 50, 50), hudCamera);
         this.selectedUnitTile = playerTeam.castleTile;
-
-        // temp
-        this.genBoardButton = new Button(LudumDare42.game.assets.whiteCircle, new Rectangle(690, hudCamera.viewportHeight - 80, 50, 50), hudCamera);
 
         enemyAI = new EnemyAI(world, this);
 
@@ -263,7 +258,6 @@ public class GameScreen extends BaseScreen {
 
             // TODO: fix these?
             endPhaseButton.render(batch);
-            genBoardButton.render(batch);
 
             if (!inTransition) {
                 statusUI.render(batch);
@@ -311,15 +305,6 @@ public class GameScreen extends BaseScreen {
             turnAction.nextTurn();
         }
 
-        if (genBoardButton.checkForTouch(screenX, screenY)) {
-            for(Tile t: world.tiles) {
-                t.resetResource();
-            }
-            world.randomAssignTileType();
-            playerTeam.takeOver();
-            enemyTeam.takeOver();
-        }
-
         if (!transitioning) {
             if (turnAction.turn == Turn.PLAYER_RECRUITMENT) {
                 Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
@@ -336,33 +321,36 @@ public class GameScreen extends BaseScreen {
             }
             else if (turnAction.turn == Turn.PLAYER_ACTION && pickPixmap != null){
                 Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
-                //attack unit
-                if (t != null && t.occupant != null && t.occupant.team == Team.Type.enemy && selectedUnitTile != null && adjacentTiles.contains(t, true)) {
-                    resolveAttack(selectedUnitTile.occupant, t);
-                }
-                //move unit
-                else if (t != null && selectedUnitTile != null && adjacentTiles.contains(t, true)) {
-                    Unit moveUnit = selectedUnitTile.occupant;
-
-                    if (t.occupant == null) {
-                        moveUnit.moveTo(t);
-                    } else if (t.occupant.team == Team.Type.player && t.occupant.actionAvailable > 0) {
-                        // allow swap
-                        Unit swap = t.occupant;
-                        moveUnit.moveTo(t);
-                        swap.moveTo(selectedUnitTile);
-
+                if (t != null) {
+                    if (selectedUnitTile != null) {
+                        if (t == selectedUnitTile) {
+                            // reset
+                            selectedUnitTile = null;
+                        } else if (adjacentTiles.contains(t, true)) {
+                            Unit playerUnit = selectedUnitTile.occupant;
+                            if (t.occupant == null) {
+                                // move to this tile
+                                playerUnit.moveTo(t);
+                            } else if (t.occupant.team == Team.Type.enemy) {
+                                // attack
+                                resolveAttack(playerUnit, t);
+                            } else if (t.occupant.actionAvailable > 0) {
+                                // swap
+                                Unit swap = t.occupant;
+                                playerUnit.moveTo(t);
+                                swap.moveTo(selectedUnitTile);
+                            }
+                            selectedUnitTile = null;
+                        }
+                    } else if (t.occupant != null && t.occupant.team == Team.Type.player) {
+                        // select unit
+                        selectedUnitTile = t;
                     }
-                    selectedUnitTile = null;
                 }
-                //select unit
-                else if (t != null && t.occupant != null && t.occupant.team == Team.Type.player && t.occupant.actionAvailable > 0) {
-                    selectedUnitTile = t;
-                }
-                //deselect
                 else {
                     selectedUnitTile = null;
                 }
+
                 // if no action left, next
                 if (!playerTeam.isActionLeft()) { //TODO also able to early out with a button and leave movement on the field for the turn
                     turnAction.nextTurn();
