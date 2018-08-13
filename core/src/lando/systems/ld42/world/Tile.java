@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import lando.systems.ld42.Assets;
@@ -64,7 +65,30 @@ public class Tile {
         this.animState = 0f;
         this.position = new Vector2(TileUtils.getX(col, tileWidth), TileUtils.getY(row, col, tileHeight) - 120);
         this.pickColor = TileUtils.getColorFromPosition(row, col);
-        this.texture = LudumDare42.game.assets.blankTile;
+        int rand = MathUtils.random(5);
+        switch (rand){
+            case 0:
+                this.texture = LudumDare42.game.assets.blankTile;
+                break;
+            case 1:
+                this.texture = LudumDare42.game.assets.blankTile1;
+                break;
+            case 2:
+                this.texture = LudumDare42.game.assets.blankTile2;
+                break;
+            case 3:
+                this.texture = LudumDare42.game.assets.blankTile3;
+                break;
+            case 4:
+                this.texture = LudumDare42.game.assets.blankTile4;
+                break;
+            case 5:
+                this.texture = LudumDare42.game.assets.blankTile5;
+                break;
+            default:
+                this.texture = LudumDare42.game.assets.blankTile;
+
+        }
         this.hexBase = LudumDare42.game.assets.whiteHex;
         this.hexOverlay = LudumDare42.game.assets.emptyHex;
         Timeline.createSequence()
@@ -97,7 +121,7 @@ public class Tile {
         // draw owner color
         if (owner != Team.Type.none) {
             Color teamColor = (owner == Team.Type.player) ? Config.player_color : Config.enemy_color;
-            batch.setColor(new Color(teamColor.r, teamColor.g, teamColor.b, 0.5f * alpha.floatValue()));
+            batch.setColor(new Color(teamColor.r, teamColor.g, teamColor.b, 0.4f * alpha.floatValue()));
             batch.draw(LudumDare42.game.assets.whiteHex, position.x, position.y, tileWidth, tileHeight);
         }
 

@@ -63,6 +63,11 @@ public class Assets implements Disposable {
     public TextureRegion highlightHex;
     public TextureRegion emptyHex;
     public TextureRegion blankTile;
+    public TextureRegion blankTile1;
+    public TextureRegion blankTile2;
+    public TextureRegion blankTile3;
+    public TextureRegion blankTile4;
+    public TextureRegion blankTile5;
     public TextureRegion sparkle;
     public TextureRegion sparklePlayer;
     public TextureRegion sparkleEnemy;
@@ -172,6 +177,11 @@ public class Assets implements Disposable {
         //highlightHex = atlas.findRegion("tile-outline");
         emptyHex = atlas.findRegion("tile-empty");
         blankTile = atlas.findRegion("tile-blank");
+        blankTile1 = atlas.findRegion("tile-blank1");
+        blankTile2 = atlas.findRegion("tile-blank2");
+        blankTile3 = atlas.findRegion("tile-blank3");
+        blankTile4 = atlas.findRegion("tile-blank4");
+        blankTile5 = atlas.findRegion("tile-blank5");
         sparkle = atlas.findRegion("sparkle");
         sparklePlayer = atlas.findRegion("sparkle-player");
         sparkleEnemy = atlas.findRegion("sparkle-enemy");
