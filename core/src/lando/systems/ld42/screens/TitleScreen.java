@@ -38,7 +38,7 @@ class Letter {
 
 public class TitleScreen extends BaseScreen {
 
-    private final String title = "KINGDOM FALL";
+    private final String title = "KINGDOMS FALL";
     private Rectangle titleBounds;
     private Assets assets;
     private BitmapFont titleFont;
