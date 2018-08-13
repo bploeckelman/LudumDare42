@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
@@ -21,14 +22,14 @@ import lando.systems.ld42.utils.Utils;
 
 class Letter {
     String letter;
-    float x;
+    MutableFloat x;
     float y;
     float w;
     float h;
     float fy;
     public Letter(String letter, float x, float y, float w, float h, float fy) {
         this.letter = letter;
-        this.x = x;
+        this.x = new MutableFloat(x);
         this.y = y;
         this.w = w;
         this.h = h;
@@ -52,7 +53,9 @@ public class TitleScreen extends BaseScreen {
     private boolean falling = true;
 
     enum State {intro, outro, tutorial, end, done}
+
     private State state = State.intro;
+    private float fallTiming = 0.2f;
 
     public boolean showTutorial;
     private HelpModalWindow helpModalWindow;
@@ -67,7 +70,7 @@ public class TitleScreen extends BaseScreen {
 
         glyphLayout.setText(titleFont, title, Color.WHITE, hudCamera.viewportWidth / 2, 1, true);
 
-        float finalY = hudCamera.viewportHeight - (titleBounds.height - glyphLayout.height)/2;
+        float finalY = hudCamera.viewportHeight - (titleBounds.height - glyphLayout.height) / 2;
 
         letters = new Letter[title.length()];
         int index = 0;
@@ -75,7 +78,7 @@ public class TitleScreen extends BaseScreen {
         for (int i = 0; i < glyphLayout.runs.size; i++) {
             GlyphLayout.GlyphRun run = glyphLayout.runs.get(i);
             float x = titleBounds.x + (titleBounds.width - run.width) / 2;
-            for (BitmapFont.Glyph g: run.glyphs) {
+            for (BitmapFont.Glyph g : run.glyphs) {
                 letters[index++] = new Letter(g.toString(), x, y, g.width, g.height, finalY);
                 x += g.width;
             }
@@ -100,7 +103,7 @@ public class TitleScreen extends BaseScreen {
 
         if (falling) {
             time += dt;
-            int glyphCountUpdate = (int) (time / 0.2f);
+            int glyphCountUpdate = (int) (time / fallTiming);
             for (int i = 0; i < letters.length; i++) {
                 if (glyphCountUpdate-- < 0) break;
                 float dy = speed * dt;
@@ -119,11 +122,28 @@ public class TitleScreen extends BaseScreen {
             }
         } else if (state == State.outro) {
             time += dt;
-            if (time >= 2) {
-                transition();
-            }
+//            if (time >= 5) {
+//                transition();
+//            }
+//            triggerRandomJiggle();
         } else if (state == State.tutorial) {
             transition();
+        }
+    }
+
+    private void triggerRandomJiggle() {
+        try {
+            if (MathUtils.random(100) < 100) {
+                int index = MathUtils.random(letters.length - 1);
+                Letter l = letters[index];
+                Tween.to(l.x, -1, 0.33f)
+                        .target(l.x.floatValue() + 5)
+                        .repeatYoyo(-1, 0f)
+                        .start(game.tween);
+
+            }
+        } catch (Exception e) {
+            // eat it
         }
     }
 
@@ -150,7 +170,8 @@ public class TitleScreen extends BaseScreen {
                 time = 0;
                 for (Letter l: letters) {
                     l.fy = -100;
-                    speed = 600;
+                    fallTiming = 0.05f;
+                    speed = 1200;
                 }
                 falling = true;
                 state = State.tutorial;
@@ -178,7 +199,7 @@ public class TitleScreen extends BaseScreen {
             batch.draw(game.assets.titleTexture, 0f, 0f, hudCamera.viewportWidth, hudCamera.viewportHeight);
 
             for (Letter l : letters) {
-                Assets.drawString(batch, l.letter, l.x, l.y, Color.WHITE, 1, titleFont);
+                Assets.drawString(batch, l.letter, l.x.floatValue(), l.y, Color.WHITE, 1, titleFont);
             }
 
             if (helpModalWindow.isActive) {
