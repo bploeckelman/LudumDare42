@@ -1,6 +1,9 @@
 package lando.systems.ld42.ui;
 
+import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.equations.Bounce;
+import aurelienribon.tweenengine.equations.Quint;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -11,6 +14,7 @@ import lando.systems.ld42.Assets;
 import lando.systems.ld42.Config;
 import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.accessors.ColorAccessor;
+import lando.systems.ld42.accessors.RectangleAccessor;
 import lando.systems.ld42.screens.GameScreen;
 import lando.systems.ld42.world.Tile;
 
@@ -114,6 +118,7 @@ public class StatusUI extends UserInterface {
         batch.draw(wizard,  bx4, by, boxWidth / 2f, boxHeight);
 
         // TODO: draw numerator and denom with diff colors?
+        // TODO: maybe grey if full (num == denom), yellow if not
 
         String peasantCount = gameScreen.playerTeam.getUnitCountPeasant() + "/" + gameScreen.playerTeam.getMaxPeasant();
         String soldierCount = gameScreen.playerTeam.getUnitCountSoldier() + "/" + gameScreen.playerTeam.getTileTypeCount(Tile.Type.mountain);
@@ -157,17 +162,51 @@ public class StatusUI extends UserInterface {
         this.height = 40f;
 
         float lowerLeftY = camera.viewportHeight - height;
-        float territorySegmentWidth = width / 6f;
+        float unitsOffsetY = 10f;
+        float segmentTerritoryWidth = (1 / 6f) * width;
+        float segmentUnitsWidth = (4 / 6f) * width;
+
+        float territoryPlayerInitialX = -segmentTerritoryWidth;
+        float territoryPlayerEndingX = 0f;
+
+        float unitsPlayerInitialY = camera.viewportHeight;
+        float unitsPlayerEndingY = lowerLeftY - unitsOffsetY;
+
+        float territoryEnemyInitialX = camera.viewportWidth;
+        float territoryEnemyEndingX = camera.viewportWidth - segmentTerritoryWidth;//territoryPlayerEndingX + territoryEnemyInitialX + segmentUnitsWidth;
 
         bounds.set(0f, lowerLeftY, width, height);
-        boundsPlayerTerritory.set(0f, lowerLeftY, territorySegmentWidth, height);
-        boundsPlayerUnits.set(boundsPlayerTerritory.x + boundsPlayerTerritory.width, lowerLeftY, width - 2f * territorySegmentWidth, height);
-        boundsEnemyTerritory.set(boundsPlayerUnits.x + boundsPlayerUnits.width, lowerLeftY, territorySegmentWidth, height);
+        boundsPlayerTerritory.set(territoryPlayerInitialX, lowerLeftY, segmentTerritoryWidth, height);
+        boundsPlayerUnits.set(territoryPlayerEndingX + boundsPlayerTerritory.width, unitsPlayerInitialY, segmentUnitsWidth, height + unitsOffsetY);
+        boundsEnemyTerritory.set(territoryEnemyInitialX, lowerLeftY, segmentTerritoryWidth, height);
 
-        Tween.to(color, ColorAccessor.A, 2f)
-             .delay(2f)
-             .target(0.9f)
-             .start(LudumDare42.game.tween);
+        float duration = 1.25f;
+        float initialDelay = 3.5f; // don't know why pushPause() isn't working
+        Timeline.createParallel()
+                .push(
+                        Tween.to(color, ColorAccessor.A, duration).delay(initialDelay)
+                             .target(0.9f).ease(Quint.OUT)
+                )
+                .push(
+                        // units panel drops, then territories panels come in from sides
+                        Timeline.createSequence()
+                                .push(
+                                        Tween.to(boundsPlayerUnits, RectangleAccessor.Y, duration).delay(initialDelay)
+                                             .target(unitsPlayerEndingY).ease(Bounce.OUT)
+                                )
+                                .push(
+                                        Timeline.createParallel()
+                                        .push(
+                                                Tween.to(boundsPlayerTerritory, RectangleAccessor.X, duration / 2f)
+                                                     .target(territoryPlayerEndingX).ease(Bounce.OUT)
+                                        )
+                                        .push(
+                                                Tween.to(boundsEnemyTerritory, RectangleAccessor.X, duration / 2f)
+                                                     .target(territoryEnemyEndingX).ease(Bounce.OUT)
+                                        )
+                                )
+                )
+                .start(LudumDare42.game.tween);
     }
 
 }
