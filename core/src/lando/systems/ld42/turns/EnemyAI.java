@@ -205,7 +205,6 @@ public class EnemyAI {
 
     private void moveUnit(Unit u, Tile t){
         u.moveTo(t);
-        u.actionAvailable--;
         delay = Unit.moveDuration + .1f; // This needs to be longer than the tween, so the new tile is occupied
 
     }
