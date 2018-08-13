@@ -328,21 +328,23 @@ public class GameScreen extends BaseScreen {
                             selectedUnitTile = null;
                         } else if (adjacentTiles.contains(t, true)) {
                             Unit playerUnit = selectedUnitTile.occupant;
-                            if (t.occupant == null) {
-                                // move to this tile
-                                playerUnit.moveTo(t);
-                            } else if (t.occupant.team == Team.Type.enemy) {
-                                // attack
-                                resolveAttack(playerUnit, t);
-                            } else if (t.occupant.actionAvailable > 0) {
-                                // swap
-                                Unit swap = t.occupant;
-                                playerUnit.moveTo(t);
-                                swap.moveTo(selectedUnitTile);
+                            if (playerUnit.actionAvailable > 0) {
+                                if (t.occupant == null) {
+                                    // move to this tile
+                                    playerUnit.moveTo(t);
+                                } else if (t.occupant.team == Team.Type.enemy) {
+                                    // attack
+                                    resolveAttack(playerUnit, t);
+                                } else if (t.occupant.actionAvailable > 0) {
+                                    // swap
+                                    Unit swap = t.occupant;
+                                    playerUnit.moveTo(t);
+                                    swap.moveTo(selectedUnitTile);
+                                }
+                                selectedUnitTile = null;
                             }
-                            selectedUnitTile = null;
                         }
-                    } else if (t.occupant != null && t.occupant.team == Team.Type.player) {
+                    } else if (t.occupant != null && t.occupant.team == Team.Type.player && t.occupant.actionAvailable > 0) {
                         // select unit
                         selectedUnitTile = t;
                     }
