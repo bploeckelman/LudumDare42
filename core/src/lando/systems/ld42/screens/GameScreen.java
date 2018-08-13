@@ -31,6 +31,7 @@ import lando.systems.ld42.turns.Turn;
 import lando.systems.ld42.turns.TurnAction;
 import lando.systems.ld42.ui.Button;
 import lando.systems.ld42.ui.RecruitmentUI;
+import lando.systems.ld42.ui.StatusUI;
 import lando.systems.ld42.ui.Tooltip;
 import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.utils.Screenshake;
@@ -58,10 +59,10 @@ public class GameScreen extends BaseScreen {
     public Vector2 cameraCenter;
     public Pixmap pickPixmap;
     public Color pickColor;
-    public PlayerHUD hud;
     public Tooltip tooltip;
     public Screenshake shaker;
     public Stage ui;
+    public StatusUI statusUI;
     public RecruitmentUI recruitmentUI;
     public int pickMapScale = 8;
     private FrameBuffer pickBuffer;
@@ -101,7 +102,6 @@ public class GameScreen extends BaseScreen {
         this.playerTeam = new PlayerTeam(world);
         this.enemyTeam = new EnemyTeam(world);
         this.turnAction = new TurnAction(playerTeam, enemyTeam);
-        this.hud = new PlayerHUD(this);
         this.pickBuffer = new FrameBuffer(Pixmap.Format.RGBA8888,
                                           (int) worldCamera.viewportWidth / pickMapScale,
                                           (int) worldCamera.viewportHeight / pickMapScale,
@@ -176,9 +176,9 @@ public class GameScreen extends BaseScreen {
         world.update(dt);
         playerTeam.update(dt);
         enemyTeam.update(dt);
-        hud.update(dt);
 
         recruitmentUI.update(dt);
+        statusUI.update(dt);
 
         updateCamera();
         targetZoom.setValue(Math.max(world.bounds.width / worldCamera.viewportWidth, world.bounds.height / worldCamera.viewportHeight));
@@ -252,15 +252,22 @@ public class GameScreen extends BaseScreen {
             }
 
             particleSystem.render(batch);
-
         }
         batch.end();
 
+        // Draw HUD
         batch.setProjectionMatrix(hudCamera.combined);
         batch.begin();
         {
             batch.setColor(Color.WHITE);
-            hud.render(batch, inTransition);
+
+            // TODO: fix these?
+            endPhaseButton.render(batch);
+            genBoardButton.render(batch);
+
+            if (!inTransition) {
+                statusUI.render(batch);
+            }
 
             if (tooltip != null) {
                 tooltip.render(batch, hudCamera);
@@ -270,52 +277,36 @@ public class GameScreen extends BaseScreen {
                 batch.draw(pickRegion, 0, 0, 100, 80);
             }
 
-            endPhaseButton.render(batch);
-            genBoardButton.render(batch);
-
-        }
-
-        String turnText = "";
-        if (turnAction.turn == Turn.PLAYER_RECRUITMENT) {
-            turnText = "Player's Recruitment Turn " + turnNumber;
-        }
-        else if (turnAction.turn == Turn.PLAYER_ACTION) {
-            turnText = "Player's Action Turn " + turnNumber;
-        } else {
-            switch(enemyAI.phase){
-
-                case Recruit:
-                    turnText = "Enemy's Recruitment Turn " + turnNumber;
-                    break;
-                case Move:
-                    turnText = "Enemy's Move Turn " + turnNumber;
-                    break;
-                case RemoveTile:
-                    turnText = "The world is crumbling";
-                    break;
-                case Squish:
-                    turnText = "Heal the world";
-                    break;
-                case Finish:
-                    turnText = "Reticulating Spines";
-                    break;
+            // TODO: move to status ui
+            String turnText = "";
+            if (turnAction.turn == Turn.PLAYER_RECRUITMENT) {
+                turnText = "Player's Recruitment Turn " + turnNumber;
+            } else if (turnAction.turn == Turn.PLAYER_ACTION) {
+                turnText = "Player's Action Turn " + turnNumber;
+            } else {
+                switch (enemyAI.phase) {
+                    case Recruit:    turnText = "Enemy's Recruitment Turn " + turnNumber; break;
+                    case Move:       turnText = "Enemy's Move Turn " + turnNumber; break;
+                    case RemoveTile: turnText = "The world is crumbling"; break;
+                    case Squish:     turnText = "Heal the world"; break;
+                    case Finish:     turnText = "Reticulating Spines"; break;
+                }
             }
 
-        }
-        Assets.drawString(batch, turnText, 0, 30, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
+            Assets.drawString(batch, turnText, 0, 30, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
 
-        if (gameOver) {
-            Assets.drawString(batch, endGameText, 0, Config.window_height/2, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
+            if (gameOver) {
+                Assets.drawString(batch, endGameText, 0, Config.window_height/2f, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
+            }
         }
-
         batch.end();
 
+        // Draw Scene2D ui components
         ui.draw();
     }
 
     @Override
     public boolean touchUp (int screenX, int screenY, int pointer, int button) {
-
         if (endPhaseButton.checkForTouch(screenX, screenY) && turnAction.turn != Turn.ENEMY){
             turnAction.nextTurn();
         }
@@ -344,8 +335,6 @@ public class GameScreen extends BaseScreen {
                 }
             }
             else if (turnAction.turn == Turn.PLAYER_ACTION && pickPixmap != null){
-//                recruitmentUI.hide();
-
                 Tile t = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
                 //attack unit
                 if (t != null && t.occupant != null && t.occupant.team == Team.Type.enemy && selectedUnitTile != null && adjacentTiles.contains(t, true)) {
@@ -484,7 +473,11 @@ public class GameScreen extends BaseScreen {
 
         recruitmentUI = new RecruitmentUI(assets);
 
-        ui.addActor(recruitmentUI.window);
+        statusUI = new StatusUI(assets);
+        statusUI.rebuild(this, hudCamera);
+
+        ui.addActor(recruitmentUI.root);
+//        ui.addActor(statusUI.root);
     }
 
     private boolean checkVictory() {

@@ -61,6 +61,7 @@ public class Assets implements Disposable {
     public TextureRegion highlightHex;
     public TextureRegion emptyHex;
     public TextureRegion blankTile;
+    public NinePatch ninePatchScrews;
 
     public TextureRegion tree;
     public TextureRegion mountain;
@@ -165,6 +166,8 @@ public class Assets implements Disposable {
         tree = atlas.findRegion("tree");
         mountain = atlas.findRegion("mountain");
         gem = atlas.findRegion("gem");
+
+        ninePatchScrews = new NinePatch(atlas.findRegion("ninepatch-screws"), 6, 6, 6, 6);
 
         unitHeadPeasant = atlas.findRegion("unit-peasant-head");
         unitHeadSoldier = atlas.findRegion("unit-soldier-head");

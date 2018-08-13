@@ -52,7 +52,6 @@ public class Button {
     // Update & Render -------------------------------------------------------------------------------------------------
 
     public void render(SpriteBatch batch) {
-
         // Button texture
         if (buttonTexture != null) {
             batch.draw(buttonTexture, bounds.x, bounds.y, bounds.width, bounds.height);
