@@ -209,7 +209,7 @@ public class Assets implements Disposable {
 
         titleTexture = mgr.get(titleTextureAsset);
         Array<TextureAtlas.AtlasRegion> textureHighlight = atlas.findRegions("tile-outline");
-        tileHighlightAnimation = new Animation<TextureRegion>(0.7f, textureHighlight, Animation.PlayMode.LOOP);
+        tileHighlightAnimation = new Animation<TextureRegion>(0.1f, textureHighlight, Animation.PlayMode.LOOP_PINGPONG);
 
 
         // Initialize distance field font

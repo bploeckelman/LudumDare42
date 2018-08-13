@@ -26,7 +26,7 @@ public class EndScreen extends BaseScreen{
     private String artists = "Art by:\nMatt Neumann\nLuke Bain\nTroy Sullivan";
     private String emotionalSupport = "Emotional Support:\nAsuka the Shiba";
     //TODO add song title
-    private String music = "Music by:\nLuke Bain\nDoug Graham";
+    private String music = "Audio by:\nLuke Bain\nDoug Graham";
     private String libgdx = "Made with <3 and LibGDX";
 
     private float animTimer;
