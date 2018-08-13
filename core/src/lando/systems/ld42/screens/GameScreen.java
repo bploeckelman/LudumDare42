@@ -220,10 +220,9 @@ public class GameScreen extends BaseScreen {
     @Override
     public void render(SpriteBatch batch, boolean inTransition) {
         transitioning = inTransition;
-
         // Draw picking frame buffer
-        if (!inTransition) {
-            batch.setProjectionMatrix(screenShakeCamera.getCombinedMatrix());
+        if (!transitioning) {
+            batch.setProjectionMatrix(worldCamera.combined);
             pickBuffer.begin();
             {
                 Gdx.gl.glClearColor(0f, 0f, 1f, 1f);

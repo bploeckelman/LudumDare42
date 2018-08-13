@@ -19,14 +19,14 @@ public class EndScreen extends BaseScreen{
     private static float ANIMATION_TIME = 2f;
     private static float shadeAlpha = .3f;
 
-    private String heading = "LD42";
+    private String heading = "Kingdoms Fall";
     private String theme = "Made for Ludum Dare 42:\nTheme: Running out of Space";
     private String thanks = "Thanks for playing our game!";
     private String developers = "Developed by:\nDoug Graham\nBrian Ploeckelman\nBrian Rossman\nJeffrey Hwang\nBrandon Humboldt";
     private String artists = "Art by:\nMatt Neumann\nLuke Bain\nTroy Sullivan";
     private String emotionalSupport = "Emotional Support:\nAsuka the Shiba";
     //TODO add song title
-    private String music = "Music by:\nLuke Bain";
+    private String music = "Music by:\nLuke Bain\nDoug Graham";
     private String libgdx = "Made with <3 and LibGDX";
 
     private float animTimer;
@@ -67,7 +67,7 @@ public class EndScreen extends BaseScreen{
         LudumDare42.game.assets.drawString(batch, artists, hudCamera.viewportWidth/2, hudCamera.viewportHeight - 120, Config.player_color, .3f, LudumDare42.game.assets.font, hudCamera.viewportWidth/2, Align.center);
         LudumDare42.game.assets.drawString(batch, music, hudCamera.viewportWidth/2, hudCamera.viewportHeight - 220, Config.player_color, .3f, LudumDare42.game.assets.font, hudCamera.viewportWidth/2, Align.center);
         LudumDare42.game.assets.drawString(batch, libgdx, hudCamera.viewportWidth/2, hudCamera.viewportHeight - 300, Config.player_color, .4f, LudumDare42.game.assets.font, hudCamera.viewportWidth/2, Align.center);
-        LudumDare42.game.assets.drawString(batch, thanks, 0, 200, Config.player_color, .3f, LudumDare42.game.assets.font, hudCamera.viewportWidth, Align.center);
+        LudumDare42.game.assets.drawString(batch, thanks, 0, 100, Config.player_color, .3f, LudumDare42.game.assets.font, hudCamera.viewportWidth, Align.center);
 
         batch.end();
 

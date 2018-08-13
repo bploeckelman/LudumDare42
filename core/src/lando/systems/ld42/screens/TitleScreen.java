@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Align;
 import lando.systems.ld42.Assets;
 import lando.systems.ld42.accessors.ColorAccessor;
+import lando.systems.ld42.utils.HelpModalWindow;
 import lando.systems.ld42.utils.Utils;
 
 public class TitleScreen extends BaseScreen {
@@ -18,6 +19,9 @@ public class TitleScreen extends BaseScreen {
     public Color backgroundColor;
     public float accum;
     public boolean leavingScreen;
+    public boolean showTutorial;
+    private HelpModalWindow helpModalWindow;
+
 
     public TitleScreen() {
         alpha = new MutableFloat(0);
@@ -38,6 +42,9 @@ public class TitleScreen extends BaseScreen {
              .start(game.tween);
 
         Gdx.input.setInputProcessor(this);
+        this.helpModalWindow = new HelpModalWindow(hudCamera);
+        this.showTutorial = true;
+
     }
 
     @Override
@@ -47,7 +54,11 @@ public class TitleScreen extends BaseScreen {
             Gdx.app.exit();
         }
 
-        if (Gdx.input.justTouched() && !leavingScreen) {
+        if (Gdx.input.justTouched() && showTutorial) {
+            helpModalWindow.show();
+            showTutorial = false;
+        }
+        else if (Gdx.input.justTouched() && !leavingScreen) {
             leavingScreen = true;
             game.setScreen(new GameScreen());
         }
@@ -71,6 +82,11 @@ public class TitleScreen extends BaseScreen {
             Assets.drawString(batch, "Click to start!", width, 30,
                               clickTextColor, clickTextScale.floatValue(),
                               game.assets.font, width, Align.left);
+
+            if (helpModalWindow.isActive) {
+                helpModalWindow.render(batch);
+            }
+
         }
         batch.end();
     }
