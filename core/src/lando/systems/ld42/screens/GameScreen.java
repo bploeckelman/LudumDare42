@@ -29,10 +29,7 @@ import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.turns.EnemyAI;
 import lando.systems.ld42.turns.Turn;
 import lando.systems.ld42.turns.TurnAction;
-import lando.systems.ld42.ui.Button;
-import lando.systems.ld42.ui.RecruitmentUI;
-import lando.systems.ld42.ui.StatusUI;
-import lando.systems.ld42.ui.Tooltip;
+import lando.systems.ld42.ui.*;
 import lando.systems.ld42.units.Unit;
 import lando.systems.ld42.utils.Screenshake;
 import lando.systems.ld42.utils.TileUtils;
@@ -60,7 +57,7 @@ public class GameScreen extends BaseScreen {
     public Vector2 cameraCenter;
     public Pixmap pickPixmap;
     public Color pickColor;
-    public Tooltip tooltip;
+
     public ScreenShakeCameraController screenShakeCamera;
     public Stage ui;
     public StatusUI statusUI;
@@ -72,6 +69,7 @@ public class GameScreen extends BaseScreen {
     private String endGameText;
 
     public EnemyAI enemyAI;
+    public Tooltip tooltip;
 
     public ParticleSystem particleSystem;
 
@@ -94,8 +92,9 @@ public class GameScreen extends BaseScreen {
         this.adjacentTiles = new Array<Tile>();
         this.adjacentBuildTiles = new Array<Tile>();
         this.turnNumber = 1;
-        this.tooltip = new Tooltip();
+
         this.screenShakeCamera = new ScreenShakeCameraController(worldCamera);
+
         this.cameraTouchStart = new Vector3();
         this.touchStart = new Vector3();
         this.playerTeam = new PlayerTeam(world);
@@ -113,6 +112,7 @@ public class GameScreen extends BaseScreen {
         this.selectedUnitTile = playerTeam.castleTile;
 
         enemyAI = new EnemyAI(world, this);
+        tooltip = new Tooltip();
 
         initializeUserInterface();
     }
@@ -182,6 +182,33 @@ public class GameScreen extends BaseScreen {
         screenShakeCamera.update(dt);
     }
 
+    private void UpdateTileDetails(Tile hoverTile) {
+        if (hoverTile != null && hoverTile.occupant != null) {
+            TileUtils.getNeighbors(hoverTile, world, adjacentTiles);
+
+            if (hoverTile.occupant.team == Team.Type.player) {
+                int playerDefense = calculateDefense(hoverTile, Team.Type.player);
+                int enemyAttack = calculateAttack(null, Team.Type.enemy);
+
+                if (enemyAttack == 0) {
+                    tooltip.setText("Player Defense: " + playerDefense, hoverTile);
+                } else {
+                    tooltip.setText("Player Defense: " + playerDefense + "\nEnemy attack: " + enemyAttack, hoverTile);
+                }
+            } else {
+                int enemyDefense = calculateDefense(hoverTile, Team.Type.enemy);
+                int playerAttack = calculateAttack(null, Team.Type.player);
+                if (playerAttack == 0) {
+                    tooltip.setText("Enemy Defense: " + enemyDefense, hoverTile);
+                } else {
+                    tooltip.setText("Enemy Defense: " + enemyDefense + "\nPlayer Attack: " + playerAttack, hoverTile);
+                }
+            }
+        } else {
+            tooltip.text = null;
+        }
+    }
+
     @Override
     public void render(SpriteBatch batch, boolean inTransition) {
         transitioning = inTransition;
@@ -223,23 +250,13 @@ public class GameScreen extends BaseScreen {
 
             if (!transitioning) {
                 Tile touchedTile = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
-                if (touchedTile != null) {
-                    if (touchedTile.owner == Team.Type.player || (touchedTile.occupant != null && touchedTile.occupant.team == Team.Type.player)) {
-                        calculateInformationForPlayerTile(touchedTile);
-                    } else if (touchedTile.owner == Team.Type.enemy || (touchedTile.occupant != null && touchedTile.occupant.team == Team.Type.enemy)) {
-                        calculateInformationForEnemyTile(touchedTile);
-                    } else {
-                        tooltip.text = null;
-                    }
-                } else {
-                    tooltip.text = null;
-                }
+                UpdateTileDetails(touchedTile);
             }
 
             if (selectedUnitTile != null) {
                 selectedUnitTile.renderHighlight(batch, Color.YELLOW);
                 TileUtils.getNeighbors(selectedUnitTile, world, adjacentTiles);
-                for (Tile adjacentTile : adjacentTiles){
+                for (Tile adjacentTile : adjacentTiles) {
                     adjacentTile.renderHighlight(batch, Color.BLUE);
                 }
             }
@@ -280,18 +297,28 @@ public class GameScreen extends BaseScreen {
                 turnText = "Player's Action Turn " + turnNumber;
             } else {
                 switch (enemyAI.phase) {
-                    case Recruit:    turnText = "Enemy's Recruitment Turn " + turnNumber; break;
-                    case Move:       turnText = "Enemy's Move Turn " + turnNumber; break;
-                    case RemoveTile: turnText = "The world is crumbling"; break;
-                    case Squish:     turnText = "Heal the world"; break;
-                    case Finish:     turnText = "Reticulating Spines"; break;
+                    case Recruit:
+                        turnText = "Enemy's Recruitment Turn " + turnNumber;
+                        break;
+                    case Move:
+                        turnText = "Enemy's Move Turn " + turnNumber;
+                        break;
+                    case RemoveTile:
+                        turnText = "The world is crumbling";
+                        break;
+                    case Squish:
+                        turnText = "Heal the world";
+                        break;
+                    case Finish:
+                        turnText = "Reticulating Spines";
+                        break;
                 }
             }
 
             Assets.drawString(batch, turnText, 0, 30, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
 
             if (gameOver) {
-                Assets.drawString(batch, endGameText, 0, Config.window_height/2f, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
+                Assets.drawString(batch, endGameText, 0, Config.window_height / 2f, Color.BLACK, .5f, Assets.font, Config.window_width, Align.center);
             }
         }
         batch.end();
@@ -362,30 +389,6 @@ public class GameScreen extends BaseScreen {
         }
 
         return false;
-    }
-
-    private void calculateInformationForPlayerTile(Tile currentTile) {
-        TileUtils.getNeighbors(currentTile, world, adjacentTiles);
-
-        if (adjacentTiles == null || currentTile == null) return;
-
-        int playerDefense = calculateDefense(currentTile, Team.Type.player);
-        int enemyAttack = calculateAttack(null, Team.Type.enemy);
-
-        String str = "Player Defense: " + playerDefense + "\nEnemy Attack: " + enemyAttack;
-        tooltip.setText(str, currentTile);
-    }
-
-    private void calculateInformationForEnemyTile(Tile currentTile) {
-        TileUtils.getNeighbors(currentTile, world, adjacentTiles);
-
-        if (adjacentTiles == null || currentTile == null) return;
-
-        int enemyDefense = calculateDefense(currentTile, Team.Type.enemy);
-        int playerAttack = calculateAttack(null, Team.Type.player);
-
-        String str = "Enemy Defense: " + enemyDefense + "\nPlayer Attack: " + playerAttack;
-        tooltip.setText(str, currentTile);
     }
 
     private int calculateDefense(Tile currentTile, Team.Type team) {
