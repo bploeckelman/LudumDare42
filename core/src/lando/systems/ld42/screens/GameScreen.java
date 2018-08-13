@@ -286,6 +286,7 @@ public class GameScreen extends BaseScreen {
         {
             batch.setColor(Color.WHITE);
 
+
             // TODO: fix these?
             endPhaseButton.render(batch);
 
