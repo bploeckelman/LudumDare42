@@ -220,9 +220,6 @@ public class GameScreen extends BaseScreen {
         {
             world.render(batch);
 
-            playerTeam.render(batch);
-            enemyTeam.render(batch);
-
             if (!transitioning) {
                 Tile touchedTile = getTileFromScreen(Gdx.input.getX(), Gdx.input.getY());
                 if (touchedTile != null) {
@@ -245,6 +242,9 @@ public class GameScreen extends BaseScreen {
                     adjacentTile.renderHighlight(batch, Color.BLUE);
                 }
             }
+
+            playerTeam.render(batch);
+            enemyTeam.render(batch);
 
             particleSystem.render(batch);
         }
