@@ -76,7 +76,8 @@ public class World {
             }
         }
         bounds.setWidth(Tile.tileWidth * (maxCol+1.5f) * .75f);
-        bounds.setHeight(Tile.tileHeight * (maxRow+2));
+        bounds.setHeight(Tile.tileHeight * (maxRow+4));
+        bounds.setY(-Tile.tileHeight);
     }
 
     public void render(SpriteBatch batch){

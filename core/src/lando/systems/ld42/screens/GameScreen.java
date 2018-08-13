@@ -183,7 +183,7 @@ public class GameScreen extends BaseScreen {
 
         updateCamera();
         targetZoom.setValue(Math.max(world.bounds.width / worldCamera.viewportWidth, world.bounds.height / worldCamera.viewportHeight));
-        cameraTargetPos.set(world.bounds.width/2, world.bounds.height/2, 0);
+        cameraTargetPos.set(world.bounds.x + world.bounds.width/2, world.bounds.y + world.bounds.height/2, 0);
         screenShakeCamera.update(dt);
     }
 
