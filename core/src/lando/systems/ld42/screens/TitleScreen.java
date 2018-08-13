@@ -168,11 +168,8 @@ public class TitleScreen extends BaseScreen {
         batch.setProjectionMatrix(hudCamera.combined);
         batch.begin();
         {
-            batch.setColor(Color.RED);
-            batch.draw(assets.whitePixel, titleBounds.x, titleBounds.y, titleBounds.width, titleBounds.height);
-
             for (Letter l : letters) {
-                titleFont.draw(batch, l.letter, l.x, l.y);
+                Assets.drawString(batch, l.letter, l.x, l.y, Color.WHITE, 1, titleFont);
             }
 
             if (helpModalWindow.isActive) {
