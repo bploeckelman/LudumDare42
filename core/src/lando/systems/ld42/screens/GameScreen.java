@@ -34,6 +34,7 @@ import lando.systems.ld42.ui.RecruitmentUI;
 import lando.systems.ld42.ui.StatusUI;
 import lando.systems.ld42.ui.Tooltip;
 import lando.systems.ld42.units.Unit;
+import lando.systems.ld42.utils.Audio;
 import lando.systems.ld42.utils.TileUtils;
 import lando.systems.ld42.utils.screenshake.ScreenShakeCameraController;
 import lando.systems.ld42.world.Tile;
@@ -445,6 +446,7 @@ public class GameScreen extends BaseScreen {
 
     public void resolveAttack(Unit attackingUnit, Tile attackingTile){
         particleSystem.addBattleCloud(attackingTile, attackingUnit.tile);
+        LudumDare42.game.audio.playSound(Audio.Sounds.fight);
         int result = willAttackSucceed(attackingUnit, attackingTile);
         if (result > 0) {
             //attack succeeded

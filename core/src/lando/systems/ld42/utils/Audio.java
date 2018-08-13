@@ -21,7 +21,7 @@ public class Audio implements Disposable {
     public static final boolean shutUpYourTunes = false;
 
     public enum Sounds {
-        lose_level, peasant, soldier, archer, wizard
+        lose_level, peasant, soldier, archer, wizard, fight
     }
 
     public enum Musics {
@@ -42,10 +42,14 @@ public class Audio implements Disposable {
 //        putSound(Sounds.lose_level, Gdx.audio.newSound(Gdx.files.internal("audio/awww.mp3")));
 //        putSound(Sounds.lose_level, Gdx.audio.newSound(Gdx.files.internal("audio/beer-bottle-pop.mp3")));
 
-        putSound(Sounds.peasant, Gdx.audio.newSound(Gdx.files.internal("sounds/stick.mp3")));
+        putSound(Sounds.peasant, Gdx.audio.newSound(Gdx.files.internal("sounds/peasant.mp3")));
+        putSound(Sounds.peasant, Gdx.audio.newSound(Gdx.files.internal("sounds/peasant1.mp3")));
         putSound(Sounds.soldier, Gdx.audio.newSound(Gdx.files.internal("sounds/army.mp3")));
         putSound(Sounds.archer, Gdx.audio.newSound(Gdx.files.internal("sounds/arrow.mp3")));
+        putSound(Sounds.archer, Gdx.audio.newSound(Gdx.files.internal("sounds/arrow1.mp3")));
         putSound(Sounds.wizard, Gdx.audio.newSound(Gdx.files.internal("sounds/wizard.mp3")));
+
+        putSound(Sounds.fight, Gdx.audio.newSound(Gdx.files.internal("sounds/swords.mp3")));
 
         musics.put(Musics.music1, Gdx.audio.newMusic(Gdx.files.internal("sounds/lute-harp.mp3")));
 //        musics.put(Musics.music2, Gdx.audio.newMusic(Gdx.files.internal("audio/song2.mp3")));
