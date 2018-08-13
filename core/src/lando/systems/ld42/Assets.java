@@ -89,6 +89,7 @@ public class Assets implements Disposable {
     public Animation<TextureRegion> castleWaveAnimationEnemy;
     public Animation<TextureRegion> castleLowerAnimationPlayer;
     public Animation<TextureRegion> castleLowerAnimationEnemy;
+    public Animation<TextureRegion> tileHighlightAnimation;
 
     public static BitmapFont font;
     public ShaderProgram fontShader;
@@ -163,7 +164,7 @@ public class Assets implements Disposable {
         whiteCircle = atlas.findRegion("white-circle");
         defaultHex = atlas.findRegion("default-hex");
         whiteHex = atlas.findRegion("white-hex");
-        highlightHex = atlas.findRegion("tile-outline");
+        //highlightHex = atlas.findRegion("tile-outline");
         emptyHex = atlas.findRegion("tile-empty");
         blankTile = atlas.findRegion("tile-blank");
         sparkle = atlas.findRegion("sparkle");
@@ -207,6 +208,9 @@ public class Assets implements Disposable {
         castleWaveAnimationEnemy = new Animation<TextureRegion>(0.16f, castleWaveEnemy, Animation.PlayMode.LOOP);
 
         titleTexture = mgr.get(titleTextureAsset);
+        Array<TextureAtlas.AtlasRegion> textureHighlight = atlas.findRegions("tile-outline");
+        tileHighlightAnimation = new Animation<TextureRegion>(0.7f, textureHighlight, Animation.PlayMode.LOOP);
+
 
         // Initialize distance field font
         font = mgr.get(distanceFieldFontAsset);

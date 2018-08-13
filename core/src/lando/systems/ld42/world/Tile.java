@@ -6,6 +6,7 @@ import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.equations.Back;
 import aurelienribon.tweenengine.primitives.MutableFloat;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -52,6 +53,7 @@ public class Tile {
     public Team.Type owner;
     public Unit occupant;
     public Array<Tile> tempNeighbors;
+    private TextureRegion highlightKeyFrame;
 
     public Tile (int col, int row){
         this.world = World.THE_WORLD;
@@ -84,6 +86,7 @@ public class Tile {
 
     public void update(float dt) {
         animState += dt;
+        highlightKeyFrame = LudumDare42.game.assets.tileHighlightAnimation.getKeyFrame(animState);
     }
 
     public void render(SpriteBatch batch){
@@ -179,7 +182,7 @@ public class Tile {
 
     public void renderHighlight(SpriteBatch batch, Color c){
         batch.setColor(c.r, c.g, c.b, alpha.floatValue());
-        batch.draw(LudumDare42.game.assets.highlightHex, position.x, position.y, tileWidth, tileHeight);
+        batch.draw(highlightKeyFrame, position.x, position.y, tileWidth, tileHeight);
     }
 
     public void killTile(){
