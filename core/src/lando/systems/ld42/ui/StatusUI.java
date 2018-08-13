@@ -82,7 +82,7 @@ public class StatusUI extends UserInterface {
         this.assets = assets;
         this.layout = assets.layout;
         this.color = new Color(1f, 1f, 1f, 0f);
-        this.turnTextColor = new Color(255f / 255f, 126f / 255f, 0f / 255f, 0f);
+        this.turnTextColor = Config.turn_text_color;
         this.proj = new Vector3();
         this.bounds = new Rectangle();
         this.boundsPlayerUnits = new Rectangle();
@@ -191,6 +191,16 @@ public class StatusUI extends UserInterface {
                 else if (currentEnemyPhase == EnemyAI.Phase.Squish)     turnText = "Heal The World";
                 else if (currentEnemyPhase == EnemyAI.Phase.Finish) {
                     kickoffPhaseTransition = false;
+                }
+            }
+
+            if (currentTurn == Turn.PLAYER_ACTION || currentTurn == Turn.PLAYER_RECRUITMENT) {
+                turnTextColor = Config.player_color;
+            } else {
+                if (currentEnemyPhase == EnemyAI.Phase.Recruit || currentEnemyPhase == EnemyAI.Phase.Move) {
+                    turnTextColor = Config.enemy_color;
+                } else {
+                    turnTextColor = Config.turn_text_color;
                 }
             }
         }
