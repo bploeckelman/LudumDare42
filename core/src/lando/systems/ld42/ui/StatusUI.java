@@ -54,6 +54,8 @@ public class StatusUI extends UserInterface {
     private TextureRegion soldier;
     private TextureRegion archer;
     private TextureRegion wizard;
+    private int claimedCountPlayer;
+    private int claimedCountEnemy;
 
     public Vector2 territoryPlayerTarget;
     public Vector2 territoryEnemyTarget;
@@ -73,6 +75,8 @@ public class StatusUI extends UserInterface {
         this.soldier = assets.unitAnimationSoldier.getKeyFrame(0);
         this.archer  = assets.unitAnimationArcher.getKeyFrame(0);
         this.wizard  = assets.unitAnimationWizard.getKeyFrame(0);
+        this.claimedCountPlayer = 0;
+        this.claimedCountEnemy = 0;
         for (int i = 0; i < 256; ++i) {
             sparklePool.free(new Sparkle());
         }
@@ -84,7 +88,13 @@ public class StatusUI extends UserInterface {
             Sparkle sparkle = activeSparkles.get(i);
             sparkle.update(dt);
             if (sparkle.dead) {
-                // TODO: increment claimed counter for this sparkle here?
+                // Increase claimed count
+                if (sparkle.teamType == Team.Type.player) {
+                    claimedCountPlayer++;
+                } else if (sparkle.teamType == Team.Type.enemy) {
+                    claimedCountEnemy++;
+                }
+
                 activeSparkles.removeIndex(i);
                 sparklePool.free(sparkle);
             }
@@ -113,7 +123,8 @@ public class StatusUI extends UserInterface {
                 proj.y - sparkleHeight / 2f,
                 (teamType == Team.Type.player) ? territoryPlayerTarget.x : territoryEnemyTarget.x,
                 (teamType == Team.Type.player) ? territoryPlayerTarget.y : territoryEnemyTarget.y,
-                (teamType == Team.Type.player) ? Config.player_color   : Config.enemy_color);
+                (teamType == Team.Type.player) ? Config.player_color   : Config.enemy_color,
+                teamType);
         activeSparkles.add(sparkle);
     }
 
@@ -135,8 +146,8 @@ public class StatusUI extends UserInterface {
         assets.ninePatchScrews.draw(batch, boundsEnemyTerritory.x, boundsEnemyTerritory.y, boundsEnemyTerritory.width, boundsEnemyTerritory.height);
 
         // Draw claimed territory
-        String playerTerritoryCount = Integer.toString(gameScreen.playerTeam.getTileTotalCount(), 10);
-        String enemyTerritoryCount = Integer.toString(gameScreen.enemyTeam.getTileTotalCount(), 10);
+        String playerTerritoryCount = Integer.toString(claimedCountPlayer, 10);
+        String enemyTerritoryCount = Integer.toString(claimedCountEnemy, 10);
         String territoryLabelPlayer = "Claimed: " + playerTerritoryCount;
         String territoryLabelEnemy = "Claimed: " + enemyTerritoryCount;
 

@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Pool;
 import lando.systems.ld42.LudumDare42;
 import lando.systems.ld42.accessors.ColorAccessor;
 import lando.systems.ld42.accessors.Vector2Accessor;
+import lando.systems.ld42.teams.Team;
 
 public class Sparkle implements Pool.Poolable {
 
@@ -20,6 +21,7 @@ public class Sparkle implements Pool.Poolable {
     public Vector2 target;
     public Color color;
     public MutableFloat rotation;
+    public Team.Type teamType;
     public int revolutions;
     public boolean dead;
 
@@ -29,6 +31,7 @@ public class Sparkle implements Pool.Poolable {
         this.color = new Color(1f, 1f, 1f, 1f);
         this.rotation = new MutableFloat(0f);
         this.revolutions = 1;
+        this.teamType = Team.Type.none;
         this.dead = true;
     }
 
@@ -37,12 +40,13 @@ public class Sparkle implements Pool.Poolable {
         dead = true;
     }
 
-    public void init(float px, float py, float tx, float ty, Color color) {
+    public void init(float px, float py, float tx, float ty, Color color, Team.Type teamType) {
         this.pos.set(px, py);
         this.target.set(tx, ty);
         this.color.set(color.r, color.g, color.b, 1f);
         this.rotation.setValue(0f);
         this.revolutions = MathUtils.random(2, 8);
+        this.teamType = teamType;
         this.dead = false;
 
         float min_transit_duration = 1f;
