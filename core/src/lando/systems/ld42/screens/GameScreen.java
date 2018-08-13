@@ -302,6 +302,7 @@ public class GameScreen extends BaseScreen {
     @Override
     public boolean touchUp (int screenX, int screenY, int pointer, int button) {
         if (endPhaseButton.checkForTouch(screenX, screenY) && turnAction.turn != Turn.ENEMY){
+            selectedUnitTile = null;
             turnAction.nextTurn();
         }
 
@@ -314,8 +315,6 @@ public class GameScreen extends BaseScreen {
                 }
                 if (!playerTeam.buildsLeft()) {
                     selectedUnitTile = null;
-                    playerTeam.replenishAction();
-                    enemyTeam.replenishAction();
                     turnAction.nextTurn();
                 }
             }

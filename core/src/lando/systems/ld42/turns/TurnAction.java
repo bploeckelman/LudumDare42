@@ -27,10 +27,10 @@ public class TurnAction {
             case PLAYER_RECRUITMENT:
                 this.turn = Turn.PLAYER_ACTION;
                 playerTeam.replenishAction();
-                enemyTeam.replenishAction();
                 break;
             case PLAYER_ACTION:
                 this.turn = Turn.ENEMY;
+//                enemyTeam.replenishAction();
                 break;
             case ENEMY:
                 this.turn = Turn.PLAYER_RECRUITMENT;
