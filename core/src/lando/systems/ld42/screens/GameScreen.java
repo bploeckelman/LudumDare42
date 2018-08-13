@@ -150,9 +150,6 @@ public class GameScreen extends BaseScreen {
         if (turnNumber != 1 || turnAction.turn == Turn.ENEMY){
             helpHandPos.set(-1000, -1000);
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            Gdx.app.exit();
-        }
 
         if (checkVictory()) {
             endGameText = "You Win!";
@@ -162,7 +159,7 @@ public class GameScreen extends BaseScreen {
             endGameText = "You Lost :(";
         }
 
-        if ((Gdx.input.justTouched() && gameOver) || Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+        if ((Gdx.input.justTouched() && gameOver)) {
             game.setScreen(new EndScreen());
         }
 
