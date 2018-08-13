@@ -15,16 +15,17 @@ import java.util.HashMap;
 
 public class Audio implements Disposable {
 
-    public static final float MUSIC_VOLUME = 1f;
+    public static final float MUSIC_VOLUME = .4f;
+    public static final float SOUND_VOLUME = .6f;
     public static final boolean shutUpYourFace = false;
     public static final boolean shutUpYourTunes = false;
 
     public enum Sounds {
-        lose_level
+        lose_level, peasant, soldier, archer, wizard
     }
 
     public enum Musics {
-        music1, music2
+        music1
     }
 
     public HashMap<Sounds, SoundContainer> sounds = new HashMap<Sounds, SoundContainer>();
@@ -38,19 +39,24 @@ public class Audio implements Disposable {
     }
 
     public Audio(boolean playMusic) {
-        putSound(Sounds.lose_level, Gdx.audio.newSound(Gdx.files.internal("audio/awww.mp3")));
-        putSound(Sounds.lose_level, Gdx.audio.newSound(Gdx.files.internal("audio/beer-bottle-pop.mp3")));
+//        putSound(Sounds.lose_level, Gdx.audio.newSound(Gdx.files.internal("audio/awww.mp3")));
+//        putSound(Sounds.lose_level, Gdx.audio.newSound(Gdx.files.internal("audio/beer-bottle-pop.mp3")));
 
-        musics.put(Musics.music1, Gdx.audio.newMusic(Gdx.files.internal("audio/song1.mp3")));
-        musics.put(Musics.music2, Gdx.audio.newMusic(Gdx.files.internal("audio/song2.mp3")));
+        putSound(Sounds.peasant, Gdx.audio.newSound(Gdx.files.internal("sounds/stick.mp3")));
+        putSound(Sounds.soldier, Gdx.audio.newSound(Gdx.files.internal("sounds/army.mp3")));
+        putSound(Sounds.archer, Gdx.audio.newSound(Gdx.files.internal("sounds/arrow.mp3")));
+        putSound(Sounds.wizard, Gdx.audio.newSound(Gdx.files.internal("sounds/wizard.mp3")));
+
+        musics.put(Musics.music1, Gdx.audio.newMusic(Gdx.files.internal("sounds/lute-harp.mp3")));
+//        musics.put(Musics.music2, Gdx.audio.newMusic(Gdx.files.internal("audio/song2.mp3")));
 
         currentMusic = musics.get(Musics.music1);
-        currentMusic.setLooping(false);
-        currentMusic.setVolume(MUSIC_VOLUME);
-        musicVolume = new MutableFloat(MUSIC_VOLUME);
+        currentMusic.setLooping(true);
+        currentMusic.setVolume(0);
+        musicVolume = new MutableFloat(0);
         if (playMusic) {
             currentMusic.play();
-            setMusicVolume(MUSIC_VOLUME, 2f);
+            setMusicVolume(MUSIC_VOLUME, 5f);
         }
         currentMusic.setOnCompletionListener(nextSong);
     }
@@ -94,7 +100,7 @@ public class Audio implements Disposable {
 
         SoundContainer soundCont = sounds.get(soundOption);
         Sound s = soundCont.getSound();
-        return (s != null) ? s.play(1f) : 0;
+        return (s != null) ? s.play(SOUND_VOLUME) : 0;
     }
 
     public void playMusic(Musics musicOption) {
@@ -123,7 +129,7 @@ public class Audio implements Disposable {
     }
 
     public void setMusicVolume(float level, float duration) {
-        LudumDare42.game.tween.killTarget(musicVolume);
+//        LudumDare42.game.tween.killTarget(musicVolume);
         Tween.to(musicVolume, 1, duration)
                 .target(level)
                 .ease(Sine.IN)
@@ -134,14 +140,14 @@ public class Audio implements Disposable {
     public Music.OnCompletionListener nextSong = new Music.OnCompletionListener() {
         @Override
         public void onCompletion(Music music) {
-            if (currentMusic == musics.get(Musics.music1)){
-                currentMusic = musics.get(Musics.music2);
-            } else {
-                currentMusic = musics.get(Musics.music1);
-            }
-            currentMusic.setVolume(musicVolume.floatValue());
-            currentMusic.play();
-            currentMusic.setOnCompletionListener(nextSong);
+//            if (currentMusic == musics.get(Musics.music1)){
+//                currentMusic = musics.get(Musics.music2);
+//            } else {
+//                currentMusic = musics.get(Musics.music1);
+//            }
+//            currentMusic.setVolume(musicVolume.floatValue());
+//            currentMusic.play();
+//            currentMusic.setOnCompletionListener(nextSong);
         }
     };
 }

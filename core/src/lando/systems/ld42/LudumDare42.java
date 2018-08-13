@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import lando.systems.ld42.accessors.*;
 import lando.systems.ld42.screens.BaseScreen;
 import lando.systems.ld42.screens.TitleScreen;
+import lando.systems.ld42.utils.Audio;
 
 public class LudumDare42 extends ApplicationAdapter {
 
@@ -45,6 +46,7 @@ public class LudumDare42 extends ApplicationAdapter {
 
         LudumDare42.game = this;
 
+
         if (tween == null) {
             tween = new TweenManager();
             Tween.setWaypointsLimit(4);
@@ -61,6 +63,8 @@ public class LudumDare42 extends ApplicationAdapter {
             assets = new Assets();
         }
 
+        audio = new Audio();
+
         setScreen(new TitleScreen());
     }
 
@@ -73,6 +77,7 @@ public class LudumDare42 extends ApplicationAdapter {
 //        audio.update(dt);
         tween.update(dt);
         screen.update(dt);
+        audio.update(dt);
 
         if (nextScreen != null) {
             nextScreen.update(dt);

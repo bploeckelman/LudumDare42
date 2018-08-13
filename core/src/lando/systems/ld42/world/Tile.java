@@ -148,7 +148,7 @@ public class Tile {
         Assets.drawString(batch, ""+attackPower, center - 5 - layout.width, y - 16 + layout.height/2f, Color.WHITE, .3f, Assets.font);
 
         layout.setText(Assets.font, ""+defensePower);
-        batch.draw(LudumDare42.game.assets.sheild, center + 5, y - 30, 32, 32);
+        batch.draw(LudumDare42.game.assets.shield, center + 5, y - 30, 32, 32);
         Assets.drawString(batch, ""+defensePower, center + 47, y - 16 + layout.height/2f, Color.WHITE, .3f, Assets.font);
 
     }

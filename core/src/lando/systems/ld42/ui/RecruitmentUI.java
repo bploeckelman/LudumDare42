@@ -23,6 +23,7 @@ import lando.systems.ld42.units.ArcherUnit;
 import lando.systems.ld42.units.PeasantUnit;
 import lando.systems.ld42.units.SoldierUnit;
 import lando.systems.ld42.units.WizardUnit;
+import lando.systems.ld42.utils.Audio;
 import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
 
@@ -116,6 +117,7 @@ public class RecruitmentUI extends UserInterface {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 team.addUnit(new PeasantUnit(LudumDare42.game.assets), tile);
+                LudumDare42.game.audio.playSound(Audio.Sounds.peasant);
                 RecruitmentUI.this.hide();
             }
         });
@@ -123,6 +125,7 @@ public class RecruitmentUI extends UserInterface {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 team.addUnit(new SoldierUnit(LudumDare42.game.assets), tile);
+                LudumDare42.game.audio.playSound(Audio.Sounds.soldier);
                 RecruitmentUI.this.hide();
             }
         });
@@ -130,6 +133,7 @@ public class RecruitmentUI extends UserInterface {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 team.addUnit(new ArcherUnit(LudumDare42.game.assets), tile);
+                LudumDare42.game.audio.playSound(Audio.Sounds.archer);
                 RecruitmentUI.this.hide();
             }
         });
@@ -137,6 +141,7 @@ public class RecruitmentUI extends UserInterface {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 team.addUnit(new WizardUnit(LudumDare42.game.assets), tile);
+                LudumDare42.game.audio.playSound(Audio.Sounds.wizard);
                 RecruitmentUI.this.hide();
             }
         });
