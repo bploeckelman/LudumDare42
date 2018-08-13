@@ -7,6 +7,7 @@ import lando.systems.ld42.screens.GameScreen;
 import lando.systems.ld42.teams.EnemyTeam;
 import lando.systems.ld42.teams.Team;
 import lando.systems.ld42.units.*;
+import lando.systems.ld42.utils.Audio;
 import lando.systems.ld42.utils.TileUtils;
 import lando.systems.ld42.world.Tile;
 import lando.systems.ld42.world.World;
@@ -17,7 +18,7 @@ public class EnemyAI {
 
     public enum Phase {Recruit, Move, RemoveTile, Squish, Finish}
 
-    public static int turnsPerSquanch = 6;
+    public static int turnsPerSquanch = 5;
 
     private Array<Tile> neighbors;
     private Array<Tile> tempTileArray;
@@ -125,6 +126,7 @@ public class EnemyAI {
         delay = Unit.moveDuration + .5f;
         enemyTeam.removeLeftoverActions();
         phase = Phase.RemoveTile;
+        LudumDare42.game.audio.playSound(Audio.Sounds.tileFall);
 
     }
 
@@ -223,6 +225,7 @@ public class EnemyAI {
         }
         if (screen.turnNumber % turnsPerSquanch == 0){
             phase = Phase.Squish;
+            LudumDare42.game.audio.playSound(Audio.Sounds.squanch);
         } else {
             phase = Phase.Finish;
         }

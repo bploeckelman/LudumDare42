@@ -21,7 +21,7 @@ public class Audio implements Disposable {
     public static final boolean shutUpYourTunes = false;
 
     public enum Sounds {
-        lose_level, peasant, soldier, archer, wizard, fight, click
+        lose_level, peasant, soldier, archer, wizard, fight, click, tileFall, squanch
     }
 
     public enum Musics {
@@ -54,6 +54,9 @@ public class Audio implements Disposable {
         putSound(Sounds.click, Gdx.audio.newSound(Gdx.files.internal("sounds/click.mp3")));
         putSound(Sounds.click, Gdx.audio.newSound(Gdx.files.internal("sounds/click1.mp3")));
         putSound(Sounds.click, Gdx.audio.newSound(Gdx.files.internal("sounds/click2.mp3")));
+
+        putSound(Sounds.tileFall, Gdx.audio.newSound(Gdx.files.internal("sounds/rumble-low.mp3")));
+        putSound(Sounds.squanch, Gdx.audio.newSound(Gdx.files.internal("sounds/crumble.mp3")));
 
 
         musics.put(Musics.music1, Gdx.audio.newMusic(Gdx.files.internal("sounds/lute-harp.mp3")));
