@@ -135,6 +135,13 @@ public class TitleScreen extends BaseScreen {
                     for (Letter l: letters) {
                         l.y = l.fy;
                     }
+
+                    // no .reverse.. sigh
+                    for (int k = 0; k < letters.length/2; k++) {
+                        Letter temp = letters[k];
+                        letters[k] = letters[letters.length-(1+k)];
+                        letters[letters.length-(1+k)] = temp;
+                    }
                 }
                 falling = false;
                 state = State.outro;
