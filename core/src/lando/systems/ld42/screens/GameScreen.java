@@ -236,6 +236,9 @@ public class GameScreen extends BaseScreen {
                 batch.end();
             }
 
+            if (pickPixmap != null) {
+                pickPixmap.dispose();
+            }
             pickPixmap = ScreenUtils.getFrameBufferPixmap(0, 0, pickBuffer.getWidth(), pickBuffer.getHeight());
             pickBuffer.end();
         }
