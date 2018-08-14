@@ -137,13 +137,16 @@ public class GameScreen extends BaseScreen {
         // Don't judge me there is only 30 min left in the Jam
         if (turnNumber == 1 && turnAction.turn == Turn.PLAYER_ACTION){
             if (selectedUnitTile == null) {
-                Unit u = playerTeam.units.get(0);
-                if (u != null) {
-                    helpHandPos.set(u.pos.x + u.size.x/2f, u.pos.y + (u.size.y *2));
+                if (playerTeam.units.size > 0) {
+                    Unit u = playerTeam.units.get(0);
+                    if (u != null) {
+                        helpHandPos.set(u.pos.x + u.size.x / 2f, u.pos.y + (u.size.y * 2));
+                    }
                 }
             } else {
                 Tile t = world.getTile(selectedUnitTile.col, selectedUnitTile.row + 1);
-                helpHandPos.set(t.position.x + Tile.tileWidth/2f, t.position.y + Tile.tileHeight * 1.5f);
+                helpHandPos.set(t.position.x + Tile.tileWidth / 2f, t.position.y + Tile.tileHeight * 1.5f);
+
             }
         }
 
