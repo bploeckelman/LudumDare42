@@ -96,23 +96,23 @@ public class HelpModalWindow extends ModalWindow {
                 LudumDare42.game.assets.unitAnimationPeasant.getKeyFrame(0).getRegionWidth() * 1.5f,
                 LudumDare42.game.assets.unitAnimationPeasant.getKeyFrame(0).getRegionHeight() * 1.5f);
 
-        batch.draw(LudumDare42.game.assets.unitAnimationArcher.getKeyFrame(0),
+        batch.draw(LudumDare42.game.assets.unitAnimationSoldier.getKeyFrame(0),
                 modalRect.x + margin_left * 1.5f + unitOffeset,
                 modalRect.y + modalRect.height - margin_top * 2f - margin_top * MARGIN_MULTIPLIER * (introTutorial.length+6) - 18f,
+                LudumDare42.game.assets.unitAnimationSoldier.getKeyFrame(0).getRegionWidth() * 1.5f,
+                LudumDare42.game.assets.unitAnimationSoldier.getKeyFrame(0).getRegionHeight() * 1.5f);
+
+        batch.draw(LudumDare42.game.assets.unitAnimationArcher.getKeyFrame(0),
+                modalRect.x + margin_left * 1.5f + unitOffeset,
+                modalRect.y + modalRect.height - margin_top * 2f - margin_top * MARGIN_MULTIPLIER * (introTutorial.length+7) - 18f,
                 LudumDare42.game.assets.unitAnimationArcher.getKeyFrame(0).getRegionWidth() * 1.5f,
                 LudumDare42.game.assets.unitAnimationArcher.getKeyFrame(0).getRegionHeight() * 1.5f);
 
         batch.draw(LudumDare42.game.assets.unitAnimationWizard.getKeyFrame(0),
                 modalRect.x + margin_left * 1.5f + unitOffeset,
-                modalRect.y + modalRect.height - margin_top * 2f - margin_top * MARGIN_MULTIPLIER * (introTutorial.length+7) - 18f,
+                modalRect.y + modalRect.height - margin_top * 2f - margin_top * MARGIN_MULTIPLIER * (introTutorial.length+8) - 18f,
                 LudumDare42.game.assets.unitAnimationWizard.getKeyFrame(0).getRegionWidth() * 1.5f,
                 LudumDare42.game.assets.unitAnimationWizard.getKeyFrame(0).getRegionHeight() * 1.5f);
-
-        batch.draw(LudumDare42.game.assets.unitAnimationSoldier.getKeyFrame(0),
-                modalRect.x + margin_left * 1.5f + unitOffeset,
-                modalRect.y + modalRect.height - margin_top * 2f - margin_top * MARGIN_MULTIPLIER * (introTutorial.length+8) - 18f,
-                LudumDare42.game.assets.unitAnimationSoldier.getKeyFrame(0).getRegionWidth() * 1.5f,
-                LudumDare42.game.assets.unitAnimationSoldier.getKeyFrame(0).getRegionHeight() * 1.5f);
     }
 
 }
